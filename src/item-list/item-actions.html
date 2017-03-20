@@ -121,7 +121,7 @@
           <paper-dialog id="select-action">
             <paper-listbox class="dropdown-content">
               <template is="dom-repeat" items="[[itemActionsDetails(selectedItem)]]">
-                  <paper-item><paper-button on-tap="_selectAction"><iron-icon icon="[[item.icon]]"></iron-icon> [[item.name]]</paper-button></paper-item>
+                  <paper-item><paper-button on-tap="_selectAction" class$="button [[item.name]]"><iron-icon icon="[[item.icon]]"></iron-icon> [[item.name]]</paper-button></paper-item>
               </template>
             </paper-listbox>
           </paper-dialog>
