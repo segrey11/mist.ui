@@ -459,7 +459,7 @@
         handleDesktopNotificationClick: function(e) {
             if (e.detail.data.url) {
                 window.history.pushState({}, null, e.detail.data.url);
-                window.dispatchEvent(new CustomEvent('location-changed'));
+                window.dispatchEvent(new CustomEvent('location-changed', { bubbles: true, composed: true} ));
                 e.stopPropagation();
             }
         },
