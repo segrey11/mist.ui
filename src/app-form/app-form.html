@@ -215,6 +215,10 @@
                 background-color: #eee;
             }
 
+            .pad-0 {
+                padding: 0;
+            }
+
             paper-radio-group {
                 display: flex;
                 flex-wrap: nowrap;
@@ -802,6 +806,8 @@
             },
 
             showOption: function (option) {
+                if (option.zone_id)
+                    return option.zone_id;
                 if (option.title)
                     return option.title;
                 if (option.name)

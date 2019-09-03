@@ -445,6 +445,21 @@
                         f.options = this.model.keysArray || [];
                     }
 
+                    if (f.name.endsWith("zone")) {
+                        f.options = this._toArray(this.model.zones);
+                    }
+
+                    if (f.type == "fieldgroup") {
+                        for (var k=0; k<f.subfields.length; k++) {
+                            var sf = f.subfields[k];
+                            if (sf.name.endsWith("zone")) {
+                                sf.options = this._toArray(this.model.zones);
+                                if (sf.options.length)
+                                    this.set('machineFields.'+index+'.subfields.'+k+'.value', sf.options[0].id);
+                            }
+                        }
+                    }
+
                     if (f.name.startsWith("script") || f.name.startsWith(
                             "schedule_script")) {
                         f.options = this.model.scriptsArray || [];
