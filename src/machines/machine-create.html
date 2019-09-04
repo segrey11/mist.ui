@@ -443,7 +443,7 @@
                     }
 
                     if (f.name.endsWith("key")) {
-                        f.options = this.model.keysArray || [];
+                        f.options = this._toArray(this.model.keys);
                     }
 
                     if (f.name.endsWith("zone")) {
@@ -463,7 +463,7 @@
 
                     if (f.name.startsWith("script") || f.name.startsWith(
                             "schedule_script")) {
-                        f.options = this.model.scriptsArray || [];
+                        f.options = this._toArray(this.model.scripts);
                     }
 
                     if (f.name == "action") {
