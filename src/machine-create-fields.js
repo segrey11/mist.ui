@@ -1476,7 +1476,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                         defaultValue: '',
                         helptext: '',
                         show: true,
-                        class: 'width-150 inline-block pad-0',
+                        class: 'width-150 inline-block pad-r-0',
                         required: true,
                         suffix: '.',
                     }, {
@@ -1486,8 +1486,9 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                         value: '',
                         defaultValue: '',
                         helptext: '',
+                        payloadValue: 'zone_id',
                         show: true,
-                        class: 'inline-block pad-0',
+                        class: 'inline-block pad-l-0',
                         required: true,
                         options: []
                     }

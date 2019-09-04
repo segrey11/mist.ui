@@ -218,6 +218,12 @@
             .pad-0 {
                 padding: 0;
             }
+            .pad-r-0 {
+                padding-right: 0;
+            }
+            .pad-l-0 {
+                padding-left: 0;
+            }
 
             paper-radio-group {
                 display: flex;
@@ -523,7 +529,7 @@
                                         <paper-item disabled>No [[_computeResourceTypeForField(field.name, field.options.length)]] found</paper-item>
                                     </template>
                                     <template is="dom-repeat" items="[[field.options]]" as="option">
-                                        <paper-item value="[[option.id]]" class$="button-[[option.button]]" disabled$="[[option.disabled]]">
+                                        <paper-item value="[[_getPayloadValue(field,option)]]" class$="button-[[option.button]]" disabled$="[[option.disabled]]">
                                             <template is="dom-if" if="[[option.icon]]">
                                                 <iron-icon class="field-icon" icon="[[option.icon]]"></iron-icon>
                                             </template>
@@ -1394,6 +1400,14 @@
             },
             _noOptions: function (options, length) {
                 return !options || options.length == 0;
+            },
+            _getPayloadValue: function(field, option) {
+                if (!field.payloadValue){
+                    return option.id;
+                } else {
+                    console.log('_getPayloadValue', field, option, option[field.payloadValue])
+                    return option[field.payloadValue];
+                }
             },
             _filter: function (options, search) {
                 return options.filter(function (op) {
