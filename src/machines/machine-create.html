@@ -122,7 +122,7 @@
                         fields to appear.</p>
                 </div>
                 <div hidden$=[[!selectedCloud]]>
-                    <app-form id="createForm" fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch"></app-form>
+                    <app-form id="createForm" format-payload fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch"></app-form>
                 </div>
             </paper-material>
         </div>
@@ -1538,8 +1538,8 @@
             var hostnameInd = this._fieldIndexByName("hostname"),
                 composedHostname = '',
                 hostname =  this.get('machineFields.' + hostnameInd + '.value');
-            if (hostanme.record_name && hostname.dns_zone) {
-                composedHostname = hostanme.record_name+'.'+hostname.dns_zone;
+            if (hostname.record_name && hostname.dns_zone) {
+                composedHostname = hostname.record_name+'.'+hostname.dns_zone;
             }
             this.set('machineFields.' + hostnameInd + '.value',composedHostname);
         },
