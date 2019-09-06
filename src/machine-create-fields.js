@@ -1458,7 +1458,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         // }
             {
                 name: 'hostname',
-                label: 'Create hostname',
+                label: 'Create DNS record',
                 type: 'fieldgroup',
                 value: {},
                 defaultValue: {},

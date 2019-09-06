@@ -1539,7 +1539,7 @@
                 composedHostname = '',
                 hostname =  this.get('machineFields.' + hostnameInd + '.value');
             if (hostname.record_name && hostname.dns_zone) {
-                composedHostname = hostname.record_name+'.'+hostname.dns_zone;
+                composedHostname = hostname.record_name+'.'+hostname.dns_zone+'.';
             }
             this.set('machineFields.' + hostnameInd + '.value',composedHostname);
         },
