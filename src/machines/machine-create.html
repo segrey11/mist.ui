@@ -320,10 +320,26 @@
             }
             // add cloud fields
             if (machineFields.fields) {
-                this.set('machineFields', JSON.parse(JSON.stringify(machineFields.fields)));
+                // allow hostname iff at least a cloud has dns access enabled
+                var fields = JSON.parse(JSON.stringify(machineFields.fields));
+                if (this.model.clouds) {
+                    var dns = this._enableHostname(this.model.clouds);
+                    if (!dns) {
+                        var ind = this._fieldIndexByName('hostname', fields);
+                        if (ind > -1) {
+                            fields.splice(ind,1);
+                        }
+                    }  
+                }
+                this.set('machineFields', fields);
             }
             // set values by provider
             this._updateFields(selectedCloud);
+        },
+        _enableHostname: function(clouds) {
+            return Object.values(clouds).reduce(function(a,b){
+                        return a.dns_enabled || b.dns_enabled;
+                    });
         },
         _locationChanged: function (locationId) {
             if (!locationId) return;
