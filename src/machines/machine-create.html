@@ -122,7 +122,9 @@
                         fields to appear.</p>
                 </div>
                 <div hidden$=[[!selectedCloud]]>
-                    <app-form id="createForm" fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch"></app-form>
+                    <app-form id="createForm" fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch">
+                        <span hidden="[[!priceEstimation]]">Estimated Price $[[priceEstimation]]/month</span>
+                    </app-form>
                 </div>
             </paper-material>
         </div>
@@ -216,6 +218,10 @@
                     return VOLUME_CREATE_FIELDS;
                 }
             },
+            priceEstimation: {
+                type: String,
+                computed: '_computePriceEstimation(selectedCloud,machineFields.*)'
+            },
             providers: {
                 type: Array,
                 value: function() {
@@ -257,6 +263,23 @@
                     cloud: cloud,
                     image: image
                 });
+        },
+        _computePriceEstimation: function(selectedCloud,machineFields){
+            if (!this.selectedCloud) return '';
+            if (!this.machineFields) return '';
+            var sizeInd = this._fieldIndexByName('size');
+            if (sizeInd == -1) return '';
+            var size = this.get('machineFields.'+sizeInd+'.value')
+            if (!size) return '';
+            var cloudSizes = this.model.clouds[selectedCloud].sizes,
+                cloudSize = cloudSizes[size];
+            if (!cloudSize) return '';
+            if (cloudSize.extra && cloudSize.extra.price) {
+                // console.log('price ==================', cloudSize.extra.price)
+                var price = cloudSize.extra.price * 24 * 30
+                return price.formatMoney(2,',');
+            }
+            return '';
         },
         _computeActions: function(machines) {
             var ret = ['start', 'stop', 'reboot', 'destroy', 'run-script']; //'suspend', 'resume',
