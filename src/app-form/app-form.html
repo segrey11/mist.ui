@@ -815,8 +815,8 @@
             },
 
             showOption: function (option) {
-                if (option.zone_id)
-                    return option.zone_id;
+                if (option.display)
+                    return option[option.display];
                 if (option.title)
                     return option.title;
                 if (option.name)
