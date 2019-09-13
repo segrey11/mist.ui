@@ -321,6 +321,7 @@
             // add cloud fields
             if (machineFields.fields) {
                 // allow hostname iff at least a cloud has dns access enabled
+                debugger;
                 var fields = JSON.parse(JSON.stringify(machineFields.fields));
                 if (this.model.clouds) {
                     var dns = this._enableHostname(this.model.clouds);
@@ -338,8 +339,8 @@
         },
         _enableHostname: function(clouds) {
             return Object.values(clouds).reduce(function(a,b){
-                        return a.dns_enabled || b.dns_enabled;
-                    });
+                        return a || b.dns_enabled;
+                    },false);
         },
         _locationChanged: function (locationId) {
             if (!locationId) return;
@@ -1555,7 +1556,8 @@
                 composedHostname = '',
                 hostname =  this.get('machineFields.' + hostnameInd + '.value');
             if (hostname.record_name && hostname.dns_zone) {
-                composedHostname = hostname.record_name+'.'+hostname.dns_zone+'.';
+                var domainName = this.model.zones[hostname.dns_zone].zone_id;
+                composedHostname = hostname.record_name+'.'+domainName+'.';
             }
             this.set('machineFields.' + hostnameInd + '.value',composedHostname);
         },
