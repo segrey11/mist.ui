@@ -1486,7 +1486,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                         value: '',
                         defaultValue: '',
                         helptext: '',
-                        payloadValue: 'zone_id',
+                        display: 'zone_id',
                         show: true,
                         class: 'inline-block pad-l-0 pad-t',
                         required: true,
