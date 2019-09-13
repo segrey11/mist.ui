@@ -321,7 +321,6 @@
             // add cloud fields
             if (machineFields.fields) {
                 // allow hostname iff at least a cloud has dns access enabled
-                debugger;
                 var fields = JSON.parse(JSON.stringify(machineFields.fields));
                 if (this.model.clouds) {
                     var dns = this._enableHostname(this.model.clouds);

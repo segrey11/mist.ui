@@ -1431,32 +1431,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     });
 
     if (['onapp'].indexOf(p.provider) == -1) {
-        p.fields.push(
-        //     {
-        //     name: 'create_hostname_machine',
-        //     label: 'Create hostname',
-        //     type: 'toggle',
-        //     value: false,
-        //     defaultValue: false,
-        //     excludeFromPayload: true,
-        //     helptext: 'Open options to create an A record for this machine.',
-        //     show: true,
-        //     required: false,
-        // }, {
-        //     name: 'hostname',
-        //     label: 'Hostname',
-        //     type: 'textarea',
-        //     value: '',
-        //     defaultValue: '',
-        //     helptext: 'Provide the desired hostname you want to assign to the machine. Example: machine1.mist.io. There needs to be a DNS zone for this domain already created. Currently under heavy development, might not be fully functional.',
-        //     show: true,
-        //     required: false,
-        //     showIf: {
-        //         fieldName: 'create_hostname_machine',
-        //         fieldValues: ['true', true],
-        //     },
-        // }
-            {
+        p.fields.push({
                 name: 'hostname',
                 label: 'Create DNS record',
                 type: 'fieldgroup',
