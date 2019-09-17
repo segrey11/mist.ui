@@ -1,0 +1,110 @@
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="rbac-rule-constraints">
+    <template>
+        <style include="shared-styles tags-and-labels">
+        :host {
+            display: flex;
+            align-items: center;
+        }
+
+        paper-dropdown-menu {
+            width: 150px;
+
+            --paper-dropdown-menu-input: {
+                text-transform: uppercase;
+            }
+
+            --paper-input-container-underline: {
+                /*display: none;*/
+                opacity: 0.32;
+            }
+
+            ;
+        }
+
+        paper-dropdown-menu.short {
+            /*width: 80px;*/
+            margin-right: 16px;
+        }
+
+        paper-input {
+            vertical-align: middle;
+        }
+
+        .flex {
+            display: inline-flex;
+        }
+
+        .tag {
+            vertical-align: middle;
+        }
+
+        paper-input {
+            --paper-input-container-underline {
+                opacity: 0.32;
+            }
+        }
+
+        .tag iron-icon {
+            color: #fff;
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+        }
+
+        iron-icon.edit {
+            color: inherit;
+            padding: 8px;
+            opacity: 0.32;
+        }
+        </style>
+        <span hidden$="[[!showConstraints]]">
+            constraints
+        </span>
+    </template>
+</dom-module>
+<script>
+(function() {
+    'use strict';
+
+    Polymer({
+        is: 'rbac-rule-constraints',
+        properties: {
+            model: {
+                type: Object,
+            },
+            rule: {
+                type: Object
+            },
+            index: {
+                type: Number,
+            },
+            showConstraints: {
+                type: Boolean,
+                value: false,
+                computed: '_computeShowConstraints(rule.*)'
+            }
+        },
+
+        listeners: {
+            'keyup': 'hotkeys'
+        },
+
+        _computeShowConstraints: function(rule) {
+            // emty strings for ALL
+            return ["machine", ""].indexOf(this.rule.rtype) > -1 && ["create",""].indexOf(this.rule.action)>-1;
+        },
+
+        hotkeys: function(e) {
+            // if 'enter'
+            if (e.keyCode === 13) {
+                this.$.inputField.blur();
+            }
+        }
+    });
+})();
+</script>
