@@ -1194,7 +1194,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 valueDefaultSpan: 1,
                 valueDefaultUnit: 'days',
                 parentfield: 'expiration',
-                max: 60*60*24*7,
+                max: null,
                 helptext: '',
                 show: true,
                 required: false,
