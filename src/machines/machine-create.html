@@ -193,7 +193,7 @@
 
     Polymer({
         is: 'machine-create',
-
+        behaviors: [rbacBehavior],
         properties: {
             model: {
                 type: Object
@@ -246,6 +246,9 @@
             },
             resourceGroupsFieldIndex: {
                 type: Number
+            },
+            permissions: {
+                type: Object
             }
         },
         observers: [
@@ -256,7 +259,21 @@
         ],
         listeners: {
             'keyup': 'hotkeys',
-            'add-input': 'addInput'
+            'add-input': 'addInput',
+            'fields-changed': 'fieldsChanged'
+        },
+        attached: function() {
+            this.checkPermissions();
+        },
+        checkPermissions: function() {
+            var perm = this.check_perm('create','machine');
+            if (perm == true) {
+                return;
+            } else if (perm == false) {
+                return;
+            } else if (typeof perm == 'object') {
+                this.set('permissions', perm);
+            }
         },
         _prefillOptions: function(location) {
             if (this.shadowRoot.querySelector('app-location') && this.shadowRoot.querySelector('app-location').queryParams)
@@ -589,6 +606,39 @@
                     }.bind(this));
                 }
             }
+        },
+
+        fieldsChanged: function(e) {
+            // change notify values if expiration date changes
+            if (e.detail && e.detail.fieldname == "date" && e.detail.parentfield == "expiration") {
+                var expIndex = this._fieldIndexByName('expiration'),
+                    parentPath = 'machineFields.'+ expIndex +'.subfields',
+                    dateIndex = 1,
+                    notifyIndex = 2,
+                    dateSpan = this.get(parentPath +'.'+ dateIndex +'.valueDefaultSpan'),
+                    dateUnit = this.get(parentPath +'.'+ dateIndex +'.valueDefaultUnit');
+
+                this._setNotifyMax(parentPath +'.'+ notifyIndex +'.max', dateSpan, dateUnit);
+                this._setNotifyUnit(parentPath +'.'+ notifyIndex +'.valueDefaultUnit', dateUnit);
+            }
+        },
+        _setNotifyMax: function(path, span, unit) {
+            var notifyMax;
+            if (unit=='minutes') { notifyMax = 60 * span;}
+            if (unit=='hours') { notifyMax = 3600 * span;}
+            if (unit=='days') { notifyMax = 3600*24 * span;}
+            if (unit=='weeks') { notifyMax = 3600*24*7 * span;}
+            if (unit=='months') { notifyMax = moment().add(span,unit).diff(moment(), 'seconds');}
+            this.set(path, notifyMax);
+        },
+
+        _setNotifyUnit: function(path, dateUnit) {
+            var unit = 'minutes';
+            if (dateUnit == 'months') unit = 'weeks';
+            if (dateUnit == 'weeks') unit = 'days';
+            if (dateUnit == 'days') unit = 'hours';
+            if (dateUnit == 'hours') unit = 'minutes';
+            this.set(path, unit);
         },
 
         _machineFieldsChanged: function(changeRecord) {
