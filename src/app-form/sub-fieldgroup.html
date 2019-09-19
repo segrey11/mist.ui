@@ -105,13 +105,16 @@
                 } else if (!this.enabled) {
                     this.set('field.value', {});
                     this.notifyPath('field.value');
-                    this._fieldsChangedNotifyEvent();
                 }
+                var that = this;
+                this.debounce('_fieldsChangedNotifyEvent',function(){
+                    that._fieldsChangedNotifyEvent();
+                },100);
             },
             _fieldsChangedNotifyEvent: function(){
                 var form = this.shadowRoot.querySelector('app-form#'+this.id);
                 if (form) {
-                    form.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true}));
+                    form.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, detail: {fieldname: this.field.name}}));
                 }
             },
             _calcDisplayButtons: function(){
