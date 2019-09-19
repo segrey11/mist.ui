@@ -252,6 +252,7 @@
             }
         },
         observers: [
+            '_applyPermissions(machinesFields, permissions)',
             '_cloudChanged(selectedCloud)',
             '_machineFieldsChanged(machineFields.*)',
             '_prefillOptions(route.*)',
@@ -262,7 +263,7 @@
             'add-input': 'addInput',
             'fields-changed': 'fieldsChanged'
         },
-        attached: function() {
+        ready: function() {
             this.checkPermissions();
         },
         checkPermissions: function() {
@@ -273,6 +274,42 @@
                 return;
             } else if (typeof perm == 'object') {
                 this.set('permissions', perm);
+            }
+        },
+        _applyPermissions: function(machinesFields, permissions) {
+            if (this.permissions && this.machinesFields) {
+                if (this.permissions.expirationMax || this.permissions.expirationDefault){
+                    this._applyExpirationPermissions();
+                }
+            }
+        },
+        _applyExpirationPermissions: function() {
+            for (var i=0; i < this.machinesFields.length; i++) {
+                var ind = this._fieldIndexByName('expiration', this.machinesFields[i].fields),
+                    path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
+
+                if (ind > -1) {
+                    if (this.permissions.expirationMax)
+                        this.set(path + '.1.max', this.permissions.expirationMax.exp);
+                    if (this.permissions.expirationDefault) {
+                        if (this.permissions.expirationDefault.action) {
+                            this.set(path + '.0.value', this.permissions.expirationDefault.action);
+                            this.set(path + '.0.defaultValue', this.permissions.expirationDefault.action);
+                        }
+                        if (this.permissions.expirationDefault.exp) {
+                            this.set(path + '.1.valueDefaultSpan', this.permissions.expirationDefault.exp.span);
+                            this.set(path + '.1.valueDefaultUnit', this.permissions.expirationDefault.exp.unit);
+                        }
+                        if (this.permissions.expirationDefault.notify) {
+                            this.set(path + '.2.valueDefaultSpan', this.permissions.expirationDefault.notify.span);
+                            this.set(path + '.2.valueDefaultUnit', this.permissions.expirationDefault.notify.unit);
+                        }
+                        // console.log('defaults',this.get(path+'.0.defaultValue'))
+                        // console.log('defaults',this.get(path+'.1.valueDefaultSpan'))
+                        // console.log('defaults',this.get(path+'.2.valueDefaultSpan'))
+                    }
+                    // console.log('i ind', i, ind);
+                }
             }
         },
         _prefillOptions: function(location) {
@@ -344,6 +381,7 @@
                     return c.provider == provider;
                 });
             }
+
             // add cloud fields
             if (machineFields.fields) {
                 this.set('machineFields', JSON.parse(JSON.stringify(machineFields.fields)));
