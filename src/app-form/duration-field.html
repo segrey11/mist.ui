@@ -170,10 +170,10 @@
             },
             _secondsToDuration: function(seconds) {
                 var span, unit;
-                if (seconds % 3600*24*7 == 0) {
+                if (seconds % (3600*24*7) == 0) {
                     span = seconds / (3600*24*7);
                     unit = 'weeks';
-                } else if (seconds % 3600*24 == 0) {
+                } else if (seconds % (3600*24) == 0) {
                     span = seconds / (3600*24);
                     unit = 'days';
                 } else if (seconds % 3600 == 0) {
