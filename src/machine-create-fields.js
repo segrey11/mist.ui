@@ -1169,8 +1169,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         show: true,
         required: false,
         optional: true,
-        subfields: [
-            {
+        subfields: [{
                 name: 'action',
                 type: 'dropdown',
                 class: 'bind-both',
@@ -1178,6 +1177,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 defaultValue: 'stop',
                 helptext: '',
                 show: true,
+                parentfield: 'expiration',
                 required: false,
                 class: 'width-150 inline-block',
                 options: [
@@ -1193,6 +1193,8 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 valueType: 'date',
                 valueDefaultSpan: 1,
                 valueDefaultUnit: 'days',
+                parentfield: 'expiration',
+                max: 60*60*24*7,
                 helptext: '',
                 show: true,
                 required: false,
@@ -1214,6 +1216,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 valueDefaultUnit: 'hours',
                 class: 'bind-top',
                 helptext: '',
+                parentfield: 'expiration',
                 show: true,
                 required: false,
                 prefixText: 'Notify me ',
