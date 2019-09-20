@@ -650,14 +650,18 @@
             // change notify values if expiration date changes
             if (e.detail && e.detail.fieldname == "date" && e.detail.parentfield == "expiration") {
                 var expIndex = this._fieldIndexByName('expiration'),
-                    parentPath = 'machineFields.'+ expIndex +'.subfields',
-                    dateIndex = 1,
-                    notifyIndex = 2,
+                    parentPath = 'machineFields.'+ expIndex +'.subfields', dateIndex = 1, notifyIndex = 2,
                     dateSpan = this.get(parentPath +'.'+ dateIndex +'.valueDefaultSpan'),
-                    dateUnit = this.get(parentPath +'.'+ dateIndex +'.valueDefaultUnit');
+                    dateUnit = this.get(parentPath +'.'+ dateIndex +'.valueDefaultUnit'),
+                    notifySpan = this.get(parentPath +'.'+ notifyIndex +'.valueDefaultSpan'),
+                    notifyUnit = this.get(parentPath +'.'+ notifyIndex +'.valueDefaultUnit');
 
                 this._setNotifyMax(parentPath +'.'+ notifyIndex +'.max', dateSpan, dateUnit);
-                this._setNotifyUnit(parentPath +'.'+ notifyIndex +'.valueDefaultUnit', dateUnit);
+                // update notify unit, if notify > date counted in seconds
+                if (moment().add(dateSpan,dateUnit).diff(moment(), 'seconds') <= 
+                    moment().add(notifySpan,notifyUnit).diff(moment(), 'seconds')) {
+                    this._setNotifyUnit(parentPath +'.'+ notifyIndex +'.valueDefaultUnit', dateUnit);
+                }
             }
         },
         _setNotifyMax: function(path, span, unit) {
