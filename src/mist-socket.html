@@ -563,6 +563,28 @@
 
         _updateOrg: function (data) {
             this.set('model.onboarding.isLoadingTeams', false);
+            //test code
+            var constraints = {
+                maxOwnerBurnRate: '',
+                maxOwnerBurnRate: '',
+                maxOwnerBurnRate: '',
+                expirationDefault: {action: 'destroy', exp: {span:7,unit:'days'}, notify:{span:2,unit:'days'}}, //exp 7 days, notify 2
+                expirationMax: {exp: 30*24*3600} //30 days
+            }
+            //test code
+            for (var j=0; j<data.teams.length; j++) {
+                var team = data.teams[j];
+                for (var i=0; i<team.policy.rules.length; i++) {
+                    var rule = team.policy.rules[i];
+                    if (rule.rtype == 'machine' && rule.action == 'create') {
+                        data.teams[j].policy.rules[i].constraints = {};
+                        data.teams[j].policy.rules[i].constraints.expirationMax = constraints.expirationMax;
+                        data.teams[j].policy.rules[i].constraints.expirationDefault = constraints.expirationDefault;
+                    }
+                }
+            }
+            // end of test code
+
             this._updateModel('teams', data.teams);
             this._updateModel('members', data.members);
             data.teams = data.members = undefined;
