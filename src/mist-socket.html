@@ -569,7 +569,7 @@
                 maxOwnerBurnRate: '',
                 maxOwnerBurnRate: '',
                 expirationDefault: {action: 'destroy', exp: {span:7,unit:'days'}, notify:{span:2,unit:'days'}}, //exp 7 days, notify 2
-                expirationMax: {exp: 30*24*3600} //30 days
+                expirationMax: {action: ['destroy'], exp: 30*24*3600} //30 days
             }
             //test code
             for (var j=0; j<data.teams.length; j++) {

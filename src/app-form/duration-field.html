@@ -125,6 +125,8 @@
                 }
             },
             _computeMax: function(fieldMax,unit) {
+                if (!fieldMax) return;
+                // compute tha max number allowed for each unit 
                 return this._secondsToUnitDuration(fieldMax, unit);
             },
             _checkedChanged: function(disabled){
@@ -150,7 +152,8 @@
                 }
                 this.set('field.value', newValue);
                 this.notifyPath('field.value');
-                this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, detail: {fieldname: this.field.name, parentfield: this.field.parentfield}}));
+                this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, 
+                    detail: {fieldname: this.field.name, parentfield: this.field.parentfield}}));
             },
             _durationToSeconds: function(span,unit) {
                 var step = 1;
@@ -169,8 +172,17 @@
                 return span*step;
             },
             _secondsToDuration: function(seconds) {
+                // turn seconds to duration
+                // TODO: duration in seconds is always a product of 60 (*60 (*24 (*7))) for minutes hours days and weeks,
+                // but ammount of months in secs is not directly tracable because of differentiations in month days.
                 var span, unit;
-                if (seconds % (3600*24*7) == 0) {
+                if (seconds % (3600*24*28) == 0 || seconds % (3600*24*29) == 0 || seconds % (3600*24*30) == 0 || seconds % (3600*24*31) == 0) {
+                    if (seconds % (3600*24*28) == 0) span = seconds / (3600*24*28);
+                    if (seconds % (3600*24*29) == 0) span = seconds / (3600*24*29);
+                    if (seconds % (3600*24*30) == 0) span = seconds / (3600*24*30);
+                    if (seconds % (3600*24*31) == 0) span = seconds / (3600*24*31);
+                    unit = 'months';
+                } else if (seconds % (3600*24*7) == 0) {
                     span = seconds / (3600*24*7);
                     unit = 'weeks';
                 } else if (seconds % (3600*24) == 0) {
@@ -186,8 +198,12 @@
                 return { span:span, unit:unit };
             },
             _secondsToUnitDuration: function(seconds, unit) {
+                // turn seconds to amount of set units (months, weeks, days, hours, minutes)
+                // TODO: as above, amount of seconds depends on monthdays, which differentiate accross months
                 var span, step;
-                if (unit == 'weeks') {
+                if (unit == 'months') {
+                    step = 3600*24 * moment().daysInMonth();
+                } else if (unit == 'weeks') {
                     step = 3600*24*7;
                 } else if (unit == 'days') {
                     step = 3600*24;

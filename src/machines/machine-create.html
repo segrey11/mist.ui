@@ -289,9 +289,18 @@
                     path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
 
                 if (ind > -1) {
-                    if (this.permissions.expirationMax)
+                    if (this.permissions.expirationMax) {
+                        // enforced permissions
                         this.set(path + '.1.max', this.permissions.expirationMax.exp);
+                        if (this.permissions.expirationMax.action && this.permissions.expirationMax.action.length){
+                            var actions = this.permissions.expirationMax.action.map(function(x){
+                                return {'val':x,'title':x.toUpperCase()};
+                            })
+                            this.set(path + '.0.options', actions);
+                        }
+                    }
                     if (this.permissions.expirationDefault) {
+                        // default permissions
                         if (this.permissions.expirationDefault.action) {
                             this.set(path + '.0.value', this.permissions.expirationDefault.action);
                             this.set(path + '.0.defaultValue', this.permissions.expirationDefault.action);
@@ -304,11 +313,7 @@
                             this.set(path + '.2.valueDefaultSpan', this.permissions.expirationDefault.notify.span);
                             this.set(path + '.2.valueDefaultUnit', this.permissions.expirationDefault.notify.unit);
                         }
-                        // console.log('defaults',this.get(path+'.0.defaultValue'))
-                        // console.log('defaults',this.get(path+'.1.valueDefaultSpan'))
-                        // console.log('defaults',this.get(path+'.2.valueDefaultSpan'))
                     }
-                    // console.log('i ind', i, ind);
                 }
             }
         },
