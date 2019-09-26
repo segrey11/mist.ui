@@ -342,6 +342,8 @@
         },
 
         observers: [
+            '_observeKeys(model.keys.splices)',
+            '_observeScripts(model.scripts.splices)',
             '_routePageChanged(routeData.page, subroute.path)',
             '_sizeChanged(smallscreen)',
             '_configUpdated(config)',
@@ -370,6 +372,14 @@
             if (this.ccRequired) {
                 this._ccDismissed();
             }
+        },
+
+        _observeKeys: function(keysSplices) {
+            this.fire('update-keys');
+        },
+
+        _observeScripts: function(scriptsSplices) {
+            this.fire('update-scripts');
         },
 
         _forwardEvent: function (e) {
