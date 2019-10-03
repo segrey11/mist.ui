@@ -386,7 +386,7 @@ Polymer({
                             var val = null;
                             if (rule[p][q] != null) {
                                 var initialv = rule[p][q];
-                                val = initialv.slice(0);
+                                val = initialv //.slice(0); // TODO: slice breaks because of rule.constraints indroduction
                             }
                             obj[initialq] = val;
                         }
@@ -496,7 +496,7 @@ Polymer({
                         var val = null;
                         if (rule[p][q] != null) {
                             var initialv = rule[p][q];
-                            val = initialv.slice(0);
+                            val = initialv //.slice(0); // TODO: slice breaks because of rule.constraints indroduction
                         }
                         obj[initialq] = val;
                     }
