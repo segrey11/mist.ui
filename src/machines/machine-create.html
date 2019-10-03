@@ -279,40 +279,59 @@
         },
         _applyPermissions: function(machinesFields, permissions) {
             if (this.permissions && this.machinesFields) {
-                if (this.permissions.expirationMax || this.permissions.expirationDefault){
+                if (this.permissions.expiration){
                     this._applyExpirationPermissions();
                 }
             }
         },
+        // expiration: {
+        //             max: '30d',
+        //             default: '7d',
+        //             notify: {
+        //                 default: '2d', 
+        //                 require: true, 
+        //                 msg: 'In case of trouble contact Kevin Williams'
+        //             },
+        //             actions: {
+        //                 available: ['destroy'], 
+        //                 default: 'destroy'
+        //             }
+        //         },
         _applyExpirationPermissions: function() {
             for (var i=0; i < this.machinesFields.length; i++) {
                 var ind = this._fieldIndexByName('expiration', this.machinesFields[i].fields),
                     path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
 
                 if (ind > -1) {
-                    if (this.permissions.expirationMax) {
-                        // enforced permissions
-                        this.set(path + '.1.max', this.permissions.expirationMax.exp);
-                        if (this.permissions.expirationMax.action && this.permissions.expirationMax.action.length){
-                            var actions = this.permissions.expirationMax.action.map(function(x){
+                    if (this.permissions.expiration.max) {
+                        this.set(path + '.1.max', this.permissions.expiration.max);
+                    }
+                    if (this.permissions.expiration.default) {
+                        this.set(path + '.1.defaultValue', this.permissions.expiration.default);
+                    }
+                    if (this.permissions.expiration.notify) {
+                        if (this.permissions.expiration.notify.default) {
+                            // notify default
+                            this.set(path + '.2.defaultValue', this.permissions.expiration.notify.default);
+                        }
+                        if (this.permissions.expiration.notify.require != null
+                            && this.permissions.expiration.notify.require != undefined) {
+                            // notify require (checkbox value)
+                            this.set(path + '.2.disabled', !this.permissions.expiration.notify.require);
+                        }
+                    }
+                    if (this.permissions.expiration.actions) {
+                        if (this.permissions.expiration.actions.available) {
+                            // available actions
+                            var actions = this.permissions.expiration.actions.available.map(function(x){
                                 return {'val':x,'title':x.toUpperCase()};
                             })
                             this.set(path + '.0.options', actions);
                         }
-                    }
-                    if (this.permissions.expirationDefault) {
-                        // default permissions
-                        if (this.permissions.expirationDefault.action) {
-                            this.set(path + '.0.value', this.permissions.expirationDefault.action);
-                            this.set(path + '.0.defaultValue', this.permissions.expirationDefault.action);
-                        }
-                        if (this.permissions.expirationDefault.exp) {
-                            this.set(path + '.1.valueDefaultSpan', this.permissions.expirationDefault.exp.span);
-                            this.set(path + '.1.valueDefaultUnit', this.permissions.expirationDefault.exp.unit);
-                        }
-                        if (this.permissions.expirationDefault.notify) {
-                            this.set(path + '.2.valueDefaultSpan', this.permissions.expirationDefault.notify.span);
-                            this.set(path + '.2.valueDefaultUnit', this.permissions.expirationDefault.notify.unit);
+                        if (this.permissions.expiration.actions.default) {
+                            // default action
+                            this.set(path + '.0.value', this.permissions.expiration.actions.default);
+                            this.set(path + '.0.defaultValue', this.permissions.expiration.actions.default);
                         }
                     }
                 }
