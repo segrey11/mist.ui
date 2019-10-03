@@ -183,7 +183,7 @@
             },
             _valueIsRelativeDuration: function(value) {
                 var span, unit;
-                var durationRegex = /([0-9]+)([mhdwMY]{1})/;
+                var durationRegex = /([0-9]+)([mohdwy]{1,2})/;
                 if (durationRegex.exec(value).length == 3) {
                     span = durationRegex.exec(value)[1];
                     unit = durationRegex.exec(value)[2];
@@ -192,8 +192,8 @@
                     if (unit == 'h') unit = 'hours';
                     if (unit == 'd') unit = 'days';
                     if (unit == 'w') unit = 'weeks';
-                    if (unit == 'M') unit = 'months';
-                    if (unit == 'Y') unit = 'years';
+                    if (unit == 'mo') unit = 'months';
+                    if (unit == 'y') unit = 'years';
 
                     return {span:span,unit:unit};
 
