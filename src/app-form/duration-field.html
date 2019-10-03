@@ -57,15 +57,15 @@
             <span class="prefix">[[field.prefixText]]</span>
         </template>
         <paper-input id$="app-form-[[id]]-[[field.name]]-duration" placeholder="[[field.placeholder]]" label="[[field.label]]" validator="[[field.validator]]"
-            value="{{field.valueDefaultSpan}}" auto-validate pattern="[[field.pattern]]" required="[[field.required]]"
+            value="{{span}}" auto-validate pattern="[[field.pattern]]" required="[[field.required]]"
             error-message="[[field.errorMessage]]" disabled="[[field.disabled]]"
-            placeholder=[[field.placeholder]] hidden$="[[field.hidden]]" type="number" min="1" max="[[_computeMax(field.max,field.valueDefaultUnit,field.valueDefaultSpan)]]">
+            placeholder=[[field.placeholder]] hidden$="[[field.hidden]]" type="number" min="1" max="[[_computeMax(field.max,unit,span)]]">
             <div suffix hidden$="[[!field.suffix]]" slot="suffix">[[field.suffix]]</div>
             <div prefix hidden$="[[!field.prefix]]" slot="prefix">[[field.prefix]]</div>
         </paper-input>
         <paper-dropdown-menu id$="app-form-[[id]]-[[field.name]]" class$="dropdown-block xs12 m6 [[field.class]]"
             horizontal-align="left" disabled="[[field.disabled]]" hidden="[[field.hidden]]" required="[[field.required]]">
-            <paper-listbox slot="dropdown-content" id$="app-form-[[id]]-[[field.name]]-duration-unit" attr-for-selected="value" selected="{{field.valueDefaultUnit}}"
+            <paper-listbox slot="dropdown-content" id$="app-form-[[id]]-[[field.name]]-duration-unit" attr-for-selected="value" selected="{{unit}}"
                 class="dropdown-content">
                 <template id="durationRepeater" is="dom-repeat" items="[[field.options]]" as="option">
                     <paper-item value="[[option.val]]" disabled="[[_computeOptionDisabled(field.max,option)]]">[[option.title]]</paper-item>
@@ -89,6 +89,12 @@
                     type: Object,
                     notify: true
                 },
+                span: {
+                    type: Number
+                },
+                unit: {
+                    type: String
+                },
                 secondary: {
                     type: Boolean,
                     reflectToAttribute: true
@@ -105,7 +111,7 @@
             observers: [
                 '_initialise(field)',
                 '_checkedChanged(field.disabled)',
-                '_durationChanged(field.valueDefaultSpan, field.valueDefaultUnit, field.valueType)'
+                '_durationChanged(span, unit, field.valueType)'
             ],
             listeners: {
 
@@ -126,8 +132,19 @@
             },
             _computeMax: function(fieldMax,unit) {
                 if (!fieldMax) return;
-                // compute tha max number allowed for each unit 
-                return this._secondsToUnitDuration(fieldMax, unit);
+                // compute the max number allowed for each unit 
+                if (typeof(fieldMax) == 'number') {
+                    return this._secondsToUnitDuration(fieldMax, unit);
+                } else if (typeof(fieldMax) == 'string' && moment(fieldMax).isValid()){
+                    // TODO: compute and set value if max is a date
+                } else {
+                    var duration = this._valueIsRelativeDuration(fieldMax);
+                    if (duration) {
+                        var durSpan = duration.span;
+                        var durUnit = duration.unit;
+                        return this._secondsToUnitDuration(this._durationToSeconds(durSpan,durUnit),unit);
+                    }
+                }
             },
             _checkedChanged: function(disabled){
                 if (this.field.disabled && this.field.optional) {
@@ -140,6 +157,48 @@
             },
             _initialise: function(field) {
                 this.set('secondary', this.field.secondary);
+                // if default value exists, apply
+                if (field.defaultValue) {
+                    var span, unit;
+                    if (typeof(field.defaultValue) == 'number') {
+                        // is seconds
+                        span = this._secondsToDuration(field.defaultValue).span;
+                        unit = this._secondsToDuration(field.defaultValue).unit;
+                    } else if (typeof(field.defaultValue) == 'string') {
+                        if (moment(field.defaultValue).isValid()) {
+                            // is date
+                            // TODO: compute and set value if default is a date
+                        } else {
+                            // is relative duration
+                            var duration = this._valueIsRelativeDuration(field.defaultValue);
+                            if (duration){
+                                span = duration.span;
+                                unit = duration.unit;
+                            }
+                        }
+                    }
+                    this.set('span', span);
+                    this.set('unit', unit);
+                }
+            },
+            _valueIsRelativeDuration: function(value) {
+                var span, unit;
+                var durationRegex = /([0-9]+)([mhdwMY]{1})/;
+                if (durationRegex.exec(value).length == 3) {
+                    span = durationRegex.exec(value)[1];
+                    unit = durationRegex.exec(value)[2];
+
+                    if (unit == 'm') unit = 'minutes';
+                    if (unit == 'h') unit = 'hours';
+                    if (unit == 'd') unit = 'days';
+                    if (unit == 'w') unit = 'weeks';
+                    if (unit == 'M') unit = 'months';
+                    if (unit == 'Y') unit = 'years';
+
+                    return {span:span,unit:unit};
+
+                }
+                return false;
             },
             _durationChanged: function(span,unit,type) {
                 this.shadowRoot.querySelector("#app-form-"+this.id+"-"+this.field.name+"-duration").validate();
