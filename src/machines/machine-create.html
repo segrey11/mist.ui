@@ -558,12 +558,9 @@
                             }
                         }
                         options.forEach(function(f){
-                            if (provider == "ec2" && f.name == 'name'){} // ec2 requires a name even when attaching an existing volume
-                            else {
-                                f.showIf = {
-                                    fieldName: 'new-or-existing-volume',
-                                    fieldValues: ['new'],
-                                }
+                            f.showIf = {
+                                fieldName: 'new-or-existing-volume',
+                                fieldValues: ['new'],
                             }
                         })
                         var existingIndex = f.options.findIndex(function(f){return f.name == 'volume_id'});
