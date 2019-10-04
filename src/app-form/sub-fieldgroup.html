@@ -31,7 +31,7 @@
             </paper-toggle-button>
         </template>
         <template is="dom-if" if="[[_showForm(field.optional,enabled)]]" restamp>
-            <app-form id$="[[id]]" fields="{{field.subfields}}" display-buttons="[[_calcDisplayButtons()]]" single-column inline></app-form>
+            <app-form id$="[[id]]" fields="{{field.subfields}}" display-buttons="[[_calcDisplayButtons()]]" single-column="[[field.singleColumn]]" inline="[[field.inline]]"></app-form>
         </template>
     </template>
     <script>
@@ -69,6 +69,14 @@
                     value: false,
                     reflectToAttribute: true,
                     observer: '_enabledChanged'
+                },
+                singleColumnForm: {
+                    type: Boolean,
+                    reflectToAttribute: true
+                },
+                inline: {
+                    type: Boolean,
+                    reflectToAttribute: true
                 }
             },
             observers: [

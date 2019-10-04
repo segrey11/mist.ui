@@ -49,7 +49,7 @@
                         </p>
                     </div>
                     <template is="dom-if" if="[[fields]]" restamp>
-                        <app-form fields="{{fields}}" display-buttons="[[_calcDisplayButtons()]]" single-column></app-form>
+                        <app-form fields="{{fields}}" display-buttons="[[_calcDisplayButtons()]]" single-column="[[singleColumnForm]]" inline="[[inline]]"></app-form>
                     </template>
                 </div>
                 <div hidden$="[[!_computeType(type, 'isYesNo')]]" class="clearfix btn-group">
@@ -121,9 +121,21 @@
                     list: {
                         type: Array
                     },
+                    fields: {
+                        type: Array
+                    },
                     hideText: {
                         type: Boolean,
                         value: false
+                    },
+                    singleColumnForm: {
+                        type: Boolean,
+                        value: true,
+                        reflectToAttribute: true
+                    },
+                    inline: {
+                        type: Boolean,
+                        reflectToAttribute: true
                     }
                 },
                 _computeType: function(type, value) {

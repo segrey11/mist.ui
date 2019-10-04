@@ -1169,6 +1169,8 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         show: true,
         required: false,
         optional: true,
+        singleColumnForm: true,
+        inline: true,
         subfields: [{
                 name: 'action',
                 type: 'dropdown',
@@ -1522,6 +1524,8 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 show: true,
                 required: false,
                 optional: true,
+                singleColumnForm: true,
+                inline: true,
                 subfields: [
                     {
                         name: 'record_name',
