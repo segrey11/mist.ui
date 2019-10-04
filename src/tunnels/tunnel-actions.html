@@ -104,7 +104,7 @@ TUNNEL_ACTIONS = {
           if(this.inSingleView)
             arr.push('edit');
           arr.push('tag');
-          if (this.org.ownership_enabled && (tunnel.owned_by == this.user || this.org.is_owner)) {
+          if (this.org && this.org.ownership_enabled && (tunnel.owned_by == this.user || this.org.is_owner)) {
             arr.push('transfer-ownership');
           }
           arr.push('delete');
