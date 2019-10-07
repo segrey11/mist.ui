@@ -563,59 +563,6 @@
 
         _updateOrg: function (data) {
             this.set('model.onboarding.isLoadingTeams', false);
-            //test code
-            var constraints = {
-                // maxOwnerBurnRate: '',
-                // maxTeamBurnRate: '',
-                // maxOrgBurnRate: '',
-                // expirationDefault: {action: 'destroy', exp: {span:7,unit:'days'}, notify:{span:2,unit:'days'}}, //exp 7 days, notify 2
-                // expirationMax: {action: ['destroy'], exp: 30*24*3600} //30 days
-            }
-            constraints = {
-                expiration: {
-                    max: '3mo',
-                    default: '1mo',
-                    notify: {
-                        default: '7d', 
-                        require: true, 
-                        msg: 'In case of trouble contact Kevin Williams'
-                    },
-                    actions: {
-                        available: ['destroy'], 
-                        default: 'destroy'
-                    }
-                },
-                cost: {
-                    max_total_run_rate: 3500,
-                    max_team_run_rate: 500,
-                    max_machine_rate: 100
-                },
-                count: {
-                    max_total_machines: 50,
-                    max_team_machines: 10,
-                    max_user_machines: 3
-                },
-                cores: {
-                    max_total_cores: 500,
-                    max_team_cores: 200,
-                    max_user_cores: 60
-                }
-            }
-            //test code
-            // for (var j=0; j<data.teams.length; j++) {
-            //     var team = data.teams[j];
-            //     for (var i=0; i<team.policy.rules.length; i++) {
-            //         var rule = team.policy.rules[i];
-            //         if (rule.rtype == 'machine' && rule.action == 'create') {
-            //             data.teams[j].policy.rules[i].constraints = {};
-            //             data.teams[j].policy.rules[i].constraints.expiration = constraints.expiration;
-            //             // data.teams[j].policy.rules[i].constraints.cost = constraints.cost;
-            //             // data.teams[j].policy.rules[i].constraints.count = constraints.count;
-            //             // data.teams[j].policy.rules[i].constraints.cores = constraints.cores;
-            //         }
-            //     }
-            // }
-            // end of test code
             this._updateModel('teams', data.teams);
             this._updateModel('members', data.members);
             data.teams = data.members = undefined;
