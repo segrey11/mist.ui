@@ -794,6 +794,11 @@
                     value: false,
                     reflectToAttribute: true
                 },
+                inline: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
                 fieldVisibility: {
                     type: Object
                 }
@@ -804,7 +809,6 @@
             ],
 
             listeners: {
-                'form-updated': 'runFieldsChanged',
                 'fields-changed': 'runFieldsChanged',
                 'field-value-changed': 'runValidateFields',
                 'app-form-ready': 'runValidateFields'
@@ -1009,7 +1013,6 @@
                             }
                         });
                         that.set('form', form);
-                        this.fire('form-updated');
                         that.runValidateFields();
                     },500);
                 }

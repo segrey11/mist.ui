@@ -63,21 +63,9 @@
         }
         </style>
         <span hidden$="[[!showConstraints]]">
-            <element-for-in content="[[rule.constraints]]"></element-for-in>
-            <!-- <span hidden$=[[!rule.constraints.expiration]]><strong>Expiration: </strong>
-                [[_displayJSON(rule.constraints.expiration)]]<br/>
-            </span>
-            <span hidden$=[[!rule.constraints.cost]]><strong>Cost: </strong>
-                [[_displayJSON(rule.constraints.cost)]]<br/>
-            </span>
-            <span hidden$=[[!rule.constraints.count]]><strong>Count: </strong>
-                [[_displayJSON(rule.constraints.count)]]<br/>
-            </span>
-            <span hidden$=[[!rule.constraints.cores]]><strong>Cores: </strong>
-                [[_displayJSON(rule.constraints.cores)]]<br/>
-            </span> -->
-            <span hidden$="[[!error]]">[[error]]</span>
-            <span hidden$="[[!rule.constraints]]">Edit</span>
+            <span hidden$="[[!error]]" class="error">[[error]]</span>
+            <span hidden$="[[!hasConstraints(rule.constraints)]]">Has constraints</span>
+            <span hidden$="[[hasConstraints(rule.constraints)]]" on-tap="editConstraints">Add</span>
             <iron-icon icon="editor:mode-edit" on-tap="editConstraints" class="edit"></iron-icon>
         </span>
         <dialog-element id="editConstraints" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]"></dialog-element>
@@ -92,251 +80,8 @@ const RBAC_CONSTRAINTS_FIELDS = [{
         defaultValue: '',
         show: true,
         required: false,
-        helptext: 'Edit the constraints in JSON format'
+        helptext: 'Add/edit constraints in JSON format'
 }]
-// const RBAC_CONSTRAINTS_FIELDS = [{
-//     name: 'expiration',
-//     label: 'Set machine expiration constraints',
-//     type: 'fieldgroup',
-//     value: {},
-//     defaultValue: {},
-//     defaultToggleValue: false,
-//     show: true,
-//     required: false,
-//     optional: true,
-//     singleColumnForm: true,
-//     inline: false,
-//     subfields: [{
-//             name: 'max',
-//             type: 'duration_field',
-//             value: '1mo',
-//             defaultValue: '1mo',
-//             helptext: 'Define the max machine expiration time allowed after creation',
-//             required: false,
-//             show: true,
-//             optional: true,
-//             disabled: true,
-//             parentField: 'expiration',
-//             valueType: 'relative',
-//             options: [
-//                 {val: 'months', title: 'months'},
-//                 {val: 'weeks', title: 'weeks'},
-//                 {val: 'days', title: 'days'},
-//                 {val: 'hours', title: 'hours'},
-//                 {val: 'minutes', title: 'minutes'}
-//             ]
-//         }, {
-//             name: 'default',
-//             type: 'duration_field',
-//             value: '1w',
-//             helptext: 'Set a default machine expiration after creation',
-//             defaultValue: '1w',
-//             required: false,
-//             show: true,
-//             optional: true,
-//             disabled: true,
-//             parentField: 'expiration',
-//             valueType: 'relative',
-//             options: [
-//                 {val: 'months', title: 'months'},
-//                 {val: 'weeks', title: 'weeks'},
-//                 {val: 'days', title: 'days'},
-//                 {val: 'hours', title: 'hours'},
-//                 {val: 'minutes', title: 'minutes'}
-//             ]
-//         }, {
-//             name: 'notify',
-//             type: 'fieldgroup',
-//             class: 'xs12 m12 l12',
-//             label: 'Notification',
-//             value: {},
-//             defaultValue: {},
-//             defaultToggleValue: false,
-//             show: true,
-//             required: false,
-//             parentField: 'expiration',
-//             singleColumnForm: true,
-//             inline: true,
-//             subfields: [{
-//                 name: 'default',
-//                 helptext: 'Set a default notification time before expiration',
-//                 type: 'duration_field',
-//                 value: '',
-//                 defaultValue: '2d',
-//                 required: false,
-//                 show: true,
-//                 optional: true,
-//                 valueType: 'relative',
-//                 disabled: true,
-//                 parentField: 'notify',
-//                 options: [
-//                     {val: 'months', title: 'months'},
-//                     {val: 'weeks', title: 'weeks'},
-//                     {val: 'days', title: 'days'},
-//                     {val: 'hours', title: 'hours'},
-//                     {val: 'minutes', title: 'minutes'}
-//                 ]
-//             },{
-//                 name: 'msg',
-//                 label: 'Expiration text message',
-//                 type: 'text',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 show: true,
-//                 required: false,
-//                 parentField: 'notify',
-//                 helptext: 'Set a message',
-//             },{
-//                 name: 'require',
-//                 label: 'Notification',
-//                 type: 'checkbox',
-//                 class: 'pad-l-32',
-//                 value: false,
-//                 defaultValue: false,
-//                 show: true,
-//                 disabled: true,
-//                 parentField: 'notify',
-//                 required: false,
-//                 helptext: 'Enable by default the notification email, before machine expiration.',
-//             }]
-//         }
-//     ]
-// }, {
-//     name: 'cost',
-//     label: 'Set machine cost constraints',
-//     type: 'fieldgroup',
-//     value: {},
-//     defaultValue: {},
-//     defaultToggleValue: false,
-//     show: true,
-//     required: false,
-//     optional: true,
-//     subfields: [{
-//                 name: 'max_total_run_rate',
-//                 label: 'max_total_run_rate',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cost',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_total_run_rate',
-//             },{
-//                 name: 'max_team_run_rate',
-//                 label: 'max_team_run_rate',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cost',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_team_run_rate',
-//             },{
-//                 name: 'max_machine_rate',
-//                 label: 'max_machine_rate',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cost',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_machine_rate',
-//             }]
-// }, {
-//     name: 'count',
-//     label: 'Set machine count constraints',
-//     type: 'fieldgroup',
-//     value: {},
-//     defaultValue: {},
-//     defaultToggleValue: false,
-//     show: true,
-//     required: false,
-//     optional: true,
-//     subfields: [{
-//                 name: 'max_total_machines',
-//                 label: 'max_total_machines',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'count',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_total_machines',
-//             },{
-//                 name: 'max_team_machines',
-//                 label: 'max_team_machines',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'count',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_team_machines',
-//             },{
-//                 name: 'max_user_machines',
-//                 label: 'max_user_machines',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'count',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_user_machines',
-//             }]
-// },  {
-//     name: 'cores',
-//     label: 'Set machine cores constraints',
-//     type: 'fieldgroup',
-//     value: {},
-//     defaultValue: {},
-//     defaultToggleValue: false,
-//     show: true,
-//     required: false,
-//     optional: true,
-//     subfields: [{
-//                 name: 'max_total_cores',
-//                 label: 'max_total_cores',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cores',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_total_cores',
-//             },{
-//                 name: 'max_team_cores',
-//                 label: 'max_team_cores',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cores',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_team_cores',
-//             },{
-//                 name: 'max_user_machines',
-//                 label: 'max_user_machines',
-//                 type: 'number',
-//                 class: 'pad-l-32',
-//                 value: '',
-//                 defaultValue: '',
-//                 parentField: 'cores',
-//                 show: true,
-//                 required: false,
-//                 helptext: 'Set the max_user_cores',
-//             }]
-// }
-// ]
-
     Polymer({
         is: 'rbac-rule-constraints',
         properties: {
@@ -367,7 +112,7 @@ const RBAC_CONSTRAINTS_FIELDS = [{
             },
             inline: {
                 type: Boolean,
-                value: true
+                value: false
             },
             error: {
                 type: String,
@@ -389,6 +134,9 @@ const RBAC_CONSTRAINTS_FIELDS = [{
             if (e.keyCode === 13) {
                 this.$.inputField.blur();
             }
+        },
+        hasConstraints(constraints){
+            return constraints && Object.keys(constraints).length ? true : false;
         },
         editConstraints: function(e) {
             this.error = "";
@@ -426,35 +174,9 @@ const RBAC_CONSTRAINTS_FIELDS = [{
                 }
             }
         },
-        _displayJSON: function(json){
-            return json && JSON.stringify(json);
-        },
         _mapValuesToFields: function() {
             // fill in fields with constraints corresponding values
             this.set('fields.0.value', JSON.stringify(this.rule.constraints));
-
-            // this._updateLoop(this.fields,'fields.', 'constraints');
-            // this.notifyPath('fields');
-        },
-        _updateLoop: function(fields, baseFieldPath, valuePath){
-            // loop through fields 
-            for (var i=0; i < fields.length; i++) {
-                var newFieldpath = baseFieldPath +''+ i +'.', 
-                    newValuePath = valuePath +'.'+ fields[i].name;
-                if (fields[i].type == "fieldgroup") {
-                    if (JSON.stringify(this.get('rule.' + newValuePath)) && 
-                        JSON.stringify(this.get('rule.' + newValuePath)) != '{}'){
-                        this.set(newFieldpath + 'defaultToggleValue', true);
-                    }
-                    this._updateLoop(fields[i].subfields, newFieldpath+'subfields.', newValuePath);
-                }
-                this._updateFieldValue(newFieldpath, newValuePath);
-            }
-        },
-        _updateFieldValue: function(fieldpath, valuePath) {
-            this.set(fieldpath + 'value', this.get('rule.' + valuePath));
-            this.set(fieldpath + 'defaultValue', this.get('rule.' + valuePath));
-            this.set(fieldpath + 'disabled', false);
         }
     });
 </script>
