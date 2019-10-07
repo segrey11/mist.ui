@@ -290,12 +290,12 @@
                     path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
 
                 if (ind > -1) {
-                    // force expiration and disallow close option
-                    this.set('machinesFields.'+ i +'.fields.'+ ind + '.defaultToggleValue', true);
-                    this.set('machinesFields.'+ i +'.fields.'+ ind + '.toggleDisabled', true);
-
                     if (this.permissions.expiration.max) {
                         this.set(path + '.1.max', this.permissions.expiration.max);
+
+                        // force expiration and disallow to close option
+                        this.set('machinesFields.'+ i +'.fields.'+ ind + '.defaultToggleValue', true);
+                        this.set('machinesFields.'+ i +'.fields.'+ ind + '.toggleDisabled', true);
                     }
                     if (this.permissions.expiration.default) {
                         this.set(path + '.1.defaultValue', this.permissions.expiration.default);
@@ -304,6 +304,14 @@
                         if (this.permissions.expiration.notify.default) {
                             // notify default
                             this.set(path + '.2.defaultValue', this.permissions.expiration.notify.default);
+                            // notify require
+                            this.set(path + '.2.defaultCheck', this.permissions.expiration.notify.require);
+                            if (this.permissions.expiration.notify.require)
+                                this.set(path + '.2.disabledCheck', this.permissions.expiration.notify.require);
+                            // notify max
+                            if (this.permissions.expiration.default) {
+                                this.set(path + '.2.max', this.permissions.expiration.default);
+                            }
                         }
                         if (this.permissions.expiration.notify.require != null
                             && this.permissions.expiration.notify.require != undefined) {
@@ -701,7 +709,6 @@
                     parentPath = 'machineFields.'+ expIndex +'.subfields', dateIndex = 1, notifyIndex = 2,
                     date = this.get(parentPath +'.'+ dateIndex +'.value'),
                     notify = this.get(parentPath +'.'+ notifyIndex +'.value');
-
                 this.set(parentPath +'.'+ notifyIndex +'.max', date);
             }
         },
