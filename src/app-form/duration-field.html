@@ -123,6 +123,7 @@
                 if (!fieldMax) 
                     return false;
                 if (fieldMax) {
+                    // allow max to also be a date
                     var max = this._secondsToDuration(this._computeMax(fieldMax)),
                         unitsArr = ['seconds','minutes','hours','days','weeks','months','years'];
                     // allow only smaller options than the maximum unit
@@ -262,6 +263,26 @@
                 } else if (seconds % 60 == 0) {
                     span = seconds / 60;
                     unit = 'minutes';
+                } else { // if nothing divides exactly, try an approximation
+                    if (seconds > 3600*24*28) {
+                        span =  Math.floor(seconds / 3600*24*28);
+                        unit = 'months';
+                    } else if (seconds > 3600*24*7) {
+                        span =  Math.floor(seconds / 3600*24*7);
+                        unit = 'weeks';
+                    } else if (seconds > 3600*24) {
+                        span =  Math.floor(seconds / 3600*24);
+                        unit = 'days';
+                    } else if (seconds > 3600) {
+                        span = Math.floor(seconds / 3600);
+                        unit = 'hours';
+                    } else if (seconds > 60) {
+                        span =  Math.floor(seconds / 60);
+                        unit = 'minutes';
+                    } else {
+                        span = seconds;
+                        unit = 'seconds';
+                    }
                 }
                 return { span:span, unit:unit };
             },
