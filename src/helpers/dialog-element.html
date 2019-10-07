@@ -49,7 +49,7 @@
                         </p>
                     </div>
                     <template is="dom-if" if="[[fields]]" restamp>
-                        <app-form fields="{{fields}}" display-buttons="[[_calcDisplayButtons()]]" single-column="[[singleColumnForm]]" inline="[[inline]]"></app-form>
+                        <app-form id="{{formId}}" form="{{form}}" fields="{{fields}}" display-buttons="[[_calcDisplayButtons()]]" single-column="[[singleColumnForm]]" inline="[[inline]]"></app-form>
                     </template>
                 </div>
                 <div hidden$="[[!_computeType(type, 'isYesNo')]]" class="clearfix btn-group">
@@ -136,6 +136,16 @@
                     inline: {
                         type: Boolean,
                         reflectToAttribute: true
+                    },
+                    form: {
+                        type: Object,
+                        observer: '_formChanged',
+                        notify: true
+                    },
+                    formId : {
+                        type: String,
+                        value: '',
+                        reflectToAttribute: true
                     }
                 },
                 _computeType: function(type, value) {
@@ -148,15 +158,19 @@
                     this.$.dialogModal.opened = false;
                     this._modalClosed(e);
                 },
+                _formChanged: function(form, oldform) {
+                    console.log('form',form, oldform);
+                },
                 _modalClosed: function(e) {
-                    console.log('closed');
-                    var normalizedEvent = Polymer.dom(e);
+                    console.log('closed', this.form);
+                    // var normalizedEvent = Polymer.dom(e);
                     // if (e.target.id == 'dialogModal') {
                         console.log(this.$.dialogModal.closingReason);
                         this.dispatchEvent(new CustomEvent('confirmation', { bubbles: true, composed: true, detail: {
                             response: 'confirm',
                             confirmed: true,
-                            reason: this.reason
+                            reason: this.reason,
+                            form: this.form
                         } }));
                     // }
                 },

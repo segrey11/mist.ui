@@ -203,16 +203,21 @@
             _durationChanged: function(span,unit,type) {
                 this.shadowRoot.querySelector("#app-form-"+this.id+"-"+this.field.name+"-duration").validate();
                 // this._computePlurals(span);
-                var newValue;
-                if (type == 'secs') {
-                    newValue = this._durationToSeconds(span,unit);
-                } else if (type == 'date')  {
-                    newValue = moment().add(span,unit).utc().format("YYYY-MM-DD HH:mm:ss");
-                }
-                this.set('field.value', newValue);
-                this.notifyPath('field.value');
-                this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, 
+                if (span && unit && type) {
+                    var newValue;
+                    if (type == 'secs') {
+                        newValue = this._durationToSeconds(span,unit);
+                    } else if (type == 'date')  {
+                        newValue = moment().add(span,unit).utc().format("YYYY-MM-DD HH:mm:ss");
+                    } else if (type == 'relative') {
+                        var relativeUnit = ['mo'].indexOf(unit) >= -1 ? unit.substring(0,2) : unit.substring(0,1);
+                        newValue = span+''+relativeUnit;
+                    }
+                    this.set('field.value', newValue);
+                    this.notifyPath('field.value');
+                    this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, 
                     detail: {fieldname: this.field.name, parentfield: this.field.parentfield}}));
+                }
             },
             _durationToSeconds: function(span,unit) {
                 var step = 1;

@@ -804,6 +804,7 @@
             ],
 
             listeners: {
+                'form-updated': 'runFieldsChanged',
                 'fields-changed': 'runFieldsChanged',
                 'field-value-changed': 'runValidateFields',
                 'app-form-ready': 'runValidateFields'
@@ -873,6 +874,7 @@
             },
 
             runFieldsChanged: function (e) {
+                console.log('rule form - fields changed by event');
                 this._fieldsChanged();
             },
 
@@ -917,6 +919,9 @@
                             console.log(el.name);
                             if (el.name == "expiration") {
                                 // console.log(el.value);
+                            }
+                            if (el.type == "fieldgroup") {
+                                console.log('fieldgroup', that.id, 'el', el.name, el.value);
                             }
                             // if field has a dependency
                             if (el.showIf) {
@@ -1004,6 +1009,7 @@
                             }
                         });
                         that.set('form', form);
+                        this.fire('form-updated');
                         that.runValidateFields();
                     },500);
                 }

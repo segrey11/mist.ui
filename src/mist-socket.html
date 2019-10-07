@@ -573,10 +573,10 @@
             }
             constraints = {
                 expiration: {
-                    max: '30d',
-                    default: '7d',
+                    max: '3mo',
+                    default: '1mo',
                     notify: {
-                        default: '2d', 
+                        default: '7d', 
                         require: true, 
                         msg: 'In case of trouble contact Kevin Williams'
                     },
@@ -602,16 +602,19 @@
                 }
             }
             //test code
-            for (var j=0; j<data.teams.length; j++) {
-                var team = data.teams[j];
-                for (var i=0; i<team.policy.rules.length; i++) {
-                    var rule = team.policy.rules[i];
-                    if (rule.rtype == 'machine' && rule.action == 'create') {
-                        data.teams[j].policy.rules[i].constraints = {};
-                        data.teams[j].policy.rules[i].constraints.expiration = constraints.expiration;
-                    }
-                }
-            }
+            // for (var j=0; j<data.teams.length; j++) {
+            //     var team = data.teams[j];
+            //     for (var i=0; i<team.policy.rules.length; i++) {
+            //         var rule = team.policy.rules[i];
+            //         if (rule.rtype == 'machine' && rule.action == 'create') {
+            //             data.teams[j].policy.rules[i].constraints = {};
+            //             data.teams[j].policy.rules[i].constraints.expiration = constraints.expiration;
+            //             // data.teams[j].policy.rules[i].constraints.cost = constraints.cost;
+            //             // data.teams[j].policy.rules[i].constraints.count = constraints.count;
+            //             // data.teams[j].policy.rules[i].constraints.cores = constraints.cores;
+            //         }
+            //     }
+            // }
             // end of test code
             this._updateModel('teams', data.teams);
             this._updateModel('members', data.members);
