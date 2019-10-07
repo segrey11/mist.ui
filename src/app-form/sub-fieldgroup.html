@@ -26,7 +26,7 @@
             }
         </style>
         <template is="dom-if" if="[[field.optional]]" restamp>
-            <paper-toggle-button id$="[[id]]-[[field.name]]-toggler" checked="{{enabled}}">
+            <paper-toggle-button id$="[[id]]-[[field.name]]-toggler" checked="{{enabled}}" disabled="{{field.toggleDisabled}]">
                 <span class="title">[[field.label]]</span>
             </paper-toggle-button>
         </template>

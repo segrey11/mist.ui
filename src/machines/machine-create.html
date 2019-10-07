@@ -284,25 +284,16 @@
                 }
             }
         },
-        // expiration: {
-        //             max: '30d',
-        //             default: '7d',
-        //             notify: {
-        //                 default: '2d', 
-        //                 require: true, 
-        //                 msg: 'In case of trouble contact Kevin Williams'
-        //             },
-        //             actions: {
-        //                 available: ['destroy'], 
-        //                 default: 'destroy'
-        //             }
-        //         },
         _applyExpirationPermissions: function() {
             for (var i=0; i < this.machinesFields.length; i++) {
                 var ind = this._fieldIndexByName('expiration', this.machinesFields[i].fields),
                     path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
 
                 if (ind > -1) {
+                    // force expiration and disallow close option
+                    this.set('machinesFields.'+ i +'.fields.'+ ind + '.defaultToggleValue', true);
+                    this.set('machinesFields.'+ i +'.fields.'+ ind + '.toggleDisabled', true);
+
                     if (this.permissions.expiration.max) {
                         this.set(path + '.1.max', this.permissions.expiration.max);
                     }
@@ -708,36 +699,11 @@
             if (e.detail && e.detail.fieldname == "date" && e.detail.parentfield == "expiration") {
                 var expIndex = this._fieldIndexByName('expiration'),
                     parentPath = 'machineFields.'+ expIndex +'.subfields', dateIndex = 1, notifyIndex = 2,
-                    dateSpan = this.get(parentPath +'.'+ dateIndex +'.valueDefaultSpan'),
-                    dateUnit = this.get(parentPath +'.'+ dateIndex +'.valueDefaultUnit'),
-                    notifySpan = this.get(parentPath +'.'+ notifyIndex +'.valueDefaultSpan'),
-                    notifyUnit = this.get(parentPath +'.'+ notifyIndex +'.valueDefaultUnit');
+                    date = this.get(parentPath +'.'+ dateIndex +'.value'),
+                    notify = this.get(parentPath +'.'+ notifyIndex +'.value');
 
-                this._setNotifyMax(parentPath +'.'+ notifyIndex +'.max', dateSpan, dateUnit);
-                // update notify unit, if notify > date counted in seconds
-                if (moment().add(dateSpan,dateUnit).diff(moment(), 'seconds') <= 
-                    moment().add(notifySpan,notifyUnit).diff(moment(), 'seconds')) {
-                    this._setNotifyUnit(parentPath +'.'+ notifyIndex +'.valueDefaultUnit', dateUnit);
-                }
+                this.set(parentPath +'.'+ notifyIndex +'.max', date);
             }
-        },
-        _setNotifyMax: function(path, span, unit) {
-            var notifyMax;
-            if (unit=='minutes') { notifyMax = 60 * span;}
-            if (unit=='hours') { notifyMax = 3600 * span;}
-            if (unit=='days') { notifyMax = 3600*24 * span;}
-            if (unit=='weeks') { notifyMax = 3600*24*7 * span;}
-            if (unit=='months') { notifyMax = moment().add(span,unit).diff(moment(), 'seconds');}
-            this.set(path, notifyMax);
-        },
-
-        _setNotifyUnit: function(path, dateUnit) {
-            var unit = 'minutes';
-            if (dateUnit == 'months') unit = 'weeks';
-            if (dateUnit == 'weeks') unit = 'days';
-            if (dateUnit == 'days') unit = 'hours';
-            if (dateUnit == 'hours') unit = 'minutes';
-            this.set(path, unit);
         },
 
         _machineFieldsChanged: function(changeRecord) {

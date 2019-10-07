@@ -123,8 +123,8 @@
                 if (!fieldMax) 
                     return false;
                 if (fieldMax) {
-                    var max = this._secondsToDuration(fieldMax), 
-                        unitsArr = ['minutes','hours','days','weeks','months','years'];
+                    var max = this._secondsToDuration(this._computeMax(fieldMax)),
+                        unitsArr = ['seconds','minutes','hours','days','weeks','months','years'];
                     // allow only smaller options than the maximum unit
                     var threshold = unitsArr.indexOf(max.unit);
                     return threshold < unitsArr.indexOf(option.val);
@@ -132,11 +132,13 @@
             },
             _computeMax: function(fieldMax,unit) {
                 if (!fieldMax) return;
+                if (!unit) var unit = 'seconds';
                 // compute the max number allowed for each unit 
                 if (typeof(fieldMax) == 'number') {
                     return this._secondsToUnitDuration(fieldMax, unit);
                 } else if (typeof(fieldMax) == 'string' && moment(fieldMax).isValid()){
                     // TODO: compute and set value if max is a date
+                    return this._secondsToUnitDuration(moment(fieldMax).diff(moment(), 'seconds'),unit);
                 } else {
                     var duration = this._valueIsRelativeDuration(fieldMax);
                     if (duration) {
@@ -168,6 +170,8 @@
                         if (moment(field.defaultValue).isValid()) {
                             // is date
                             // TODO: compute and set value if default is a date
+                            span = this._secondsToDuration(moment(field.defaultValue).diff(moment(), 'seconds')).span;
+                            unit = this._secondsToDuration(moment(field.defaultValue).diff(moment(), 'seconds')).unit;
                         } else {
                             // is relative duration
                             var duration = this._valueIsRelativeDuration(field.defaultValue);
@@ -275,6 +279,8 @@
                     step = 3600;
                 } else if (unit == 'minutes') {
                     step = 60;
+                } else if (unit == 'seconds') {
+                    step = 1;
                 }
                 span = Math.floor(seconds / step);
                 return span;
