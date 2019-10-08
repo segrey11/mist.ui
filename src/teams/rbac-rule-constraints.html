@@ -64,18 +64,16 @@
         </style>
         <span hidden$="[[!showConstraints]]">
             <span hidden$="[[!error]]" class="error">[[error]]</span>
-            <span hidden$="[[!hasConstraints(rule.constraints)]]">Has constraints</span>
-            <span hidden$="[[hasConstraints(rule.constraints)]]" on-tap="editConstraints">Add</span>
             <iron-icon icon="editor:mode-edit" on-tap="editConstraints" class="edit"></iron-icon>
         </span>
-        <dialog-element id="editConstraints" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]"></dialog-element>
+        <dialog-element id="editConstraints" modal="true" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]" modal=[[modal]]></dialog-element>
     </template>
 </dom-module>
 <script>
 const RBAC_CONSTRAINTS_FIELDS = [{
         name: 'constraints',
         label: 'Constraints in JSON',
-        type: 'textarea',
+        type: 'jsoneditor',
         value: '',
         defaultValue: '',
         show: true,
@@ -117,6 +115,10 @@ const RBAC_CONSTRAINTS_FIELDS = [{
             error: {
                 type: String,
                 value: ''
+            },
+            modal: {
+                type: Boolean,
+                value: true
             }
         },
 
@@ -163,20 +165,13 @@ const RBAC_CONSTRAINTS_FIELDS = [{
             var reason = e.detail.reason,
                 response = e.detail.response;
             if (response == 'confirm' && reason == "edit.constraints") {
-                var newConstraints;
-                try {
-                    newConstraints = JSON.parse(this.fields[0].value);
-                    this.set('rule.constraints', newConstraints);
-                    this.fire('update-constraints');
-                } catch (e){
-                    this.error = "JSON parse error";
-                    console.error(e);
-                }
+                var newConstraints = this.fields[0].value;
+                this.set('rule.constraints', newConstraints);
             }
         },
         _mapValuesToFields: function() {
             // fill in fields with constraints corresponding values
-            this.set('fields.0.value', JSON.stringify(this.rule.constraints));
+            this.set('fields.0.value', this.rule.constraints || {});
         }
     });
 </script>

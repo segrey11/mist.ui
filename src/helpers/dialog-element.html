@@ -128,6 +128,9 @@
                         type: Boolean,
                         value: false
                     },
+                    modal: {
+                        type: Boolean
+                    },
                     singleColumnForm: {
                         type: Boolean,
                         value: true,
@@ -136,11 +139,6 @@
                     inline: {
                         type: Boolean,
                         reflectToAttribute: true
-                    },
-                    form: {
-                        type: Object,
-                        observer: '_formChanged',
-                        notify: true
                     },
                     formId : {
                         type: String,
@@ -158,19 +156,14 @@
                     this.$.dialogModal.opened = false;
                     this._modalClosed(e);
                 },
-                _formChanged: function(form, oldform) {
-                    console.log('form',form, oldform);
-                },
                 _modalClosed: function(e) {
-                    console.log('closed', this.form);
                     // var normalizedEvent = Polymer.dom(e);
                     // if (e.target.id == 'dialogModal') {
                         console.log(this.$.dialogModal.closingReason);
                         this.dispatchEvent(new CustomEvent('confirmation', { bubbles: true, composed: true, detail: {
                             response: 'confirm',
                             confirmed: true,
-                            reason: this.reason,
-                            form: this.form
+                            reason: this.reason
                         } }));
                     // }
                 },
