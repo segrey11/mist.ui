@@ -61,10 +61,13 @@
             padding: 8px;
             opacity: 0.32;
         }
+        :host iron-icon {
+            cursor: pointer;
+        }
         </style>
         <span hidden$="[[!showConstraints]]">
             <span hidden$="[[!error]]" class="error">[[error]]</span>
-            <iron-icon icon="editor:mode-edit" on-tap="editConstraints" class="edit"></iron-icon>
+            <iron-icon icon="icons:settings" on-tap="editConstraints" class="edit" title="Edit constraints"></iron-icon>
         </span>
         <template is="dom-if" if="[[showConstraints]]">
             <dialog-element id="editConstraints" modal="true" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]" modal=[[modal]]></dialog-element>
