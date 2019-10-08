@@ -574,7 +574,6 @@ Polymer({
         this.set('rules.' + e.detail.index + '.operator', e.detail.operator);
     },
     _updateConstraints: function(e) {
-        debugger;
         this.set('rules.' + e.detail.index + '.constraints', e.detail.constraints);
         this.ruleHasChanges();
         this._rulesChanged();
