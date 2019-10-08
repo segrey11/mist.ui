@@ -92,8 +92,7 @@ const RBAC_CONSTRAINTS_FIELDS = [{
                 type: Object,
             },
             rule: {
-                type: Object,
-                notify: true
+                type: Object
             },
             index: {
                 type: Number,
@@ -171,12 +170,14 @@ const RBAC_CONSTRAINTS_FIELDS = [{
                 response = e.detail.response;
             if (response == 'confirm' && reason == "edit.constraints") {
                 var newConstraints = this.fields[0].value;
-                this.set('rule.constraints', newConstraints);
+                this.dispatchEvent(new CustomEvent('update-constraints', 
+                    { bubbles: true, composed: true, detail: { index: this.index, constraints: newConstraints}}));
             }
         },
         _mapValuesToFields: function() {
             // fill in fields with constraints corresponding values
-            this.set('fields.0.value', this.rule.constraints || {});
+            var constraints = JSON.stringify(this.rule.constraints);
+            this.set('fields.0.value', JSON.parse(constraints) || {});
         }
     });
 </script>

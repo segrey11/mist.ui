@@ -320,7 +320,7 @@ Polymer({
         'update-rtype': '_updateRtype',
         'update-raction': '_updateRaction',
         'update-operator': '_updateOperator',
-        'update-constraints': '_rulesChanged'
+        'update-constraints': '_updateConstraints'
     },
     attached: function() {},
     _computeCommonPermissions: function(model) {
@@ -572,6 +572,12 @@ Polymer({
     },
     _updateOperator: function(e) {
         this.set('rules.' + e.detail.index + '.operator', e.detail.operator);
+    },
+    _updateConstraints: function(e) {
+        debugger;
+        this.set('rules.' + e.detail.index + '.constraints', e.detail.constraints);
+        this.ruleHasChanges();
+        this._rulesChanged();
     },
     _sendingDataChanged: function(sendingData) {
         // keep element height fixed while repeater updates
