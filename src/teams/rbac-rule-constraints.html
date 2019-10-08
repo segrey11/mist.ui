@@ -66,7 +66,9 @@
             <span hidden$="[[!error]]" class="error">[[error]]</span>
             <iron-icon icon="editor:mode-edit" on-tap="editConstraints" class="edit"></iron-icon>
         </span>
-        <dialog-element id="editConstraints" modal="true" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]" modal=[[modal]]></dialog-element>
+        <template is="dom-if" if="[[showConstraints]]">
+            <dialog-element id="editConstraints" modal="true" formId="editConstraints-[[index]]" fields="{{fields}}" form="{{form}}" single-column-form="[[singleColumnForm]]" inline="[[inline]]" modal=[[modal]]></dialog-element>
+        </template>
     </template>
 </dom-module>
 <script>
