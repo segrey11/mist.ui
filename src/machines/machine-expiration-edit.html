@@ -40,7 +40,7 @@
             <template>
                 <h2>Edit expiration date</h2>
                 <div class="paper-dialog-scrollable">
-                    <app-form fields="{{fields}}" single-column inline show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT" indialog></app-form>
+                    <app-form fields="{{fields}}" single-column indialog show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT"></app-form>
                 </div>
             </template>
         </vaadin-dialog>
@@ -70,6 +70,8 @@
                         show: true,
                         required: false,
                         optional: false,
+                        singleColumnForm: true,
+                        inline: true,
                         subfields: [
                             {
                                 name: 'action',
@@ -159,18 +161,14 @@
             this.notifyPath('fields.0.subfields.0.value');
             
             if (date) {
-                this.set('fields.0.subfields.1.valueDefaultSpan', fromNow.span);
-                this.notifyPath('fields.0.subfields.1.valueDefaultSpan');
-                this.set('fields.0.subfields.1.valueDefaultUnit', fromNow.unit);
-                this.notifyPath('fields.0.subfields.1.valueDefaultUnit');
+                this.set('fields.0.subfields.1.defaultValue', fromNow);
+                this.notifyPath('fields.0.subfields.1.defaultValue');
                 if (!notify) {
                     this.set('fields.0.subfields.2.disabled', true);
                 } else if (notify) {
-                    this.set('fields.0.subfields.2.valueDefaultSpan', before.span);
-                    this.notifyPath('fields.0.subfields.2.valueDefaultSpan');
-                    this.set('fields.0.subfields.2.valueDefaultUnit', before.unit);
-                    this.notifyPath('fields.0.subfields.2.valueDefaultUnit');
-                    this.set('fields.0.subfields.2.disabled', false);
+                    this.set('fields.0.subfields.2.defaultValue', notify);
+                    this.notifyPath('fields.0.subfields.2.defaultValue');
+                    this.set('fields.0.subfields.2.defaultCheck', true);
                 } 
             }
             // console.log('DIALOG EXPIRATION', this.machine.expiration);
@@ -188,7 +186,7 @@
                     unit = unit+'s';
                 }
             }
-            return {span: span, unit: unit}
+            return span+unit;
         },
         _secondsToDuration: function(seconds) {
             var step, span;
