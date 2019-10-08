@@ -48,12 +48,15 @@
     <script>
     Polymer({
         is: 'machine-expiration-edit',
-
+        behaviors: [rbacBehavior],
         properties: {
             model: {
                 type: Object
             },
             machine: {
+                type: Object
+            },
+            permissions: {
                 type: Object
             },
             fields: {
@@ -94,8 +97,6 @@
                                 value: '',
                                 defaultValue: '',
                                 valueType: 'date',
-                                valueDefaultSpan: 1,
-                                valueDefaultUnit: 'days',
                                 helptext: '',
                                 show: true,
                                 required: false,
@@ -113,8 +114,6 @@
                                 valueType: 'secs',
                                 value: 3600,
                                 defaultValue: 3600,
-                                valueDefaultSpan: 1,
-                                valueDefaultUnit: 'hours',
                                 class: 'bind-both',
                                 helptext: '',
                                 show: true,
@@ -141,8 +140,38 @@
             'change': 'updateInputs',
             // 'open-and-select' : 'openAndSelect'
         },
+        observers: [
+            'checkPermissions(model.org)',
+            '_applyPermissions(permissions)'
+        ],
         attached: function() {
             
+        },
+        ready: function() {
+            this.checkPermissions();
+        },
+        checkPermissions: function(org) {
+            if (!org)
+                return;
+            console.log("=========", model.org)
+            var perm = this.check_perm('edit','machine');
+            if (perm == true) {
+                return;
+            } else if (perm == false) {
+                return;
+            } else if (typeof perm == 'object') {
+                this.set('permissions', perm);
+            }
+        },
+        _applyPermissions: function(permissions) {
+            if (!permissions)
+                return;
+            if (this.permissions.expiration && this.permissions.expiration.max) {
+                var path = 'fields.0.subfields.1.'; //expiration date
+                this.set(path + '.1.max', this.permissions.expiration.max);
+                //TODO: enforce permissions in edit
+                //TODO: observe date to max notify
+            }
         },
         _openDialog: function(e) {
             this._initialiseValues(this.machine);
