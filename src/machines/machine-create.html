@@ -276,6 +276,7 @@
             } else if (typeof perm == 'object') {
                 this.set('permissions', perm);
             }
+            console.log('=================', perm);
         },
         _applyPermissions: function(machinesFields, permissions) {
             if (this.permissions && this.machinesFields) {
