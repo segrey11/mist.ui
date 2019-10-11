@@ -141,7 +141,8 @@
             // 'open-and-select' : 'openAndSelect'
         },
         observers: [
-            '_checkPermissions(model.org, machine.id)'
+            '_checkPermissions(model.org, machine.id)',
+            '_expirationDateChanged(fields.0.subfields.1.value)'
         ],
         attached: function() {
         },
@@ -163,7 +164,7 @@
                 var path = 'fields.0.subfields.1.'; //expiration date
                 if (this.permissions.expiration.max)
                     this.set(path + '.1.max', this.permissions.expiration.max);
-                // apply default values only of current expiration is 'never'
+                // apply default values only if current expiration is 'never'
                 if (this.permissions.expiration.max)
                     this.set(path + '.1.max', this.permissions.expiration.max);
                 if (this.permissions.expiration.max)
@@ -172,8 +173,6 @@
                     this.set(path + '.1.max', this.permissions.expiration.max);
             }
         },
-        //TODO: enforce permissions in edit
-        //TODO: observe date to max notify
         _openDialog: function(e) {
             if (this.permissions == false) {
                 this.dispatchEvent(new CustomEvent('toast', { bubbles: true, composed: true, detail: {msg:"You are not authorized to edit the expiration date.",duration:3000} }));
@@ -188,10 +187,10 @@
         _applyPermissions: function(machine,permissions) {
             if (!this.machine || !permissions) 
                 return;
-            
+            debugger;
             // Get current machine expiration values
-            var currentExpiration = this.machine.expiration;
-            var permissionsExpiration = this.permissions.expiration;
+            var currentExpiration = this.machine.expiration,
+                permissionsExpiration = this.permissions.expiration;
 
             var expirationPath = 'fields.0.subfields.1.', //expiration date
                 actionPath = 'fields.0.subfields.0.',
@@ -205,17 +204,16 @@
             }
 
             // Apply either current values or permission forced values
-            // Current values overweigh defaults 
+            // Current values overweigh permission defaults but not max, and permission defaults overweight field defaults 
             if (currentExpiration || permissionsExpiration) {
                 // EXPIRATION
                 this.set(expirationPath + 'defaultValue', currentExpiration ? fromNow : permissionsExpiration.default);
-                this.set(expirationPath + 'value', currentExpiration ? fromNow : permissionsExpiration.default);
                 this.set(expirationPath + 'max', permissionsExpiration.max);
                 
                 // ACTIONS
-                var action = this.get(actionPath + 'defaultValue');
-                var allowed = this.get(actionPath + 'options');
-                // override if permissions dictates
+                var action = this.get(actionPath + 'defaultValue'),
+                    allowed = this.get(actionPath + 'options');
+                // override if permissions dictate
                 if (permissionsExpiration.actions) {
                     action = permissionsExpiration.actions.default ? permissionsExpiration.actions.default : action;
                     allowed = permissionsExpiration.actions.allowed ? permissionsExpiration.actions.allowed : allowed;
@@ -224,13 +222,34 @@
                 this.set(actionPath + 'value', currentExpiration.action ? currentExpiration.action : action);
                 this.set(actionPath + 'options', allowed);
 
-                // TODO NOTIFY
+                // NOTIFY
+                var defCheck = this.get(notifyPath + 'defaultCheck'),
+                    notValue = this.get(notifyPath + 'defaultValue');
+
+                // override if permissions dictate
+                if (permissionsExpiration.notify) {
+                    defCheck = permissionsExpiration.notify.require;
+                    notValue = permissionsExpiration.notify.default;
+                }
+                // override if current value exist
+                this.set(notifyPath + 'defaultCheck', currentExpiration ? notify : defCheck);
+                this.set(notifyPath + 'defaultValue', currentExpiration ? notify : notValue);
+
+                // set max
+                this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
+
                 if (!notify) {
                     this.set(notifyPath + 'disabled', true);
                 } else if (notify) {
                     this.set(notifyPath + 'defaultValue', notify);
                 } 
             }
+        },
+        _expirationDateChanged: function(date) {
+            // update notify max
+            var notifyPath = 'fields.0.subfields.2.',
+                expirationPath = 'fields.0.subfields.1.';
+            this.set(notifyPath + 'max', this.get(expirationPath + 'value'));
         },
         _dateToDurationFromNow: function(date) {
             var span, unit;
@@ -241,7 +260,11 @@
                 unit = chunks[1];
                 if (span == 'a') {
                     span = '1';
-                    unit = unit+'s';
+                }
+                if (['month'].indexOf(unit)) {
+                    unit = 'mo';
+                } else {
+                    unit = unit[0]
                 }
             }
             return span+unit;
