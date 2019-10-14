@@ -652,7 +652,9 @@
                             <span hidden$="[[!machine.expiration.date]]">
                                 <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
                             </span>
-                            <iron-icon icon="editor:mode-edit" on-tap="editExpiration" class="edit"></iron-icon>
+                            <template is="dom-if" if="canEditMachine" restamp>
+                                <iron-icon icon="editor:mode-edit" on-tap="editExpiration" class="edit"></iron-icon>
+                            </template>
                         </div>
                         <br />
                     </div>
@@ -781,7 +783,8 @@
 Polymer({
     is: 'machine-page',
     behaviors: [
-        mistLoadingBehavior
+        mistLoadingBehavior,
+        rbacBehavior
     ],
     properties: {
         model: {
@@ -919,6 +922,10 @@ Polymer({
         currency: {
             type: Object,
             value: function () { return {'sign': '$', 'rate': 1};}
+        },
+        canEditMachine: {
+            type: Boolean,
+            computed: '_computeCanEditMachine(machine.id,model)'
         }
     },
     observers: [
@@ -938,6 +945,10 @@ Polymer({
         if (this.path.endsWith("expiration")) {
             this.editExpiration();
         }
+    },
+    _computeCanEditMachine: function (machineId, model) {
+        var perm = this.check_perm('edit', 'machine', machineId);
+        return perm != false;
     },
     _renderMachineKeys: function () {
         this.$.machineKeysDomRepeat.render();
