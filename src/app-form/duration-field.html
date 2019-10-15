@@ -232,7 +232,7 @@
             _durationChanged: function(span,unit,type) {
                 this.shadowRoot.querySelector("#app-form-"+this.id+"-"+this.field.name+"-duration").validate();
                 // this._computePlurals(span);
-                var emptyValue = this.field.optional && !this.shadowRoot.querySelector('checkbox').checked;
+                var emptyValue = this.field.optional && this.field.defaultCheck;
                 if (span && unit && type) {
                     var newValue;
                     if (type == 'secs') {
