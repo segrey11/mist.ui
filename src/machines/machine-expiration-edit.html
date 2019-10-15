@@ -157,27 +157,15 @@
             this.set('permissions', perm);
             console.log('=================', perm);
         },
-        _applyPermissions: function(permissions) {
-            if (permissions == false)
-                return;
-            if (this.permissions.expiration) {
-                var path = 'fields.0.subfields.1.'; //expiration date
-                if (this.permissions.expiration.max)
-                    this.set(path + '.1.max', this.permissions.expiration.max);
-                // apply default values only if current expiration is 'never'
-                if (this.permissions.expiration.max)
-                    this.set(path + '.1.max', this.permissions.expiration.max);
-                if (this.permissions.expiration.max)
-                    this.set(path + '.1.max', this.permissions.expiration.max);
-                if (this.permissions.expiration.max)
-                    this.set(path + '.1.max', this.permissions.expiration.max);
-            }
-        },
         _openDialog: function(e) {
             if (this.permissions == false) {
                 this.dispatchEvent(new CustomEvent('toast', { bubbles: true, composed: true, detail: {msg:"You are not authorized to edit the expiration date.",duration:3000} }));
             } else {
-                this._applyPermissions(this.machine, this.permissions);
+                if (this.permissions == true) {
+                    this._initialiseValues(this.machine)
+                } else { 
+                    this._applyPermissions(this.machine, this.permissions);
+                }
                 this.$.dialogModal.opened = true;
             }
         },
@@ -189,6 +177,8 @@
                 return;
             // debugger;
             // Get current machine expiration values
+            this._initialiseValues(this.machine);
+
             var currentExpiration = this.machine.expiration,
                 permissionsExpiration = this.permissions.expiration;
 
@@ -202,7 +192,6 @@
                 var notify = currentExpiration.notify || 0,
                     before = this._secondsToDuration(notify);
             }
-
             // Apply either current values or permission forced values
             // Current values overweigh permission defaults but not max, and permission defaults overweight field defaults 
             if (currentExpiration || permissionsExpiration) {
@@ -236,7 +225,8 @@
                 this.set(notifyPath + 'defaultValue', currentExpiration ? notify : notValue);
 
                 // set max
-                this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
+                // this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
+                this._expirationDateChanged();
 
                 if (!notify) {
                     this.set(notifyPath + 'disabled', true);
@@ -245,48 +235,98 @@
                 } 
             }
         },
+        _initialiseValues: function(machine) {
+            if (!this.machine) return;
+            var date = (this.machine && this.machine.expiration) ? this.machine.expiration.date : '',
+                fromNow = this._dateToDurationFromNow(date);
+            var notify = (this.machine && this.machine.expiration) ? this.machine.expiration.notify : 0;
+
+            this.set('fields.0.subfields.0.value',  this.machine.expiration ? this.machine.expiration.action : this.fields[0].subfields[0].defaultValue);
+            this.notifyPath('fields.0.subfields.0.value');
+            
+            if (date && fromNow) {
+                this.set('fields.0.subfields.1.defaultValue', fromNow);
+                this.notifyPath('fields.0.subfields.1.defaultValue');
+            }
+            this.set('fields.0.subfields.2.defaultCheck', notify ? true : false);
+            if (notify) {
+                this.set('fields.0.subfields.2.defaultValue', notify);
+                this.notifyPath('fields.0.subfields.2.defaultValue');
+            }
+        },
+
         _expirationDateChanged: function(date) {
             // update notify max
             var notifyPath = 'fields.0.subfields.2.',
                 expirationPath = 'fields.0.subfields.1.';
             this.set(notifyPath + 'max', this.get(expirationPath + 'value'));
+            // console.log("================================= !!", this.get(expirationPath + 'value'));
+            this.notifyPath(notifyPath + 'max');
         },
         _dateToDurationFromNow: function(date) {
-            var span, unit;
             if (moment(date).isValid()){
+                var span, unit;
                 var fromNow = moment.utc(date).fromNow(true);
                 var chunks = fromNow.split(' ');
                 span = chunks[0];
                 unit = chunks[1];
-                if (span == 'a') {
+                if (['a','an'].indexOf(span)>-1) {
                     span = '1';
                 }
-                if (['month'].indexOf(unit)) {
+                if (['month'].indexOf(unit)>-1) {
                     unit = 'mo';
                 } else {
                     unit = unit[0]
                 }
+                return span+unit;
             }
-            return span+unit;
+            return  false;
         },
         _secondsToDuration: function(seconds) {
-            var step, span;
             if (seconds) {
-                if (seconds%(3600*24*7) == 0) {
-                    step = 'weeks';
-                    span = seconds/(3600*24*7);
-                } else if (seconds%(3600*24) == 0) {
-                    step = 'days';
-                    span = seconds/(3600*24);
-                } else if (seconds%3600 == 0) {
-                    step = 'hours';
-                    span = seconds/3600;
-                } else if (seconds%60 == 0) {
-                    step = 'minutes';
-                    span = seconds/60;
+                var span, unit;
+                if (seconds % (3600*24*28) == 0 || seconds % (3600*24*29) == 0 || seconds % (3600*24*30) == 0 || seconds % (3600*24*31) == 0) {
+                    if (seconds % (3600*24*28) == 0) span = seconds / (3600*24*28);
+                    if (seconds % (3600*24*29) == 0) span = seconds / (3600*24*29);
+                    if (seconds % (3600*24*30) == 0) span = seconds / (3600*24*30);
+                    if (seconds % (3600*24*31) == 0) span = seconds / (3600*24*31);
+                    unit = 'mo';
+                } else if (seconds % (3600*24*7) == 0) {
+                    span = seconds / (3600*24*7);
+                    unit = 'w';
+                } else if (seconds % (3600*24) == 0) {
+                    span = seconds / (3600*24);
+                    unit = 'd';
+                } else if (seconds % 3600 == 0) {
+                    span = seconds / 3600;
+                    unit = 'h';
+                } else if (seconds % 60 == 0) {
+                    span = seconds / 60;
+                    unit = 'm';
+                } else { 
+                    if (seconds > 3600*24*28) {
+                        span =  Math.floor(seconds / 3600*24*28);
+                        unit = 'mo';
+                    } else if (seconds > 3600*24*7) {
+                        span =  Math.floor(seconds / 3600*24*7);
+                        unit = 'w';
+                    } else if (seconds > 3600*24) {
+                        span =  Math.floor(seconds / 3600*24);
+                        unit = 'd';
+                    } else if (seconds > 3600) {
+                        span = Math.floor(seconds / 3600);
+                        unit = 'h';
+                    } else if (seconds > 60) {
+                        span =  Math.floor(seconds / 60);
+                        unit = 'm';
+                    } else {
+                        span = seconds;
+                        unit = 's';
+                    }
+                    return span+unit;
                 }
             }
-            return {span: span, unit: step}
+            return false;
         }
     });
     </script>
