@@ -652,7 +652,7 @@
                             <span hidden$="[[!machine.expiration.date]]">
                                 <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
                             </span>
-                            <template is="dom-if" if="canEditMachine" restamp>
+                            <template is="dom-if" if="[[canEditMachine]]" restamp>
                                 <iron-icon icon="editor:mode-edit" on-tap="editExpiration" class="edit"></iron-icon>
                             </template>
                         </div>
@@ -925,6 +925,7 @@ Polymer({
         },
         canEditMachine: {
             type: Boolean,
+            value: true,
             computed: '_computeCanEditMachine(machine.id,model)'
         }
     },
