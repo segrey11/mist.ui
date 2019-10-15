@@ -121,7 +121,6 @@
                                 required: false,
                                 prefixText: 'Notify me ',
                                 suffixText: 'before',
-                                secondary: true,
                                 optional: true,
                                 options: [
                                     {val: 'months', title: 'months'},
@@ -150,13 +149,11 @@
         ready: function() {
         },
         _checkPermissions: function(org, machine) {
-            // debugger;
             if (!org || !machine)
                 return;
-
             var perm = this.check_perm('edit','machine', machine, org, this.model.user);
             this.set('permissions', perm);
-            console.log('permissions', perm);
+            console.log('permissions', 'edit','machine', machine, perm);
         },
         _openDialog: function(e) {
             if (this.permissions == false) {
@@ -176,7 +173,6 @@
         _applyPermissions: function(machine,permissions) {
             if (!this.machine || !permissions) 
                 return;
-            // debugger;
             // Get current machine expiration values
             this._initialiseValues(this.machine);
 
@@ -199,6 +195,8 @@
                 // EXPIRATION
                 this.set(expirationPath + 'defaultValue', currentExpiration ? fromNow : permissionsExpiration.default);
                 this.set(expirationPath + 'max', permissionsExpiration.max);
+                this.notifyPath(expirationPath + 'defaultValue');
+                this.notifyPath(expirationPath + 'max');
                 
                 // ACTIONS
                 var action = this.get(actionPath + 'defaultValue'),
@@ -225,15 +223,15 @@
                 this.set(notifyPath + 'defaultCheck', currentExpiration ? notify : defCheck);
                 this.set(notifyPath + 'defaultValue', currentExpiration ? notify : notValue);
 
-                // set max
-                // this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
-                this._expirationDateChanged();
-
                 if (!notify) {
                     this.set(notifyPath + 'disabled', true);
                 } else if (notify) {
                     this.set(notifyPath + 'defaultValue', notify);
-                } 
+                }
+
+                // set max
+                // this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
+                this._expirationDateChanged();
             }
         },
         _initialiseValues: function(machine) {
