@@ -650,7 +650,9 @@
                         <div class="cell expiration" hidden$="[[!machine]]">
                             [[_fromNow(machine.expiration.date, machine.*, model.machines.*)]]
                             <span hidden$="[[!machine.expiration.date]]">
-                                <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
+                                <template is="dom-if" if="[[canEditMachine]]" restamp>
+                                    <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
+                                </template>
                             </span>
                             <template is="dom-if" if="[[canEditMachine]]" restamp>
                                 <iron-icon icon="editor:mode-edit" on-tap="editExpiration" class="edit"></iron-icon>
