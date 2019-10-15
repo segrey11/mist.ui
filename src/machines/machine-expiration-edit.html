@@ -208,7 +208,7 @@
                     allowed = permissionsExpiration.actions.allowed ? permissionsExpiration.actions.allowed : allowed;
                 }
                 // override if current value exist
-                this.set(actionPath + 'value', currentExpiration.action ? currentExpiration.action : action);
+                this.set(actionPath + 'value', currentExpiration && currentExpiration.action ? currentExpiration.action : action);
                 this.set(actionPath + 'options', allowed);
 
                 // NOTIFY
