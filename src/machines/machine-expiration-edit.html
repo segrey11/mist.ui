@@ -223,6 +223,10 @@
                 this.set(notifyPath + 'defaultCheck', currentExpiration ? notify : defCheck);
                 this.set(notifyPath + 'defaultValue', currentExpiration ? notify : notValue);
 
+                if (permissionsExpiration.notify.require) {
+                    this.set(notifyPath + 'optional', false);
+                }
+
                 if (!notify) {
                     this.set(notifyPath + 'disabled', true);
                 } else if (notify) {

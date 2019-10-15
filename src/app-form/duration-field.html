@@ -8,6 +8,8 @@
         :host {
             padding: 0;
             margin: 0;
+            display: block;
+            overflow: hidden;
         }
         iron-icon {
             color: inherit !important;
@@ -37,10 +39,12 @@
         paper-checkbox {
             float: left;
             padding-top: 30px;
-            padding-left: 16px;
             margin-right: 0;
             --paper-checkbox-checked-color: var(--mist-blue) !important;
             --paper-checkbox-checked-ink-color: var(--mist-blue) !important;
+        }
+        :host([optional]) {
+            padding-left: 16px;
         }
         .prefix {
             padding-right: 16px;
@@ -99,19 +103,28 @@
                     type: Boolean,
                     value: true,
                     reflectToAttribute: true
+                },
+                optional: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
                 }
             },
             observers: [
                 '_initialise(field)',
                 '_checkedChanged(field.defaultCheck)',
                 '_durationChanged(span, unit, field.valueType)',
-                '_maxChanged(field.max)'
+                '_maxChanged(field.max)',
+                '_optionalChanged(field.optional)'
             ],
             listeners: {
 
             },
             ready: function() {
 
+            },
+            _optionalChanged: function(optional){
+                this.set('optional',optional);
             },
             _maxChanged: function(fieldMax){
                 if (!fieldMax)

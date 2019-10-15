@@ -1229,7 +1229,6 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 valueType: 'secs',
                 value: 3600,
                 defaultValue: 3600,
-                class: 'bind-top',
                 helptext: '',
                 parentfield: 'expiration',
                 show: true,
