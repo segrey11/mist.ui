@@ -1236,7 +1236,6 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 required: false,
                 prefixText: 'Notify me ',
                 suffixText: 'before',
-                secondary: true,
                 optional: true,
                 defaultCheck: true,
                 disabled: false,

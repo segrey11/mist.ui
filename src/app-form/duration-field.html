@@ -9,9 +9,6 @@
             padding: 0;
             margin: 0;
         }
-        :host([secondary]), :host([secondary]) ::slotted(*), :host([secondary]) ::slotted(*) {
-            /* color: var(--light-theme-secondary-color); */
-        }
         iron-icon {
             color: inherit !important;
         }
@@ -95,10 +92,6 @@
                 unit: {
                     type: String
                 },
-                secondary: {
-                    type: Boolean,
-                    reflectToAttribute: true
-                },
                 showPlural: {
                     type: Boolean
                 },
@@ -162,7 +155,7 @@
                     return this._secondsToUnitDuration(fieldMax, unit);
                 } else if (typeof(fieldMax) == 'string' && moment(fieldMax).isValid()){
                     // TODO: compute and set value if max is a date
-                    return this._secondsToUnitDuration(moment(fieldMax).diff(moment(), 'seconds'),unit);
+                    return this._secondsToUnitDuration(moment.utc(fieldMax).diff(moment(), 'seconds'),unit);
                 } else {
                     var duration = this._valueIsRelativeDuration(fieldMax);
                     if (duration) {
@@ -174,10 +167,14 @@
             },
             _checkedChanged: function(defaultCheck){
                 console.log('_checkedChanged',defaultCheck);
+                if (defaultCheck) {
+                    this.set('field.disabled', false);
+                } else if (defaultCheck ==  false) {
+                    this.set('field.disabled', true);
+                }
                 this._durationChanged();
             },
             _initialise: function(field) {
-                this.set('secondary', this.field.secondary);
                 // if default value exists, apply
                 if (field.defaultValue) {
                     var span, unit;
@@ -189,8 +186,8 @@
                         if (moment(field.defaultValue).isValid()) {
                             // is date
                             // TODO: compute and set value if default is a date
-                            span = this._secondsToDuration(moment(field.defaultValue).diff(moment(), 'seconds')).span;
-                            unit = this._secondsToDuration(moment(field.defaultValue).diff(moment(), 'seconds')).unit;
+                            span = this._secondsToDuration(moment.utc(field.defaultValue).diff(moment(), 'seconds')).span;
+                            unit = this._secondsToDuration(moment.utc(field.defaultValue).diff(moment(), 'seconds')).unit;
                         } else {
                             // is relative duration
                             var duration = this._valueIsRelativeDuration(field.defaultValue);
