@@ -114,6 +114,7 @@
                                 valueType: 'secs',
                                 value: 3600,
                                 defaultValue: 3600,
+                                defaultCheck: true,
                                 class: 'bind-both',
                                 helptext: '',
                                 show: true,
@@ -155,7 +156,7 @@
 
             var perm = this.check_perm('edit','machine', machine, org, this.model.user);
             this.set('permissions', perm);
-            console.log('=================', perm);
+            console.log('permissions', perm);
         },
         _openDialog: function(e) {
             if (this.permissions == false) {
@@ -260,7 +261,7 @@
             var notifyPath = 'fields.0.subfields.2.',
                 expirationPath = 'fields.0.subfields.1.';
             this.set(notifyPath + 'max', this.get(expirationPath + 'value'));
-            // console.log("================================= !!", this.get(expirationPath + 'value'));
+            console.log("_expirationDateChanged", this.get(expirationPath + 'value'));
             this.notifyPath(notifyPath + 'max');
         },
         _dateToDurationFromNow: function(date) {

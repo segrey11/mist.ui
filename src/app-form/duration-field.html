@@ -173,13 +173,8 @@
                 }
             },
             _checkedChanged: function(defaultCheck){
-                if (this.field.defaultCheck && this.field.optional) {
-                    if (this.field.type == 'secs') {
-                        this.set('field.value', 0);
-                    } else {
-                        this.set('field.value', '');
-                    }
-                }
+                console.log('_checkedChanged',defaultCheck);
+                this._durationChanged();
             },
             _initialise: function(field) {
                 this.set('secondary', this.field.secondary);
@@ -232,9 +227,12 @@
             _durationChanged: function(span,unit,type) {
                 this.shadowRoot.querySelector("#app-form-"+this.id+"-"+this.field.name+"-duration").validate();
                 // this._computePlurals(span);
-                var emptyValue = this.field.optional && this.field.defaultCheck;
-                if (span && unit && type) {
-                    var newValue;
+                var emptyValue = this.field.optional && !this.field.defaultCheck;
+                if (this.span && this.unit && this.field.valueType) {
+                    var newValue,
+                        span = span || this.span,
+                        unit = unit || this.unit,
+                        type = type || this.field.valueType;
                     if (type == 'secs') {
                         newValue = emptyValue ? 0 : this._durationToSeconds(span,unit);
                     } else if (type == 'date')  {
