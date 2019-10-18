@@ -108,6 +108,10 @@
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true
+                },
+                valid: {
+                    type: Boolean,
+                    value: false,
                 }
             },
             observers: [
@@ -298,13 +302,13 @@
                     unit = 'minutes';
                 } else { // if nothing divides exactly, try an approximation
                     if (seconds > 3600*24*28) {
-                        span =  Math.floor(seconds / 3600*24*28);
+                        span =  Math.floor(seconds / (3600*24*28));
                         unit = 'months';
                     } else if (seconds > 3600*24*7) {
-                        span =  Math.floor(seconds / 3600*24*7);
+                        span =  Math.floor(seconds / (3600*24*7));
                         unit = 'weeks';
                     } else if (seconds > 3600*24) {
-                        span =  Math.floor(seconds / 3600*24);
+                        span =  Math.floor(seconds / (3600*24));
                         unit = 'days';
                     } else if (seconds > 3600) {
                         span = Math.floor(seconds / 3600);
