@@ -108,10 +108,6 @@
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true
-                },
-                valid: {
-                    type: Boolean,
-                    value: false,
                 }
             },
             observers: [
@@ -239,7 +235,7 @@
                 return false;
             },
             _durationChanged: function(span,unit,type) {
-                this.shadowRoot.querySelector("#app-form-"+this.id+"-"+this.field.name+"-duration").validate();
+                this.shadowRoot.querySelector('paper-input').validate();
                 // this._computePlurals(span);
                 var emptyValue = this.field.optional && !this.field.defaultCheck;
                 if (this.span && this.unit && this.field.valueType) {
@@ -259,7 +255,16 @@
                     this.notifyPath('field.value');
                     this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, 
                     detail: {fieldname: this.field.name, parentfield: this.field.parentfield}}));
+
+                    this.validate();
+
+                } else {
+                    this.set('field.valid', false);
                 }
+            },
+            validate: function() {
+                var valid = !this.shadowRoot.querySelector('paper-input').invalid;
+                this.set('field.valid', valid);
             },
             _durationToSeconds: function(span,unit) {
                 var step = 1;
