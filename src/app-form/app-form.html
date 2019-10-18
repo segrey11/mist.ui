@@ -1031,7 +1031,9 @@
                         'machines_tags': this._validateTags,
                         'date': this._validateDatetime,
                         'mist_size': this._validateMistSize,
-                        'list': this._validateList
+                        'list': this._validateList,
+                        'duration_field': this._validateDurationField,
+                        'fieldgroup': this._validateGroup
                     },
                     customValidators = {
                         'cidr-validator': this._validateCidr,
@@ -1078,12 +1080,27 @@
                 }.bind(this));
             },
 
+            _validateDurationField: function(field) {
+                return field.valid;
+            },
+
             _validateList: function(field) {
                 if (field.min && field.min > field.items.length) return false;
 
                 var valid = true;
                 for (var i = 0; i < field.items.length; i++) {
                     valid = valid && this._validateFields(field.items[i]);
+                    if (!valid) {
+                        break;
+                    }
+                }
+                return valid;
+            },
+
+            _validateGroup: function(field) {
+                var valid = true;
+                for (var i = 0; i < field.subfields.length; i++) {
+                    valid = valid && this._validateFields(field.subfields[i]);
                     if (!valid) {
                         break;
                     }
