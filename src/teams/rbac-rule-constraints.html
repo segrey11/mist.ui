@@ -132,7 +132,7 @@ const RBAC_CONSTRAINTS_FIELDS = [{
         },
         _computeShowConstraints: function(rule) {
             // emty strings for ALL
-            return ["machine", ""].indexOf(this.rule.rtype) > -1 && ["create",""].indexOf(this.rule.action)>-1;
+            return ["machine", ""].indexOf(this.rule.rtype) > -1 && ["create","edit",""].indexOf(this.rule.action)>-1;
         },
 
         hotkeys: function(e) {

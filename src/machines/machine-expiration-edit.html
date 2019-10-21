@@ -200,15 +200,15 @@
                 
                 // ACTIONS
                 var action = this.get(actionPath + 'defaultValue'),
-                    allowed = this.get(actionPath + 'options');
+                    available = this.get(actionPath + 'options');
                 // override if permissions dictate
                 if (permissionsExpiration.actions) {
                     action = permissionsExpiration.actions.default ? permissionsExpiration.actions.default : action;
-                    allowed = permissionsExpiration.actions.allowed ? permissionsExpiration.actions.allowed : allowed;
+                    available = permissionsExpiration.actions.available ? permissionsExpiration.actions.available : available;
                 }
                 // override if current value exist
                 this.set(actionPath + 'value', currentExpiration && currentExpiration.action ? currentExpiration.action : action);
-                this.set(actionPath + 'options', allowed);
+                this.set(actionPath + 'options', available);
 
                 // NOTIFY
                 var defCheck = this.get(notifyPath + 'defaultCheck'),
