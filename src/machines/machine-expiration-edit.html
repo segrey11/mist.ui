@@ -216,8 +216,10 @@
 
                 // override if permissions dictate
                 if (permissionsExpiration.notify) {
-                    defCheck = permissionsExpiration.notify.require;
-                    notValue = permissionsExpiration.notify.default;
+                    if (permissionsExpiration.notify.require != undefined)
+                        defCheck = permissionsExpiration.notify.require;
+                    if (permissionsExpiration.notify.default)
+                        notValue = permissionsExpiration.notify.default;
                 }
                 // override if current value exist
                 this.set(notifyPath + 'defaultCheck', currentExpiration ? notify : defCheck);
