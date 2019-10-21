@@ -650,7 +650,7 @@
                         <div class="cell expiration" hidden$="[[!machine]]">
                             [[_fromNow(machine.expiration.date, machine.*, model.machines.*)]]
                             <span hidden$="[[!machine.expiration.date]]">
-                                <template is="dom-if" if="[[canEditMachine]]" restamp>
+                                <template is="dom-if" if="[[canDeleteExpiration]]" restamp>
                                     <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
                                 </template>
                             </span>
@@ -929,7 +929,12 @@ Polymer({
             type: Boolean,
             value: true,
             computed: '_computeCanEditMachine(machine.id,model)'
-        }
+        },
+        canDeleteExpiration: {
+            type: Boolean,
+            value: true,
+            computed: '_computeCanDeleteExpiration(machine.id,model)'
+        },
     },
     observers: [
         '_isMonitored(machine, model.monitoring.machines.*)',
@@ -952,6 +957,10 @@ Polymer({
     _computeCanEditMachine: function (machineId, model) {
         var perm = this.check_perm('edit', 'machine', machineId);
         return perm != false;
+    },
+    _computeCanDeleteExpiration: function (machineId, model) {
+        var perm = this.check_perm('edit', 'machine', machineId);
+        return perm == true || !perm.expiration || (perm.expiration && !perm.expiration.max);
     },
     _renderMachineKeys: function () {
         this.$.machineKeysDomRepeat.render();
