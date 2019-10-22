@@ -202,7 +202,6 @@
                 var action = this.get(actionPath + 'defaultValue'),
                     options = this.get(actionPath + 'options') || [],
                     available;
-                debugger;
                 // override if permissions dictate
                 if (permissionsExpiration.actions) {
                     action = permissionsExpiration.actions.default ? permissionsExpiration.actions.default : action;
