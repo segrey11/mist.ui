@@ -40,7 +40,7 @@
             <template>
                 <h2>Edit expiration date</h2>
                 <div class="paper-dialog-scrollable">
-                    <app-form fields="{{fields}}" single-column indialog show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT"></app-form>
+                    <app-form id="machine-expiration-edit" fields="{{fields}}" single-column indialog show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT"></app-form>
                 </div>
             </template>
         </vaadin-dialog>
@@ -204,7 +204,7 @@
                 // override if permissions dictate
                 if (permissionsExpiration.actions) {
                     action = permissionsExpiration.actions.default ? permissionsExpiration.actions.default : action;
-                    available = permissionsExpiration.actions.available ? permissionsExpiration.actions.available : available;
+                    available = permissionsExpiration.actions.available ? this._toOptionsFormat(permissionsExpiration.actions.available) : available;
                 }
                 // override if current value exist
                 this.set(actionPath + 'value', currentExpiration && currentExpiration.action ? currentExpiration.action : action);
@@ -239,6 +239,13 @@
                 // this.set(notifyPath + 'max', this.set(expirationPath + 'value'));
                 this._expirationDateChanged();
             }
+        },
+        _toOptionsFormat: function(arr) {
+            if (!arr)
+                return [];
+            return arr.map(function(x){
+                return {"val": x, "title": x.toUpperCase()}
+            })
         },
         _initialiseValues: function(machine) {
             if (!this.machine) return;
