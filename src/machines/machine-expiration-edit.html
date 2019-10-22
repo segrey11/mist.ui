@@ -200,15 +200,27 @@
                 
                 // ACTIONS
                 var action = this.get(actionPath + 'defaultValue'),
-                    available = this.get(actionPath + 'options');
+                    options = this.get(actionPath + 'options') || [],
+                    available;
+                debugger;
                 // override if permissions dictate
                 if (permissionsExpiration.actions) {
                     action = permissionsExpiration.actions.default ? permissionsExpiration.actions.default : action;
-                    available = permissionsExpiration.actions.available ? this._toOptionsFormat(permissionsExpiration.actions.available) : available;
+                    if (permissionsExpiration.actions.available) {
+                        // construct dropdown of actions, allow the selection of only available by permissions
+                        var permAvailable = this._toOptionsFormat(permissionsExpiration.actions.available);
+                        available = options.filter(function(a) {
+                                return permissionsExpiration.actions.available.indexOf(a.val) == -1;
+                            });
+                        available.forEach(function(a) {
+                                a.disabled = true;
+                            });
+                        available = available.concat(permAvailable);
+                    }
                 }
                 // override if current value exist
                 this.set(actionPath + 'value', currentExpiration && currentExpiration.action ? currentExpiration.action : action);
-                this.set(actionPath + 'options', available);
+                this.set(actionPath + 'options', available || options);
 
                 // NOTIFY
                 var defCheck = this.get(notifyPath + 'defaultCheck'),
