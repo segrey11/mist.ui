@@ -198,6 +198,9 @@
             model: {
                 type: Object
             },
+            cloud: {
+                type: Object
+            },
             selectedCloud: {
                 type: String,
                 value: false
@@ -250,6 +253,7 @@
         },
         observers: [
             '_cloudChanged(selectedCloud)',
+            '_updateCloudOptions(cloud.*)',
             '_machineFieldsChanged(machineFields.*)',
             '_prefillOptions(route.*)',
             '_locationChanged(machineFields.3.value)'
@@ -258,6 +262,10 @@
             'keyup': 'hotkeys',
             'add-input': 'addInput',
             'format-payload': 'formatPayload'
+        },
+        _updateCloudOptions: function(cloud) {
+            console.log('_updateCloudOptions === ', cloud);
+            this._updateFields(this.selectedCloud)
         },
         _prefillOptions: function(location) {
             if (this.shadowRoot.querySelector('app-location') && this.shadowRoot.querySelector('app-location').queryParams)
@@ -310,6 +318,9 @@
             }
         },
         _cloudChanged: function(selectedCloud) {
+            if (selectedCloud && this.model) {
+                this.set('cloud', this.model.clouds[selectedCloud]);
+            }
             if (!this.docs && this.machinesFields) {
                 for (var i = 0; i < this.machinesFields.length; i++) {
                     if (this.machinesFields[i].fields) {
