@@ -462,12 +462,6 @@ MACHINE_CREATE_FIELDS.push({
     }],
 });
 
-// NEPHOSCALE
-MACHINE_CREATE_FIELDS.push({
-    provider: 'nephoscale',
-    fields: [],
-});
-
 // OPENSTACK
 MACHINE_CREATE_FIELDS.push({
     provider: 'openstack',
@@ -1047,7 +1041,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     });
 
     // add cloud init field only to providers that accept and we support
-    if (['azure', 'digitalocean', 'ec2', 'gce', 'packet', 'rackspace', 'libvirt', 'openstack', 'aliyun_ecs', 'vultr', 'softlayer'].indexOf(p.provider) != -1) {
+    if (['azure', 'azure_arm', 'digitalocean', 'ec2', 'gce', 'packet', 'rackspace', 'libvirt', 'openstack', 'aliyun_ecs', 'vultr', 'softlayer'].indexOf(p.provider) != -1) {
         p.fields.push({
             name: 'cloud_init',
             label: 'Cloud Init',
@@ -1093,6 +1087,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             type: 'toggle',
             value: false,
             defaultValue: false,
+            helptext: 'Attach a volume to the machine.',
             show: true,
             required: false
         }, {
@@ -1104,7 +1099,6 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             required: false,
             horizontal: false,
             moderateTop: true,
-            helptext: 'Attach a volume to the machine.',
             min: '1',
             max: allowedVolumes,
             showIf: {
@@ -1131,27 +1125,45 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 name: 'volume_id',
                 label: 'Existing Volume',
                 type: 'mist_dropdown',
-                helptext: "The machine's location must be first selected, to add existing volumes. Only volumes of the same location can be attached to a machine.",
+                helptext: "The machine's location must first be selected, to add existing volumes. Only volumes of the same location can be attached to a machine.",
                 value: '',
                 defaultValue: '',
                 show: true,
                 required: false,
                 options: [],
+                noOptionsMessage: 'You must first select a location for your machine.',
                 showIf: {
                     fieldName: 'new-or-existing-volume',
                     fieldValues: ['existing'],
-                },
+                }
             }]
         })
-        if (['openstack','aws'].indexOf(p.provider) > -1) {
-            p.fields.push({
+        if (['ec2'].indexOf(p.provider) > -1) {
+            p.fields[p.fields.length-1].options.push({
+                name: 'device',
+                label: 'Device name',
+                type: 'text',
+                helptext: 'Choose a device name. Recommended names /dev/sd[f-p] and /dev/sd[f-p][1-6]',
+                pattern: '/dev/sd[f-p][1-6]?',
+                value: '/dev/sdf',
+                defaultValue: '/dev/sdf',
+                show: true,
+                required: true,
+                showIf: {
+                    fieldName: 'new-or-existing-volume',
+                    fieldValues: ['existing'],
+                }
+            })
+        }
+        if (['openstack','ec2','aliyun_ecs'].indexOf(p.provider) > -1) {
+            p.fields[p.fields.length-1].options.push({
                 name: 'delete_on_termination',
                 label: 'Delete volume when machine is deleted',
                 type: 'checkbox',
                 value: '',
                 defaultValue: '',
                 show: true,
-                required: false,
+                required: false
             })
         }
     }
@@ -1513,29 +1525,44 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
 
     if (['onapp'].indexOf(p.provider) == -1) {
         p.fields.push({
-            name: 'create_hostname_machine',
-            label: 'Create hostname',
-            type: 'toggle',
-            value: false,
-            defaultValue: false,
-            excludeFromPayload: true,
-            helptext: 'Open options to create an A record for this machine.',
-            show: true,
-            required: false,
-        }, {
-            name: 'hostname',
-            label: 'Hostname',
-            type: 'textarea',
-            value: '',
-            defaultValue: '',
-            helptext: 'Provide the desired hostname you want to assign to the machine. Example: machine1.mist.io. There needs to be a DNS zone for this domain already created. Currently under heavy development, might not be fully functional.',
-            show: true,
-            required: false,
-            showIf: {
-                fieldName: 'create_hostname_machine',
-                fieldValues: ['true', true],
-            },
-        });
+                name: 'hostname',
+                label: 'Create DNS record',
+                type: 'fieldgroup',
+                value: {},
+                defaultValue: {},
+                defaultToggleValue: false,
+                helptext: 'Create an A record for this machine on an existing DNS zone.',
+                show: true,
+                required: false,
+                optional: true,
+                subfields: [
+                    {
+                        name: 'record_name',
+                        type: 'text',
+                        value: '',
+                        label: 'Record name',
+                        defaultValue: '',
+                        helptext: '',
+                        show: true,
+                        class: 'width-150 inline-block pad-r-0 pad-t',
+                        required: true,
+                        suffix: '.',
+                    }, {
+                        name: 'dns_zone',
+                        type: 'mist_dropdown',
+                        label: 'DNS zone',
+                        value: '',
+                        defaultValue: '',
+                        helptext: '',
+                        display: 'zone_id',
+                        show: true,
+                        class: 'inline-block pad-l-0 pad-t',
+                        required: true,
+                        options: []
+                    }
+                ]
+            }
+        );
     }
 
     p.fields.push({

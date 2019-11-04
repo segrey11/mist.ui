@@ -122,7 +122,7 @@
                         fields to appear.</p>
                 </div>
                 <div hidden$=[[!selectedCloud]]>
-                    <app-form id="createForm" fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch"></app-form>
+                    <app-form id="createForm" format-payload fields="{{machineFields}}" method="POST" url="/api/v1/clouds/[[selectedCloud]]/machines" on-response="_machineCreateResponse" on-error="_machineCreateError" btncontent="Launch"></app-form>
                 </div>
             </paper-material>
         </div>
@@ -200,6 +200,9 @@
             model: {
                 type: Object
             },
+            cloud: {
+                type: Object
+            },
             selectedCloud: {
                 type: String,
                 value: false
@@ -252,13 +255,19 @@
         },
         observers: [
             '_cloudChanged(selectedCloud)',
+            '_updateCloudOptions(cloud.*)',
             '_machineFieldsChanged(machineFields.*)',
             '_prefillOptions(route.*)',
             '_locationChanged(machineFields.3.value)'
         ],
         listeners: {
             'keyup': 'hotkeys',
-            'add-input': 'addInput'
+            'add-input': 'addInput',
+            'format-payload': 'formatPayload'
+        },
+        _updateCloudOptions: function(cloud) {
+            console.log('_updateCloudOptions === ', cloud);
+            this._updateFields(this.selectedCloud)
         },
         _prefillOptions: function(location) {
             if (this.shadowRoot.querySelector('app-location') && this.shadowRoot.querySelector('app-location').queryParams)
@@ -311,6 +320,9 @@
             }
         },
         _cloudChanged: function(selectedCloud) {
+            if (selectedCloud && this.model) {
+                this.set('cloud', this.model.clouds[selectedCloud]);
+            }
             if (!this.docs && this.machinesFields) {
                 for (var i = 0; i < this.machinesFields.length; i++) {
                     if (this.machinesFields[i].fields) {
@@ -331,11 +343,27 @@
             }
             // add cloud fields
             if (machineFields.fields) {
-                this.set('machineFields', JSON.parse(JSON.stringify(machineFields.fields)));
+                // allow hostname iff at least a cloud has dns access enabled
+                var fields = JSON.parse(JSON.stringify(machineFields.fields));
+                if (this.model.clouds) {
+                    var dns = this._enableHostname(this.model.clouds);
+                    if (!dns) {
+                        var ind = this._fieldIndexByName('hostname', fields);
+                        if (ind > -1) {
+                            fields.splice(ind,1);
+                        }
+                    }
+                }
+                this.set('machineFields', fields);
             }
             
             // set values by provider
             this._updateFields(selectedCloud);
+        },
+        _enableHostname: function(clouds) {
+            return Object.values(clouds).reduce(function(a,b){
+                        return a || b.dns_enabled;
+                    },false);
         },
         _locationChanged: function (locationId) {
             if (!locationId) return;
@@ -421,9 +449,7 @@
                         console.log('LOCATIONS', locations.length);
                         if (locations.length == 1 && locations[0].name == "") {
                             // If there's a single location preselect it and hide the field
-                            f.value = locations[0].id;
-                            f.show = false;
-                            locations = [];
+                            this._selectSingleLocation(index,locations[0].id);
                         }
                         f.options = locations;
                         // console.log(f.options);
@@ -459,6 +485,22 @@
 
                     if (f.name.endsWith("key")) {
                         f.options = this._toArray(this.model.keys);
+                    }
+
+                    if (f.name.endsWith("zone")) {
+                        f.options = this._toArray(this.model.zones);
+                    }
+
+                    // TODO: Run a recursive _updateFields() for fieldgroup subfields
+                    if (f.type == "fieldgroup") {
+                        for (var k=0; k<f.subfields.length; k++) {
+                            var sf = f.subfields[k];
+                            if (sf.name.endsWith("zone")) {
+                                sf.options = this._toArray(this.model.zones);
+                                if (sf.options.length)
+                                    this.set('machineFields.'+index+'.subfields.'+k+'.value', sf.options[0].id);
+                            }
+                        }
                     }
 
                     if (f.name.startsWith("script") || f.name.startsWith(
@@ -510,42 +552,44 @@
                         });
                         // remove location field if it exists,
                         // the location of the machine will be used instead
-                        var options = fieldset.fields;
-                        var locationIndex = options.findIndex(function(f){return f.name == 'location'})
+                        if (fieldset) {
+                            var options = fieldset.fields;
+                            var locationIndex = options.findIndex(function(f){return f.name == 'location'})
 
-                        if (locationIndex > -1) {
-                            options.splice(locationIndex,1);
-                        }
-                        // remove resource group fields if they exists,
-                        // the resource group of the machine will be used instead
-                        var resourceGroupFields = options.filter(function(f){return f.name.indexOf('resource_group')>-1});
-                        // console.log('resourceGroupFields',resourceGroupFields);
-                        if (resourceGroupFields.length > -1) {
-                            for (var i=0; i<resourceGroupFields.length; i++) {
-                                var resourceGroupFieldName = resourceGroupFields[i].name;
-                                var fieldIndex = options.findIndex(function(f){return f.name == resourceGroupFieldName})
-                                options.splice(fieldIndex,1);
+                            if (locationIndex > -1) {
+                                options.splice(locationIndex,1);
                             }
-                        }
-                        // Remove new volume name field for now since it's not used by OpenStack
-                        if (provider == "openstack"){
-                            var nameIndex = options.findIndex(function(f){return f.name == 'name'})
-                            if (nameIndex > -1) {
-                                options.splice(nameIndex,1);
+                            // remove resource group fields if they exists,
+                            // the resource group of the machine will be used instead
+                            var resourceGroupFields = options.filter(function(f){return f.name.indexOf('resource_group')>-1});
+                            // console.log('resourceGroupFields',resourceGroupFields);
+                            if (resourceGroupFields.length > -1) {
+                                for (var i=0; i<resourceGroupFields.length; i++) {
+                                    var resourceGroupFieldName = resourceGroupFields[i].name;
+                                    var fieldIndex = options.findIndex(function(f){return f.name == resourceGroupFieldName})
+                                    options.splice(fieldIndex,1);
+                                }
                             }
-                        }
-                        options.forEach(function(f){
-                            f.showIf = {
-                                fieldName: 'new-or-existing-volume',
-                                fieldValues: ['new'],
+                            // Remove new volume name field for now since it's not used by OpenStack
+                            if (provider == "openstack"){
+                                var nameIndex = options.findIndex(function(f){return f.name == 'name'})
+                                if (nameIndex > -1) {
+                                    options.splice(nameIndex,1);
+                                }
                             }
-                        })
-                        var existingIndex = f.options.findIndex(function(f){return f.name == 'volume_id'});
-                        // add provider dependent fields if they do not yet exist
-                        var names = f.options.map(f => f.name);
-                        for (var i = 0; i < options.length;i++){
-                            if (names.indexOf(options[i].name) == -1) {
-                                f.options.splice(existingIndex, 0, options[i]);
+                            options.forEach(function(f){
+                                f.showIf = {
+                                    fieldName: 'new-or-existing-volume',
+                                    fieldValues: ['new'],
+                                }
+                            })
+                            var existingIndex = f.options.findIndex(function(f){return f.name == 'volume_id'});
+                            // add provider dependent fields if they do yet not exist
+                            var names = f.options.map(f => f.name);
+                            for (var i = options.length-1; i>=0;i--){
+                                if (names.indexOf(options[i].name) == -1) {
+                                    f.options.splice(existingIndex, 0, options[i]);
+                                }
                             }
                         }
                     }
@@ -935,6 +979,11 @@
                     this.selectedCloud].provider == "vsphere") {
                 this._updateFieldsForVsphere();
             }
+        },
+
+        _selectSingleLocation: function(index, value) {
+            this.set('machineFields.'+index+'.value', value);
+            this.set('machineFields.'+index+'.show', false);
         },
 
         _mapPortsToDockerPorts: function(input) {
@@ -1631,6 +1680,16 @@
                     this.set('machineFields.' + scheduleScriptInd + '.value', e.detail.script);
                 }
             }.bind(this), 1000);
+        },
+        formatPayload: function(e) {
+            var hostnameInd = this._fieldIndexByName("hostname"),
+                composedHostname = '',
+                hostname =  this.get('machineFields.' + hostnameInd + '.value');
+            if (hostname.record_name && hostname.dns_zone) {
+                var domainName = this.model.zones[hostname.dns_zone].zone_id;
+                composedHostname = hostname.record_name+'.'+domainName+'.';
+            }
+            this.set('machineFields.' + hostnameInd + '.value',composedHostname);
         },
         _hasProviders: function(providers) {
             if (providers && providers.length)
