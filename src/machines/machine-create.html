@@ -509,6 +509,7 @@
                     this._updateFieldsForPacket();
                 }
 
+                var that = this;
                 this.machineFields.forEach(function(f, index) {
                     // clear options
                     if (['duration_field','dropdown','radio','list'].indexOf(f.type) == -1  && f.options) {
@@ -516,13 +517,19 @@
                     }
 
                     if (f.name.endsWith("location")) {
-                        // debugger;
-                        var locations = this._toArray(this.model.clouds[cloudId].locations);
+                        var allLocations = this._toArray(this.model.clouds[cloudId].locations);
+                        var locations = allLocations.filter(function(l){
+                                var check_perm = that.check_perm('create_resources', 'location', l.id);
+                                //console.log('LOOP', l.name, check_perm);
+                                return check_perm == true;
+                            });
+                        console.log('LOCATIONS', locations.length);
                         if (locations.length == 1 && locations[0].name == "") {
                             // If there's a single location preselect it and hide the field
                             this._selectSingleLocation(index,locations[0].id);
                         }
                         f.options = locations;
+                        // console.log(f.options);
                     }
                     if (f.name.endsWith("image")) {
                         f.options = this._toArray(this.model.clouds[cloudId].images).sort(function(ima, imb) {
@@ -668,8 +675,9 @@
                     if (f.options) {
                         this.set('machineFields.' + index + '.options', f.options);
                     }
-                    // console.log('update fields', f.name, f.value)
 
+                    // console.log(this.get('machineFields.' + index + '.options'));
+                    // console.log('update fields', f.name, f.value)
                 }, this);
 
                 // if cloud is Aliyun ECS update locations
@@ -1781,7 +1789,7 @@
                 return Object.keys(x).map(y => x[y])
             }
             return [];
-        },
+        }
     });
     </script>
 </dom-module>
