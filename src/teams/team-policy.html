@@ -373,7 +373,7 @@ Polymer({
             this.team.policy.rules.forEach(function(rule, i) {
                 var cleanCopy = {};
                 for (var p in rule) {
-                    cleanCopy[p] = this._cleanCopy(rule[p]);
+                    cleanCopy[p] = this._cleanCopy(rule[p], p);
                 }
                 newArr[i] = cleanCopy;
             }.bind(this));
@@ -389,7 +389,7 @@ Polymer({
             }.bind(this), 10);
         }
     },
-    _cleanCopy: function(value) {
+    _cleanCopy: function(value, property) {
         var newValue;
         if (value == null)
             return null;
@@ -397,14 +397,16 @@ Polymer({
             newValue = "";
             newValue = value.slice(0);
         } else if (typeof value == "object") {
-            newValue = {};
-            for (var q in value) {
-                newValue[q] = this._cleanCopy(value[q]);
-            }
-        } else if (typeof value == "array") {
-            newValue = [];
-            for (var i = 0; i < value.length; i++) {
-                newValue[i] = this._cleanCopy(value[i]);
+            if (Array.isArray(value)) {
+                newValue = [];
+                for (var i = 0; i < value.length; i++) {
+                    newValue[i] = this._cleanCopy(value[i], property);
+                }
+            } else {
+                newValue = {};
+                for (var q in value) {
+                    newValue[q] = this._cleanCopy(value[q], q);
+                }
             }
         } else {
             newValue = value;
