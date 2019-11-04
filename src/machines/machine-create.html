@@ -228,7 +228,7 @@
                 value: function() {
                     return []
                 },
-                computed: "_computeProviders(model, model.cloudsArray)"
+                computed: "_computeProviders(model, model.clouds)"
             },
             newImage: {
                 type: String
@@ -1607,9 +1607,10 @@
             // console.log('creation failed', e)
         },
         _computeProviders: function(model, clouds) {
-            // // exclude bare metals and other from provider dropdown list
-            return this.model.cloudsArray.filter(function(c) {
-                return ["bare_metal", "clearcenter"].indexOf(c.provider) == -1;
+            // exclude bare metals and not allowed clouds from provider dropdown list
+            var that = this;
+            return this._toArray(this.model.clouds).filter(function(c) {
+                return ["bare_metal", "clearcenter"].indexOf(c.provider) == -1 && that.check_perm("create_resources","cloud",c.id);
             });
         },
         addInput: function(e) {
