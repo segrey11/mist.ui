@@ -118,17 +118,10 @@
                 }
 
                 this.notifyPath('field.value');
-
-                // var that = this;
-                // this.debounce('_fieldsChangedNotifyEvent',function(){
-                    this._fieldsChangedNotifyEvent();
-                // },100);
+                this._fieldsChangedNotifyEvent();
             },
             _fieldsChangedNotifyEvent: function(){
-                // var form = this.shadowRoot.querySelector('app-form#sub-fieldgroup-'+this.id);
-                // if (form) {
-                    this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, detail: {fieldname: this.field.name}}));
-                // }
+                this.dispatchEvent(new CustomEvent('fields-changed',{ bubbles: true, composed: true, detail: {fieldname: this.field.name}}));
             },
             _calcDisplayButtons: function(){
                 return false;
