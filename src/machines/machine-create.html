@@ -228,7 +228,7 @@
                 value: function() {
                     return []
                 },
-                computed: "_computeProviders(model, model.clouds)"
+                computed: "_computeProviders(model, model.clouds, model.teams.*)"
             },
             newImage: {
                 type: String
@@ -250,12 +250,13 @@
             resourceGroupsFieldIndex: {
                 type: Number
             },
-            permissions: {
+            constraints: {
                 type: Object
             }
         },
         observers: [
-            '_applyPermissions(machinesFields, permissions)',
+            '_applyConstraints(machinesFields, constraints)',
+            '_teamsChanged(model.teams.*)',
             '_cloudChanged(selectedCloud)',
             '_updateCloudOptions(cloud.*)',
             '_machineFieldsChanged(machineFields.*)',
@@ -268,7 +269,8 @@
             'format-payload': 'formatPayload',
             'fields-changed': 'fieldsChanged'
         },
-        ready: function() {
+        _teamsChanged: function() {
+            console.log('_teamsChanged CALL checkPermissions');
             this.checkPermissions();
         },
         checkPermissions: function() {
@@ -278,72 +280,76 @@
             } else if (perm == false) {
                 return;
             } else if (typeof perm == 'object') {
-                this.set('permissions', perm);
+                this.set('constraints', perm);
             }
-            console.log('=================', perm);
+            // console.log('checkPermissions', perm);
         },
-        _applyPermissions: function(machinesFields, permissions) {
-            if (this.permissions && this.machinesFields) {
-                if (this.permissions.expiration){
-                    this._applyExpirationPermissions();
+        _applyConstraints: function(machinesFields, constraints) {
+            if (this.constraints && this.machinesFields) {
+                if (this.constraints.expiration){
+                    this._applyExpirationConstraints();
                 }
             }
         },
-        _applyExpirationPermissions: function() {
+        _applyExpirationConstraints: function() {
             for (var i=0; i < this.machinesFields.length; i++) {
                 var ind = this._fieldIndexByName('expiration', this.machinesFields[i].fields),
                     path = 'machinesFields.'+ i +'.fields.'+ ind +'.subfields';
 
                 if (ind > -1) {
-                    if (this.permissions.expiration.max) {
-                        this.set(path + '.1.max', this.permissions.expiration.max);
+                    if (this.constraints.expiration.max) {
+                        this.set(path + '.1.max', this.constraints.expiration.max);
 
                         // force expiration and disallow to close option
                         this.set('machinesFields.'+ i +'.fields.'+ ind + '.defaultToggleValue', true);
                         this.set('machinesFields.'+ i +'.fields.'+ ind + '.toggleDisabled', true);
                     }
-                    if (this.permissions.expiration.default) {
-                        this.set(path + '.1.defaultValue', this.permissions.expiration.default);
+                    if (this.constraints.expiration.default) {
+                        this.set(path + '.1.defaultValue', this.constraints.expiration.default);
                     }
-                    if (this.permissions.expiration.notify) {
-                        if (this.permissions.expiration.notify.default) {
+                    if (this.constraints.expiration.notify) {
+                        if (this.constraints.expiration.notify.default) {
                             // notify default
-                            this.set(path + '.2.defaultValue', this.permissions.expiration.notify.default);
+                            this.set(path + '.2.defaultValue', this.constraints.expiration.notify.default);
                             // notify require
-                            this.set(path + '.2.defaultCheck', this.permissions.expiration.notify.require);
-                            if (this.permissions.expiration.notify.require)
-                                this.set(path + '.2.disabledCheck', this.permissions.expiration.notify.require);
+                            this.set(path + '.2.defaultCheck', this.constraints.expiration.notify.require);
+                            if (this.constraints.expiration.notify.require)
+                                this.set(path + '.2.disabledCheck', this.constraints.expiration.notify.require);
                             // notify max
-                            if (this.permissions.expiration.default) {
-                                this.set(path + '.2.max', this.permissions.expiration.default);
+                            if (this.constraints.expiration.default) {
+                                this.set(path + '.2.max', this.constraints.expiration.default);
                             }
                         }
-                        if (this.permissions.expiration.notify.require != null
-                            && this.permissions.expiration.notify.require != undefined) {
+                        if (this.constraints.expiration.notify.require != null
+                            && this.constraints.expiration.notify.require != undefined) {
                             // notify require (checkbox value)
-                            this.set(path + '.2.disabled', !this.permissions.expiration.notify.require);
+                            this.set(path + '.2.disabled', !this.constraints.expiration.notify.require);
                         }
                     }
-                    if (this.permissions.expiration.actions) {
-                        if (this.permissions.expiration.actions.available) {
+                    if (this.constraints.expiration.actions) {
+                        if (this.constraints.expiration.actions.available) {
                             // available actions
-                            var actions = this.permissions.expiration.actions.available.map(function(x){
+                            var actions = this.constraints.expiration.actions.available.map(function(x){
                                 return {'val':x,'title':x.toUpperCase()};
                             })
                             this.set(path + '.0.options', actions);
                         }
-                        if (this.permissions.expiration.actions.default) {
+                        if (this.constraints.expiration.actions.default) {
                             // default action
-                            this.set(path + '.0.value', this.permissions.expiration.actions.default);
-                            this.set(path + '.0.defaultValue', this.permissions.expiration.actions.default);
+                            this.set(path + '.0.value', this.constraints.expiration.actions.default);
+                            this.set(path + '.0.defaultValue', this.constraints.expiration.actions.default);
                         }
                     }
                 }
             }
+            // update selected cloud's provider-fields after constraints applied
+            if (this.selectedCloud) {
+                this._cloudChanged(this.selectedCloud);
+            }
         },
         _updateCloudOptions: function(cloud) {
-            console.log('_updateCloudOptions === ', cloud);
-            this._updateFields(this.selectedCloud)
+            // console.log('_updateCloudOptions === ', cloud);
+            this._updateFields(this.selectedCloud);
         },
         _prefillOptions: function(location) {
             if (this.shadowRoot.querySelector('app-location') && this.shadowRoot.querySelector('app-location').queryParams)
@@ -523,7 +529,7 @@
                                 //console.log('LOOP', l.name, check_perm);
                                 return check_perm == true;
                             });
-                        console.log('LOCATIONS', locations.length);
+                        // console.log('LOCATIONS', locations.length);
                         if (locations.length == 1 && locations[0].name == "") {
                             // If there's a single location preselect it and hide the field
                             this._selectSingleLocation(index,locations[0].id);
