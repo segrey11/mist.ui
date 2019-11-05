@@ -267,7 +267,6 @@
                     sizes = this.clouds[this.machine.cloud].sizesArray || [];
                 }
                 this.set('sizes', sizes.sort(function(a,b){
-                    console.log("compare", a.name, this.isCurrent(a,machine.size), b.name, this.isCurrent(b,machine.size));
                         if (this.isCurrent(a,machine.size))
                             return -1;
                         if (this.isCurrent(b,machine.size))
