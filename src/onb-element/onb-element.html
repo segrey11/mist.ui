@@ -154,7 +154,7 @@
                         <paper-button class="wide blue" on-tap="goToAddCloud" id="addFirstCloudBtn" hidden$="[[!check_perm('add','cloud', null, model.org, model.user)]]"> Add your clouds </paper-button>
                     </div>
                     <p>
-                        or <paper-button on-tap="showInviteForm" class="blue-link" noink>invite people </paper-button> to join you and add clouds.
+                        <span hidden$="[[!check_perm('add','cloud', null, model.org, model.user)]]"></span>or <paper-button on-tap="showInviteForm" class="blue-link" noink>invite people </paper-button> to join you and add clouds.
                     </p>
                 </div>
                 <div id="invite-form" class="onboarding-form" closed>
