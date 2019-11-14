@@ -414,20 +414,18 @@
                     }
                 }
             }
-            // clear to reset
-            this.set('machineFields', []);
-            var machineFields = [];
+            var allMachinesFields;
             if (this.selectedCloud) {
                 var provider = this.model.clouds[selectedCloud].provider;
-                machineFields = this.machinesFields.find(function(c) {
+                allMachinesFields = this.machinesFields.find(function(c) {
                     return c.provider == provider;
                 });
             }
 
             // add cloud fields
-            if (machineFields.fields) {
+            if (allMachinesFields && allMachinesFields.fields) {
                 // allow hostname iff at least a cloud has dns access enabled
-                var fields = JSON.parse(JSON.stringify(machineFields.fields));
+                var fields = JSON.parse(JSON.stringify(allMachinesFields.fields));
                 if (this.model.clouds) {
                     var dns = this._enableHostname(this.model.clouds);
                     if (!dns) {
@@ -437,6 +435,8 @@
                         }
                     }
                 }
+                // clear to reset
+                this.set('machineFields', []);
                 this.set('machineFields', fields);
             }
             
