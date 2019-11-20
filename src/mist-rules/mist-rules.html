@@ -296,7 +296,8 @@
         printResource: function(id, model, type) {
             var resourceType = type.replace('specific_','');
             return this.model && this.model[resourceType] && this.model[resourceType][id] ?
-                    this.model[resourceType][id].title || this.model[resourceType][id].name || this.model[resourceType][id].id : '';
+                    this.model[resourceType][id].title || this.model[resourceType][id].name ||
+                    this.model[resourceType][id].domain || this.model[resourceType][id].id : '';
         },
         _computeResourceRulesArray: function(rules, resource, category) {
             var rulesArray = [];
@@ -366,9 +367,9 @@
             var selectors = rulesArray.map(function(r) {
                 return r.selectors;
             });
-            var resourcesInOrder = ['clouds','machines','volumes','networks',
-                'zones','keys','images','scripts','templates',
-                'schedules','teams','members', 'arbitrary'];
+            var resourcesInOrder = ['clouds','machines','volumes','networks', 'subnets',
+                'zones', 'records', 'keys','images','scripts','templates',
+                'schedules','members', 'arbitrary'];
             rulesArray.forEach(function(r) {
                 var s = r.selectors || [];
                 // rule applies on all machines or rule is no-data-rule
@@ -449,7 +450,7 @@
                                 if (!specificCategory)
                                     categories.push({
                                         id: 'apply-on-' + thisResource.trim(),
-                                        name: 'Apply on ' + thisResource + ' ' + r.resource_type,
+                                        name: 'Apply on ' + thisResource + ' ' + r.resource_type + ' ',
                                         type: 'specific_' + r.resource_type +'s',
                                         rules: [r],
                                         count: 1,
