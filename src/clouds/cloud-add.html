@@ -91,11 +91,9 @@
                     width: 28%;
                 }
             }
-
             .cloud-page-head {
                 @apply --cloud-page-head-mixin
             }
-
             .category {
                 border-bottom: 1px solid #ddd;
             }
@@ -123,8 +121,9 @@
                 <div class="grid">
                     <div class="grid-row">
                         <template is="dom-repeat" items="[[categories]]" as="category">
-                            <div class$="[[category.class]]">
-                                <h3 class="xs12 smallcaps smaller"> [[category.name]]</h3>
+                            <!-- <div class$="[[category.class]]">-->
+                            <div class="xs12 s12 m3 l3"> 
+                                <h3 class="xs12 smallcaps category"> [[category.name]]</h3>
                                 <paper-listbox class="providers" attr-for-selected="value" selected="{{selectedProvider}}" class="dropdown-content">
                                     <template is="dom-repeat" items="[[category.providers]]" as="provider">
                                         <paper-item value="[[provider.val]]">
@@ -146,7 +145,7 @@
                         <a href="http://docs.mist.io/category/75-adding-clouds-bare-metal-and-containers" target="new" class="regular blue-link">Need help with the process?</a>
                     </p>
                 </div>
-                <div hidden$=[[!selectedProvider]]>
+                <div id="cloudFields" hidden$=[[!selectedProvider]]>
                     <h3 class="smallcaps">Adding [[_computeTitle(selectedProvider)]] cloud</h3>
                     <app-form fields="[[providerFields]]" method="POST" url="/api/v1/clouds" on-response="_cloudAddAjaxResponse" on-error="_cloudAddAjaxError"
                         btncontent="Add Cloud"></app-form>
@@ -350,6 +349,9 @@
                 }
 
                 this.fillInKnownData(selectedProvider, this.clouds);
+                // Scroll down to #cloudFields
+                if (selectedProvider)
+                    this.$.cloudFields.scrollIntoView({block: "end", behavior: "smooth"});
             },
             _keysChanged: function (keys, providerFields) {
                 // Set list of keys in providerFields when model keys change
