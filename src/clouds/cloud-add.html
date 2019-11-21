@@ -91,9 +91,11 @@
                     width: 28%;
                 }
             }
-
             .cloud-page-head {
                 @apply --cloud-page-head-mixin
+            }
+            .category {
+                border-bottom: 1px solid #ddd;
             }
         </style>
 
@@ -115,14 +117,24 @@
             <paper-material>
                 <div class="grid-row">
                     <h3 class="xs12 smallcaps">Choose a Provider</h3>
-                    <paper-listbox class="providers" attr-for-selected="value" selected="{{selectedProvider}}" class="dropdown-content">
-                        <template is="dom-repeat" items="[[providers]]" as="provider">
-                            <paper-item value="[[provider.val]]">
-                                <img src="[[_computeProviderLogo(provider.className)]]" width="24px" />
-                                <span>[[provider.title]]</span>
-                            </paper-item>
+                </div>
+                <div class="grid">
+                    <div class="grid-row">
+                        <template is="dom-repeat" items="[[categories]]" as="category">
+                            <!-- <div class$="[[category.class]]">-->
+                            <div class="xs12 s12 m3 l3"> 
+                                <h3 class="xs12 smallcaps category"> [[category.name]]</h3>
+                                <paper-listbox class="providers" attr-for-selected="value" selected="{{selectedProvider}}" class="dropdown-content">
+                                    <template is="dom-repeat" items="[[category.providers]]" as="provider">
+                                        <paper-item value="[[provider.val]]">
+                                            <img src="[[_computeProviderLogo(provider.className)]]" width="24px" />
+                                            <span>[[provider.title]]</span>
+                                        </paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </div>
                         </template>
-                    </paper-listbox>
+                    </div>
                 </div>
             </paper-material>
             <paper-material class$="selected-[[!selectedProvider]]">
@@ -133,7 +145,7 @@
                         <a href="http://docs.mist.io/category/75-adding-clouds-bare-metal-and-containers" target="new" class="regular blue-link">Need help with the process?</a>
                     </p>
                 </div>
-                <div hidden$=[[!selectedProvider]]>
+                <div id="cloudFields" hidden$=[[!selectedProvider]]>
                     <h3 class="smallcaps">Adding [[_computeTitle(selectedProvider)]] cloud</h3>
                     <app-form fields="[[providerFields]]" method="POST" url="/api/v1/clouds" on-response="_cloudAddAjaxResponse" on-error="_cloudAddAjaxError"
                         btncontent="Add Cloud"></app-form>
@@ -162,6 +174,10 @@
                 providerFields: {
                     type: Array,
                     value: []
+                },
+                categories: {
+                    type: Array,
+                    computed: '_computeCategories(providers)'
                 },
                 providers: {
                     type: Array
@@ -236,6 +252,34 @@
                         this.$.ccRequired.close();
                 }
             },
+            _computeCategories: function(providers){
+                var categories = [
+                    {name: 'Public clouds', type: 'public', class:"xs12 s12 m6 l6", providers: []},
+                    {name: 'Private clouds', type: 'private', class:"", providers: []},
+                    {name: 'Hypervisors', type: 'hypervisor', class:"", providers: []},
+                    {name: 'Containers', type: 'containers', class:"", providers: []},
+                    {name: 'Other servers', type: 'baremetal', class:"", providers: []}
+                ]
+                for (var i = 0; i < providers.length; i++) {
+                    var provider = providers[i];
+                    if (['aws','azure_arm','digitalocean','ec2','gce','hostvirtual','linode','packet','rackspace','softlayer','aliyun_ecs','vcloud'].indexOf(provider.val) > -1){
+                        categories[0].providers.push(provider);
+                    }
+                    if (['openstack','onapp','vsphere','vultr'].indexOf(provider.val) > -1){
+                        categories[1].providers.push(provider);
+                    }
+                    if (['libvirt'].indexOf(provider.val) > -1){
+                        categories[2].providers.push(provider);
+                    }
+                    if (['docker'].indexOf(provider.val) > -1){
+                        categories[3].providers.push(provider);
+                    }
+                    if (['bare_metal'].indexOf(provider.val) > -1){
+                        categories[4].providers.push(provider);
+                    }
+                }
+                return categories;
+            },
             _computeDisableAddCloud: function (enableBilling, org) {
                 return enableBilling && this.org && !this.org.card && !this.org.current_plan;
             },
@@ -305,6 +349,9 @@
                 }
 
                 this.fillInKnownData(selectedProvider, this.clouds);
+                // Scroll down to #cloudFields
+                if (selectedProvider)
+                    this.$.cloudFields.scrollIntoView({block: "end", behavior: "smooth"});
             },
             _keysChanged: function (keys, providerFields) {
                 // Set list of keys in providerFields when model keys change
