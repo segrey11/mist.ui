@@ -64,6 +64,10 @@
                 max-height: 400px !important;
             }
 
+            :host div.l12 paper-listbox.providers  paper-item {
+                padding-right: 23px;
+            }
+
             :host paper-listbox.providers paper-item {
                 display: inline-block;
                 width: 20%;
@@ -281,7 +285,9 @@
                     }
                 }
                 var cols = [
-                    {categories:[],class:'xs12 s12 m12 l6'},
+                    {categories:[],class:'xs12 s12 m12 l12'},
+                    {categories:[],class:'xs12 s12 m12 l3'},
+                    {categories:[],class:'xs12 s12 m12 l3'},
                     {categories:[],class:'xs12 s12 m12 l3'},
                     {categories:[],class:'xs12 s12 m12 l3'}
                 ];
@@ -289,8 +295,8 @@
                 cols[0].categories.push(categories[0]);
                 cols[1].categories.push(categories[1]);
                 cols[2].categories.push(categories[2]);
-                cols[2].categories.push(categories[3]);
-                cols[2].categories.push(categories[4]);
+                cols[3].categories.push(categories[3]);
+                cols[4].categories.push(categories[4]);
 
                 return cols;
             },
