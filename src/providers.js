@@ -42,7 +42,7 @@ PROVIDERS.push({
 
 // AZURE ARM
 PROVIDERS.push({
-    title: 'Azure ARM',
+    title: 'Microsoft Azure',
     val: 'azure_arm',
     className: 'provider-azure',
     options: [{
@@ -477,7 +477,7 @@ PROVIDERS.push({
 
 // GCE
 PROVIDERS.push({
-    title: 'GCE',
+    title: 'Google Cloud',
     val: 'gce',
     className: 'provider-gce',
     options: [{
