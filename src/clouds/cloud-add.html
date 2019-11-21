@@ -234,7 +234,8 @@
             observers: [
                 '_providerChanged(selectedProvider, providers)',
                 '_keysChanged(keys.*, providerFields)',
-                '_hiddenChanged(hidden)'
+                '_hiddenChanged(hidden)',
+                '_providerFieldsChanged(providerFields)'
             ],
             listeners: {
                 'iron-select': '_updateCloudTitle',
@@ -369,9 +370,15 @@
                 }
 
                 this.fillInKnownData(selectedProvider, this.clouds);
+            },
+            _providerFieldsChanged: function (fields) {
+                var that = this;
                 // Scroll down to #cloudFields
-                if (selectedProvider)
-                    this.$.cloudFields.scrollIntoView({block: "end", behavior: "smooth"});
+                if (this.selectedProvider && fields) {
+                    this.async(function(){
+                        that.$.content.scrollIntoView({block: "end", behavior: "smooth"});
+                    },100);
+                }
             },
             _keysChanged: function (keys, providerFields) {
                 // Set list of keys in providerFields when model keys change
