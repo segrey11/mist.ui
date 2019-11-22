@@ -3,7 +3,7 @@ var PROVIDERS = []
 
 // AWS
 PROVIDERS.push({
-    title: 'Amazon',
+    title: 'Amazon Web Services',
     val: 'ec2',
     className: 'provider-ec2',
     options: [{
