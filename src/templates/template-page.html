@@ -260,7 +260,7 @@
             <div class="section">
                 <div class="flex-horizontal-with-ratios">
                     <div class="width100">
-                        <template is="dom-if" if="[[stacks]]">
+                        <template is="dom-if" if="[[stacks.length]]">
                             <paper-material class="no-pad">
                                 <h3 class="smallcaps resource-head">stacks created from this template</h3>
                                 <template is="dom-repeat" items="[[stacks]]">
@@ -415,6 +415,7 @@
                     },
                     stacks: {
                         type: Array,
+                        value: function() {return [];}
                     },
                     isInline: {
                         type: Boolean,
