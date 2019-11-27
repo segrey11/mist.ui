@@ -790,7 +790,7 @@ PROVIDERS.push({
 });
 
 
-// NEPHOSCALE
+// KVM
 PROVIDERS.push({
     title: 'KVM (via libvirt)',
     val: 'libvirt',
