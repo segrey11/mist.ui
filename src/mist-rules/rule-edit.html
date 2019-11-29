@@ -678,12 +678,7 @@
             if (this.resourceType && this.resourceType != "machine"){
                 this.set('rule.data_type','logs');
             }
-            return (this.resourceType == "machine" && this.ruleType == "specific" && this.resourceId 
-                    && this.model.machines
-                    && this.model.machines[this.resourceId]
-                    && this.model.machines[this.resourceId].monitoring
-                    && this.model.machines[this.resourceId].monitoring.hasmonitoring)
-                    || (this.resource && this._resourceIsMonitored(this.resource, this.model.monitoring));
+            return this.resourceType == "machine";
         },
         _resourceIsMonitored: function(resource, modelMonitoring) {
             return this.model.monitoring.monitored_machines[resource.id];
