@@ -421,7 +421,7 @@
                             </paper-dropdown-menu>
                             <template is="dom-if" if="[[_isWebhookSelected(ruleAction.type)]]">
                                 <paper-input id ="webhook-url" class="inline" placeholder="URL to be invoked" value="{{ruleAction.url}}" on-value-changed="_validateRule" value="{{ruleAction.params}}" on-value-changed="_validateRule" pattern="^https://*"></paper-input>
-                                <paper-dropdown-menu label="method" class="inline">
+                                <paper-dropdown-menu label="method" class="inline label>
                                     <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{ruleAction.method}}" class="dropdown-content">
                                         <paper-item value="post">POST</paper-item>
                                         <paper-item value="delete">DELETE</paper-item>
