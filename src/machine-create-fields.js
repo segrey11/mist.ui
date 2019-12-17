@@ -930,7 +930,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 unit: 'cores',
             }],
         });
-    } else if (['maxihost'].indexOf(p.provider) != -1){ // size dependent on location for maxihost
+    } else if (['maxihost', 'packet'].indexOf(p.provider) != -1){ // size dependent on location for maxihost
         p.fields.splice(3, 0, {
             name: 'size',
             label: 'Size *',

@@ -533,8 +533,8 @@
                             // If there's a single location preselect it and hide the field
                             this._selectSingleLocation(index,locations[0].id);
                         }
-                        // disable maxihost locations that support no sizes
-                        if (this.model.clouds[this.selectedCloud].provider == "maxihost") {
+                        // disable maxihost and packet locations that support no sizes
+                        if (['maxihost', 'packet'].indexOf(this.model.clouds[this.selectedCloud].provider) != -1) {
                             var sizeLocations = this._toArray(this.model.clouds[this.selectedCloud].sizes).map(x=>x.extra.regions).join();
                             locations.forEach(function(l) {
                                 if (sizeLocations.indexOf(l.external_id) == -1) {l.disabled = true;}
@@ -871,10 +871,10 @@
                     this.set('machineFields.' + subid + '.options', subnets);
                 }
 
-                // if it is maxihost and location changed
-                if (this.model.clouds[this.selectedCloud].provider == 'maxihost') {
+                // if (it is maxihost or packet) and location changed
+                if (['maxihost', 'packet'].indexOf(this.model.clouds[this.selectedCloud].provider) != -1) {
                     if (this.get(changeRecord.path.replace('.value', '')).name == 'location' && changeRecord.value.length) {
-                        this._updateMaxihostSizes(changeRecord.value);
+                        this._updateSizesBasedOnLocation(changeRecord.value);
                     }
                 }
 
@@ -1395,7 +1395,7 @@
                 // console.log('_updateEc2Sizes', virtualization_type , this.model.clouds[this.selectedCloud].sizesArray.length, sizesOptions)
             }
         },
-        _updateMaxihostSizes: function(locationId){
+        _updateSizesBasedOnLocation: function(locationId){
             // var locationInd = this._fieldIndexByName('location');
             var sizeInd = this._fieldIndexByName('size');
             var locationExternalId = this.model.clouds[this.selectedCloud].locations[locationId].external_id;
