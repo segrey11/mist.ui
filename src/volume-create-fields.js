@@ -274,6 +274,45 @@ VOLUME_CREATE_FIELDS.push({
         }
     }]
 });
+// KubeVirt
+VOLUME_CREATE_FIELDS.push({
+    provider: 'kubevirt',
+    fields: [{
+            name: "storage_class_name",
+            label: "Storage Class",
+            type: "text", //must make it a dropdown
+            value: "",
+            defaultValue: "",
+            placeholder: "",
+            helptext: "Enter the name of a storage class that is configured for dynamic provisioning.",
+            errorMessage: "Please enter a storage class of the cluster.",
+            show: true,
+            required: true
+        },
+        {
+            name: "volume_mode",
+            label: "Volume Mode",
+            type: "text",
+            value: "Filesystem",
+            defaultValue: "Filesystem",
+            placeholder: "",
+            helptext: "The acccepted modes are Filesystem or Block ",
+            show: true,
+            required: false
+        },
+        {
+            name: "access_mode",
+            label: "Access Mode",
+            type: "text",
+            value: "ReadWriteOnce",
+            defaultValue: "ReadWriteOnce",
+            placeholder: "",
+            helptext: 'An access mode may be specified, valid values are ReadWriteOnce, ReadWriteMany, ReadOnlyMany',
+            show: true,
+            required: false,
+        },
+    ]
+});
 
 VOLUME_CREATE_FIELDS.forEach(function(p) {
 // add common machine properties fields
@@ -320,3 +359,4 @@ VOLUME_CREATE_FIELDS.forEach(function(p) {
         });
     }
 });
+

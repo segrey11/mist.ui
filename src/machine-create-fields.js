@@ -741,6 +741,162 @@ MACHINE_CREATE_FIELDS.push({
     }],
 });
 
+// KUBEVIRT
+MACHINE_CREATE_FIELDS.push({
+    provider: 'kubevirt',
+    fields: [{
+        name: 'network',
+        label: 'Network',
+        type: 'list',
+        items: [],
+        show: true,
+        required: false,
+        helptext: 'Add a network interface',
+        horizontal: false,
+        moderateTop: true,
+        options: [{
+            name: 'network_type',
+            label: 'Network type',
+            type: 'text',
+            value: 'pod',
+            defaultValue: 'pod',
+            show: true,
+            required: false,
+            helptext: 'Network type, only pod is supported at the moment.',
+        },
+        {
+            name: 'interface',
+            label: 'Interface',
+            type: 'text',
+            value: '',
+            defaultValue: 'masquerade',
+            show: true,
+            required: false,
+            helptext: 'Interface type, masquerade or bridge is supported',
+        },
+        {
+            name: 'network_name',
+            label: 'Name',
+            type: 'text',
+            value: '',
+            defaultValue: 'new-network',
+            show: true,
+            required: false,
+            helptext: 'A name for this network configuration',
+        },
+        ],
+    },{
+        name: 'disks',
+        label: 'Disks',
+        type: 'list',
+        items: [],
+        show: true,
+        required: false,
+        helptext: 'Add a volume with persistency for the vm.',
+        horizontal: false,
+        moderateTop: true,
+        options:[{
+            name: 'disk_type',
+            label: 'Disk Type',
+            type: 'text',
+            value: 'persistentVolumeClaim',
+            defaultValue: 'persistentVolumeClaim',
+            show: true,
+            required: true,
+            helptext: 'Only persistent volumes claims are supported for now',
+        },
+        {
+            name: 'disk_name',
+            label: 'Configuration Name',
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: false,
+            helptext: 'Specify a name for this disk configuration.'
+        },
+        {
+            name: 'claimName',
+            label: 'Claim Name',
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: true,
+            helptext: 'Specify either an existing Persistent Volume Claim or a new one.'
+        },{
+            name: 'new_claim',
+            label: 'New Claim',
+            type: 'toggle',
+            value: false,
+            defaultValue: false,
+            excludeFromPayload: true,
+            helptext: 'Enable if you want to create a new claim.',
+            show: true,
+            required: false,
+        },
+        {
+            name: 'size',
+            label: 'Size',
+            type: 'int',
+            value: '',
+            defaultValue: '1',
+            show: true,
+            required: false,
+            helptext: 'Specify the size in Gb for the volume',
+            showIf:{
+                fieldName: 'new_claim',
+                fieldValues: ['true', true],
+            },
+
+        },
+        {
+            name: 'storage_class',
+            label: 'Storage Class',
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: false,
+            helptext: 'Specify a storage class of the cluster that allows dynamic provisioning.',
+            showIf:{
+                fieldName: 'new_claim',
+                fieldValues: ['true', true],
+            },
+        },
+        {
+            name: 'volume_mode',
+            label: 'Volume Mode',
+            type: 'text',
+            value: '',
+            defaultValue: 'Filesystem',
+            show: true,
+            required: false,
+            helptext: 'Kubernetes supports either Filesystem or Block for volume modes.',
+            showIf:{
+                fieldName: 'new_claim',
+                fieldValues: ['true', true],
+            },
+        },
+        {
+            name: 'access_mode',
+            label: 'Access Mode',
+            type: 'text',
+            value: '',
+            defaultValue: 'RWO',
+            show: true,
+            required: false,
+            helptext: 'An access mode may be specified, valid values are RWO, ROX, RWX. (RW=read/write, RO=read only, O/X=once/many)',
+            showIf:{
+                fieldName: 'new_claim',
+                fieldValues: ['true', true],
+            },
+        },
+        ],
+    }
+],
+});
+
 // add common fields
 MACHINE_CREATE_FIELDS.forEach(function(p) {
     // add common machine properties fields
@@ -775,7 +931,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     });
 
     // mist_size for kvm libvirt
-    if (['libvirt'].indexOf(p.provider) != -1) {
+    if (['libvirt', 'kubevirt'].indexOf(p.provider) != -1) {
         p.fields.splice(2, 0, {
             name: 'size',
             label: 'Size *',

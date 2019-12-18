@@ -1263,8 +1263,8 @@ PROVIDERS.push({
         name: "port",
         label: "port",
         type: "text",
-        value: 8443,
-        defaultValue: 8443,
+        value: 6443,
+        defaultValue: 6443,
         show: true,
         required: false
     }, {
