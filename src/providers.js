@@ -1268,6 +1268,16 @@ PROVIDERS.push({
         show: true,
         required: false
     }, {
+        name: "ca_cert_file",
+        label: "CA Certificate",
+        helptext: 'CA certificate file',
+        type: "textarea",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: false,
+        helptext:"It is advised to add it for the SSL to work properly."
+    }, {
         name: "authentication",
         label: "Authentication",
         type: "dropdown",
@@ -1279,6 +1289,9 @@ PROVIDERS.push({
         }, {
             val: "tls",
             title: "TLS"
+        }, {
+            val: "tokenbearer",
+            title: "Token Bearer Authentication",
         }],
         show: true,
         required: true,
@@ -1320,7 +1333,7 @@ PROVIDERS.push({
         required: false,
         showIf: {
             fieldName: "authentication",
-            fieldValues: ["tls"]
+            fieldValues: ["tls","tokenbearer"]
         }
     }, {
         name: "cert_file",
@@ -1335,18 +1348,5 @@ PROVIDERS.push({
             fieldName: "authentication",
             fieldValues: ["tls"]
         }
-    }, {
-        name: "ca_cert_file",
-        label: "CA Certificate",
-        helptext: 'CA certificate file',
-        type: "textarea",
-        value: "",
-        defaultValue: "",
-        show: true,
-        required: false,
-        showIf: {
-            fieldName: "authentication",
-            fieldValues: ["tls"]
-        }
-    }]
+    },]
 });

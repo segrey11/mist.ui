@@ -745,7 +745,7 @@ MACHINE_CREATE_FIELDS.push({
 MACHINE_CREATE_FIELDS.push({
     provider: 'kubevirt',
     fields: [{
-        name: 'network',
+        name: 'networks',
         label: 'Network',
         type: 'list',
         items: [],
@@ -786,8 +786,8 @@ MACHINE_CREATE_FIELDS.push({
         },
         ],
     },{
-        name: 'disks',
-        label: 'Disks',
+        name: 'volumes',
+        label: 'Volumes',
         type: 'list',
         items: [],
         show: true,
@@ -838,12 +838,16 @@ MACHINE_CREATE_FIELDS.push({
         {
             name: 'size',
             label: 'Size',
-            type: 'int',
-            value: '',
-            defaultValue: '1',
+            type: 'slider',
+            value: 1,
+            defaultValue: 1,
+            min: 1,
+            max: 1000,
+            step: 1,
             show: true,
             required: false,
-            helptext: 'Specify the size in Gb for the volume',
+            unit: 'GB',
+            helptext: 'Custom disk size in GB.',
             showIf:{
                 fieldName: 'new_claim',
                 fieldValues: ['true', true],
@@ -931,7 +935,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     });
 
     // mist_size for kvm libvirt
-    if (['libvirt', 'kubevirt'].indexOf(p.provider) != -1) {
+    if (['libvirt'].indexOf(p.provider) != -1) {
         p.fields.splice(2, 0, {
             name: 'size',
             label: 'Size *',
@@ -1049,7 +1053,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 },
             }],
         });
-    } else if (['vsphere'].indexOf(p.provider) != -1) {
+    } else if (['vsphere', 'kubevirt'].indexOf(p.provider) != -1) {
         p.fields.splice(2, 0, {
             name: 'size',
             label: 'Size *',
@@ -1113,6 +1117,19 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             required: true,
             options: [],
             custom: false,
+        });
+    }
+
+    if (['kubevirt'].indexOf(p.provider) != -1) {
+        p.fields.splice(1, 1, {
+            name: 'image',
+            label: 'Image',
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: true,
+            options:[],
         });
     }
 
