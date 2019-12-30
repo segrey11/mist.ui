@@ -85,6 +85,9 @@
         </div>
         <iron-ajax id="getResourceGroups" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetResourceGroupsRequest"
             on-response="_handleGetResourceGroupsResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
+        <iron-ajax id="getStorageClasses" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetStorageClassesRequest"
+            on-response="_handleGetStorageClassesResponse" on-error="_handleGetStorageClassesError"></iron-ajax>
+
     </template>
     <script>
         Polymer({
@@ -174,6 +177,10 @@
                     if (this.model.clouds[cloudId].provider == "azure_arm") {
                         this._updateResourceGroups(cloudId);
                     }
+                    // if is kubevirt, change required values
+                    if (this.model.clouds[cloudId].provider == "kubevirt") {
+                        this._updateStorageClasses(cloudId);
+                    }
                     this.fields.forEach(function (f, index) {
                         if (f.name.endsWith("location")) {
                             var locations = this.model.clouds[cloudId].locationsArray.slice();
@@ -258,7 +265,7 @@
             _getResourceGroups: function(cloudId, index) {
                 this.set("resourceGroupsFieldIndex",index);
                 this.$.getResourceGroups.headers["Content-Type"] = 'application/json';
-                this.$.getResourceGroups.headers["Csrf-Token"] = CSRF_TOKEN;
+                this.$.getResourceGroups.headers["Csrf-Token"] = CSRF_TOKEN;                
                 this.$.getResourceGroups.url = '/api/v1/clouds/'+ cloudId +'/resource-groups';
                 this.$.getResourceGroups.generateRequest();
             },
