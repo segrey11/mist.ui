@@ -754,6 +754,8 @@ MACHINE_CREATE_FIELDS.push({
         helptext: 'Add a network interface',
         horizontal: false,
         moderateTop: true,
+        min: 1,
+        max: 20,
         options: [{
             name: 'network_type',
             label: 'Network type',

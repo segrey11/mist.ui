@@ -1267,13 +1267,13 @@
                 else if (field.showIf && (field.showIf.fieldExists || field.showIf.fieldName)) {
                     var d = list.find(function (f) {
                         return f.name == field.showIf.fieldName;
-                    })
+                    });
                     // try in fields
                     if (!d) {
                         d = this.fields.find(function (l) {return l.name == field.showIf.fieldName;})
                     }
-                    if (d && (field.showIf.fieldExists && d.value) || (field.showIf.fieldValues && d.value.indexOf(
-                            field.showIf.fieldValues) > -1))
+                    if (d && (field.showIf.fieldExists && d.value) || (field.showIf.fieldValues && field.showIf.fieldValues.indexOf(
+                            d.value) > -1))
                         return true;
                 }
                 return false;
