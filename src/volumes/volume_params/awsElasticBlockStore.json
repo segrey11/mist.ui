@@ -1,0 +1,41 @@
+{   "label": "AWS params",
+    "helptext": "Parameters for AWS BlockStore",
+    "subfields": [{
+            "name": "fsType",
+            "label": "Filesystem Type",
+            "type": "text",
+            "value": "ext4",
+            "defaultValue": "ext4",
+            "show": true,
+            "required": true,
+            "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+        },{
+            "name": "volumeID",
+            "label": "Volume ID",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": true,
+            "helptext": "Unique ID of the persistent disk resource in AWS (Amazon EBS volume)."
+        },{
+            "name": "partition",
+            "label": "Partition",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "Integer. If 0 or empty it will mean /dev/sda, 1 will mean /dev/sda1 etc..."
+        },{
+            "name": "readOnly",
+            "label": "Read Only",
+            "type": "toggle",
+            "value": false,
+            "defaultValue": false,
+            "excludeFromPayload": false,
+            "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+            "show": true,
+            "required": false
+        }]
+}
