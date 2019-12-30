@@ -281,6 +281,7 @@ VOLUME_CREATE_FIELDS.push({
             name: "storage_class_name",
             label: "Storage Class",
             type: "text", //must make it a dropdown
+            apiendpoint: "storage-classes",
             value: "",
             defaultValue: "",
             placeholder: "",
@@ -378,18 +379,18 @@ VOLUME_CREATE_FIELDS.push({
         },{
             name: 'volume_params',
             label: 'AWS params',
-            type: 'list',
+            type: 'fieldgroup',
             items: [],
             show: true,
             required: false,
             helptext: 'Parameters for AWS BlockStore',
-            horizontal: false,
-            moderateTop: true,
+            singleColumnForm: true,
+            inline: true,
             showIf:{
                 fieldName: 'volume_type',
                 fieldValues: ['awsElasticBlockStore'],
             },
-            options: [{
+            subfields: [{
                 name: 'fsType',
                 label: 'Filesystem Type',
                 type: 'text',
