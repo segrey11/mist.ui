@@ -1,0 +1,105 @@
+{
+    "label": "RBD params",
+    "helptext": "Parameters for Rados Block Device Volume",
+    "subfields": [{
+        "name": "fsType",
+        "label": "Filesystem Type",
+        "type": "text",
+        "value": "ext4",
+        "defaultValue": "ext4",
+        "show": true,
+        "required": true,
+        "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+    },{
+        "name": "monitors",
+        "label": "Monitors",
+        "type": "list",
+        "min": 1,
+        "max": 20,
+        "items":[],
+        "show": true,
+        "required": false,
+        "horizontal": false,
+        "moderateTop": true,
+        "helptext": "A collection of Ceph monitors.",
+        "options":[{
+            "name": "monitor",
+            "label": "Monitor",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "Name of the monitor."
+
+        }]
+    },{
+        "name": "image",
+        "label": "Image",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "The rados image name."
+    },{
+        "name": "keyring",
+        "label": "Keyring",
+        "type": "text",
+        "value": "/etc/ceph/keyring",
+        "defaultValue": "/etc/ceph/keyring",
+        "show": true,
+        "required": false,
+        "helptext": "Keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring."
+    },{
+        "name": "pool",
+        "label": "Pool Name",
+        "type": "text",
+        "value": "rbd",
+        "defaultValue": "rbd",
+        "show": true,
+        "required": false,
+        "helptext": "The rados pool name. Default is rbd."
+    },{
+        "name": "secretRef",
+        "label": "Secret Reference",
+        "type": "fieldgroup",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "helptext": "SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil.",
+        "singleColumnForm": true,
+        "inline": true,
+        "subfields":[{
+            "name": "name",
+            "label": "Name of secret",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "The name of the kubernetes secret."
+        }]
+    },{
+        "name": "user",
+        "label": "User",
+        "type": "text",
+        "value": "admin",
+        "defaultValue": "admin",
+        "show": true,
+        "required": false,
+        "helptext": "User is the rados user name, default is admin."
+    },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}

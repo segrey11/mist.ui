@@ -1,0 +1,64 @@
+{
+    "label": "StorageOS params",
+    "helptext": "Parameters for StorageOS Volume",
+    "subfields": [{
+        "name": "fsType",
+        "label": "Filesystem Type",
+        "type": "text",
+        "value": "ext4",
+        "defaultValue": "ext4",
+        "show": true,
+        "required": true,
+        "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+    },{
+        "name": "secretRef",
+        "label": "Secret Reference",
+        "type": "fieldgroup",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "helptext": "SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail. ",
+        "singleColumnForm": true,
+        "inline": true,
+        "subfields":[{
+            "name": "name",
+            "label": "Name of secret",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "The name of the kubernetes secret."
+        }]
+    },{
+        "name": "volumeName",
+        "label": "Volume Name",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "The name of a volume already created in the ScaleIO system that is associated with this volume source."
+    },{
+        "name": "volumeNamespace",
+        "label": "Volume Namespace",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "VolumeNamespace specifies the scope of the volume within StorageOS. If no namespace is specified then the Pod's namespace will be used. This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to 'default' if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created."
+    },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}

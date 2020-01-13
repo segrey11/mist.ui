@@ -1,0 +1,56 @@
+{
+        "name": "volume_params",
+        "label": "Cinder params",
+        "subfields": [{
+            "name": "fsType",
+            "label": "Filesystem Type",
+            "type": "text",
+            "value": "ext4",
+            "defaultValue": "ext4",
+            "show": true,
+            "required": true,
+            "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+        },{
+            "name": "volumeID",
+            "label": "Volume ID",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": true,
+            "helptext": "Unique ID of the volume in cinder."
+        },{
+            "name": "secretRef",
+            "label": "Secret Reference",
+            "type": "fieldgroup",
+            "value": {},
+            "defaultValue": {},
+            "show": true,
+            "required": false,
+            "optional": false,
+            "helptext": "Points to a secret object containing parameters used to connect to OpenStack.",
+            "singleColumnForm": true,
+            "inline": true,
+            "subfields":[{
+                "name": "name",
+                "label": "Name of secret",
+                "type": "text",
+                "value": "",
+                "defaultValue": "",
+                "show": true,
+                "required": false,
+                "helptext": "The name of the kubernetes secret."
+            }]
+        },{
+            "name": "readOnly",
+            "label": "Read Only",
+            "type": "toggle",
+            "value": false,
+            "defaultValue": false,
+            "excludeFromPayload": false,
+            "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+            "show": true,
+            "required": false
+        }
+        ]
+    }

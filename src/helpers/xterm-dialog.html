@@ -156,7 +156,6 @@
                         payload['provider'] = 'docker';
                         payload['host'] = '';
                     } else if (this.target.provider === 'kubevirt') {
-                        console.log('We are doing kubevirt!!!!');
                         payload['cloud_id'] = this.target.cloud;
                         payload['machine_id'] = this.target.id;
                         payload['provider'] = 'kubevirt';

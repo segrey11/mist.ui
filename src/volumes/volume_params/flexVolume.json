@@ -1,0 +1,64 @@
+{
+    "label": "Flex Volume params",
+    "helptext": "Parameters for Flex Volume",
+    "subfields": [{
+        "name": "driver",
+        "label": "Driver",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": true,
+        "helptext": "Driver is the name of driver to use for this volume."
+    },{
+        "name": "fsType",
+        "label": "Filesystem Type",
+        "type": "text",
+        "value": "ext4",
+        "defaultValue": "ext4",
+        "show": true,
+        "required": true,
+        "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+    },{
+        "name": "options",
+        "label": "options", 
+        "type": "jsoneditor",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "helptext": "Extra command options if any."
+    },{
+        "name": "secretRef",
+        "label": "Secret Reference",
+        "type": "fieldgroup",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "helptext": "Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.",
+        "singleColumnForm": true,
+        "inline": true,
+        "subfields":[{
+            "name": "name",
+            "label": "Name of secret",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "The name of the kubernetes secret."
+        }]
+    },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}

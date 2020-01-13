@@ -1,0 +1,24 @@
+{
+    "label": "Host Path params",
+    "helptext": "Parameters for Host Path Volume",
+    "subfields": [{
+        "name": "path",
+        "label": "Path",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "Path of the directory on the host. If the path is a symlink, it will follow the link to the real path."
+    },{
+        "name": "type",
+        "label": "Type",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "Type for HostPath Volume Defaults to ''."
+    }
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "label": "Flocker Volume params",
+    "helptext": "Parameters for Flocker Volume",
+    "subfields": [{
+        "name": "datasetName",
+        "label": "Dataset Name",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": true,
+        "helptext": "Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated."
+    },{
+        "name": "datasetUUID",
+        "label": "Dataset UUID",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": true,
+        "helptext": "UUID of the dataset. This is the unique identifier of a Flocker dataset"
+    }
+    ]
+}

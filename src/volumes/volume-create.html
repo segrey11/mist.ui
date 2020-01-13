@@ -55,7 +55,7 @@
                 </div>
             </paper-material>
             <paper-material hidden$="[[hasCloudsWithVolumes]]">
-                <p>Creating volumes is available in OpenStack, GCE, AWS, Azure ARM, Packet and Digital Ocean clouds
+                <p>Creating volumes is available in OpenStack, GCE, AWS, Azure ARM, Packet, Digital Ocean and Kubevirt clouds
                     <br/> Add a cloud using the
                     <a href="/clouds/+add" class="blue-link regular">add cloud form</a>.
                 </p>
@@ -127,6 +127,9 @@
                 },
                 resourceGroupsFieldIndex: {
                     type: Number
+                },
+                storageClassesFieldIndex: {
+                    type: Number
                 }
             },
             observers: [
@@ -177,8 +180,7 @@
                     if (this.model.clouds[cloudId].provider == "azure_arm") {
                         this._updateResourceGroups(cloudId);
                     }
-                    // if is kubevirt, change required values
-                    if (this.model.clouds[cloudId].provider == "kubevirt") {
+                    if (this.model.clouds[cloudId].provider == "kubevirt"){
                         this._updateStorageClasses(cloudId);
                     }
                     this.fields.forEach(function (f, index) {
@@ -280,6 +282,34 @@
             _handleGetResourceGroupsError: function(e) {
                 console.error('Got resource groups error', e);
             },
+            _updateStorageClasses: function(cloudId) {
+                var fieldIndex = this._fieldIndexByName('storage_class_name');
+                if (fieldIndex && this.get('fields.' + fieldIndex + '.options') && !this.get('fields.' + fieldIndex + '.options').length){
+                    this._getStorageClasses(cloudId, fieldIndex)
+                }
+            },
+            _getStorageClasses: function(cloudId, index) {
+                this.set("storageClassesFieldIndex", index)
+                this.$.getStorageClasses.headers["Content-Type"] = 'application/json';
+                this.$.getStorageClasses.headers["Csrf-Token"] = CSRF_TOKEN;
+                this.$.getStorageClasses.url = '/api/v1/clouds/' + cloudId + '/storage-classes';
+                this.$.getStorageClasses.generateRequest();
+            },
+            _handleGetStorageClassesRequest: function(e) {
+                this.set('fields.' + this.storageClassesFieldIndex + '.loader', true);
+            },
+            _handleGetStorageClassesResponse: function(e){
+                var options = []
+                e.detail.response.forEach(function(item, ind){
+                    options.push({title: item, val: item});
+                });
+                this.set('fields.' + this.storageClassesFieldIndex + '.options', options|| []);
+                this.shadowRoot.querySelector('app-form').dispatchEvent(new CustomEvent('fields-changed', {detail: {file: 'volume-create.html'}}));
+                this.set('fields.' + this.storageClassesFieldIndex + '.loader', false);
+            },
+            _handleGetStorageClassesError: function(e){
+                console.error("Got storage classes error ", e);
+            }, 
             _fieldIndexByName: function (name) {
                 var field = this.fields.findIndex(function (f) {
                     return f.name == name;

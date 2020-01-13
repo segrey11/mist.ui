@@ -1,0 +1,35 @@
+{   "label": "Azure File params",
+    "helptext": "Parameters for Azure File Volume",
+    "subfields": [{
+
+        "name": "secretName",
+        "label": "Secret Name",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": true,
+        "helptext": "The name of secret that contains Azure Storage Account Name and Key."
+    },
+    {
+        "name": "shareName",
+        "label": "Share Name",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "Share Name"
+    },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}

@@ -1,0 +1,67 @@
+{
+    "name": "volume_params",
+    "label": "CSI params",
+    "helptext": "Parameters for CSI Volume",
+    "subfields": [{
+        "name": "fsType",
+        "label": "Filesystem Type",
+        "type": "text",
+        "value": "ext4",
+        "defaultValue": "ext4",
+        "show": true,
+        "required": true,
+        "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+    },{
+        "name": "driver",
+        "label": "Driver",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": true,
+        "helptext": "Driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster."
+    },{ 
+        "name": "volumeAttributes",
+        "label": "Volume Attributes",
+        "type": "jsoneditor",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "helptext":"VolumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values."
+    },{
+        "name": "nodePublishSecretRef",
+        "label": "Node Publish Secret Reference",
+        "type": "fieldgroup",
+        "value": {},
+        "defaultValue": {},
+        "show": true,
+        "required": false,
+        "optional": false,
+        "helptext": "NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume                and NodeUnpublishVolume calls. This field is optional, and may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.",
+        "singleColumnForm": true,
+        "inline": true,
+        "subfields":[{
+            "name": "name",
+            "label": "Name of secret",
+            "type": "text",
+            "value": "",
+            "defaultValue": "",
+            "show": true,
+            "required": false,
+            "helptext": "The name of the kubernetes secret."
+        }]
+        
+        },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}

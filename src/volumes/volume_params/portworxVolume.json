@@ -1,0 +1,34 @@
+{
+    "label": "Portworx params",
+    "helptext": "Parameters for Portworx Volume",
+    "subfields": [{
+        "name": "fsType",
+        "label": "Filesystem Type",
+        "type": "text",
+        "value": "ext4",
+        "defaultValue": "ext4",
+        "show": true,
+        "required": true,
+        "helptext": "The type of the filesystem, eg: 'ext4', 'xfs', 'ntfs'"
+    },{
+        "name": "volumeID",
+        "label": "Volume ID",
+        "type": "text",
+        "value": "",
+        "defaultValue": "",
+        "show": true,
+        "required": false,
+        "helptext": "VolumeID uniquely identifies a Portworx volume."
+    },{
+        "name": "readOnly",
+        "label": "Read Only",
+        "type": "toggle",
+        "value": false,
+        "defaultValue": false,
+        "excludeFromPayload": false,
+        "helptext": "Enabling it will force the ReadOnly property in VolumeMounts.",
+        "show": true,
+        "required": false
+    }
+    ]
+}
