@@ -1269,15 +1269,17 @@
                     });
 
                     // if there's a list field add it as a nested object under the subform title.
-                    console.log("MY FIELDS ARE!!:  ", this.fields)
                     this.fields.forEach(function (field) {
                         if (field.type == 'mist_size' && field.value == "custom") {
                             payload[field.name] = field.customValue;
                         }
                         if (field.type == 'fieldgroup') {
+
                             if (JSON.stringify(field.value) == '{}') {
+                                console.log("OUBAKA YOUBAKA", field, field.value);
                                 excludeFields.push(field);
                             } else {
+                                console.log("Bouyaka!!!!!!", field, field.value);
                                 payload[field.name] = field.value;
                             }
                         }
@@ -1334,7 +1336,6 @@
                     if (!d) {
                         d = this.fields.find(function (l) {return l.name == field.showIf.fieldName;})
                     }
-                    console.log("field is:",field," and d is ",d)
                     if (d && (field.showIf.fieldExists && d.value) || (field.showIf.fieldValues && field.showIf.fieldValues.indexOf(
                             d.value) > -1))
                         return true;

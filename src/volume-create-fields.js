@@ -295,13 +295,22 @@ VOLUME_CREATE_FIELDS.push({
         {
             name: "volume_mode",
             label: "Volume Mode",
-            type: "text",
+            type: "dropdown",
             value: "Filesystem",
             defaultValue: "Filesystem",
             placeholder: "",
             helptext: "The acccepted modes are Filesystem or Block ",
             show: true,
-            required: false
+            required: false,
+            excludeFromPayload: false,
+            options:[{
+                title: "Filesystem",
+                val: "Filesystem"
+            },
+            {
+                title: "Block",
+                val: "Block"
+            }]
         },
         {
             name: "access_mode",
@@ -310,7 +319,7 @@ VOLUME_CREATE_FIELDS.push({
             value: "ReadWriteOnce",
             defaultValue: "ReadWriteOnce",
             placeholder: "",
-            helptext: 'An access mode may be specified, valid values are ReadWriteOnce, ReadWriteMany, ReadOnlyMany',
+            helptext: 'An access mode may be specified, valid examples are ReadWriteOnce, ReadWriteMany, ReadOnlyMany',
             show: true,
             required: false,
         },
@@ -389,6 +398,7 @@ VOLUME_CREATE_FIELDS.push({
         show: true,
         required: false,
         optional: false,
+        defaultToggleValue: true,
         helptext: '',
         showIf:{
             "fieldName": "dynamic",
