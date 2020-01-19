@@ -1068,18 +1068,19 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             },
         });
     }
-
-    p.fields.push({
-        name: 'key',
-        label: 'Key *',
-        type: 'ssh_key',
-        value: '',
-        defaultValue: '',
-        show: true,
-        required: true,
-        options: [],
-        search: '',
-    });
+    if(p.provider !== 'kubevirt'){
+        p.fields.push({
+            name: 'key',
+            label: 'Key *',
+            type: 'ssh_key',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: true,
+            options: [],
+            search: '',
+        });
+    }
 
     // add cloud init field only to providers that accept and we support
     if (['azure', 'azure_arm', 'digitalocean', 'ec2', 'gce', 'packet', 'rackspace', 'libvirt', 'openstack', 'aliyun_ecs', 'vultr', 'softlayer'].indexOf(p.provider) != -1) {
