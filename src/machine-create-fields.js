@@ -260,6 +260,12 @@ MACHINE_CREATE_FIELDS.push({
     fields: [],
 });
 
+// G8
+MACHINE_CREATE_FIELDS.push({
+    provider: 'g8',
+    fields: [],
+});
+
 // DOCKER
 MACHINE_CREATE_FIELDS.push({
     provider: 'docker',
