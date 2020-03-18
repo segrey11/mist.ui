@@ -233,6 +233,48 @@ NETWORK_CREATE_FIELDS.push({
     }]
 });
 
+// GIG G8
+NETWORK_CREATE_FIELDS.push({
+    provider: 'gig_g8',
+    fields: [{
+        name: "name",
+        label: "Name *",
+        type: "text",
+        value: "",
+        defaultValue: "",
+        placeholder: "",
+        errorMessage: "Please enter network's name",
+        show: true,
+        required: true,
+        inPayloadGroup: 'network'
+    }, {
+        name: "private_network",
+        label: "Private Network",
+        type: "ip_textarea",
+        value: "192.168.103.0/24",
+        defaultValue: "192.168.103.0/24",
+        placeholder: "",
+        show: true,
+        required: false,
+        inPayloadGroup: 'network'
+    },{
+        name: "type",
+        label: "Type",
+        type: "dropdown",
+        value: "vgw",
+        defaultValue: "vgw",
+        show: true,
+        required: false,
+        options: [{
+            title: 'Virtual Gateway', 
+            val: 'vgw'
+        },{
+            title: 'Router OS',
+            val:'routeros'
+        }],
+        inPayloadGroup: 'network'
+    }]
+});
 
 // EC2
 NETWORK_CREATE_FIELDS.push({
