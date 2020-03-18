@@ -511,6 +511,11 @@
                     this._updateFieldsForOpenstack();
                 }
 
+                // if is gig_g8 require network
+                if (this.model.clouds[this.selectedCloud].provider == "gig_g8") {
+                    this._updateFieldsForGigG8();
+                }
+
                 // if is packet construct ip_addresses value
                 if (this.model.clouds[this.selectedCloud].provider == "packet") {
                     this._updateFieldsForPacket();
@@ -717,6 +722,11 @@
                 // if is docker, change required values
                 if (this.model.clouds[this.selectedCloud].provider == "docker") {
                     this._updateFieldsForDocker();
+                }
+
+                // if is docker, change required values
+                if (this.model.clouds[this.selectedCloud].provider == "gig_g8") {
+                    this._updateFieldsForGigG8();
                 }
 
                 // if is azure arm, change required values
@@ -1237,6 +1247,14 @@
                 this.set('machineFields.' + keyInd + '.required', false);
                 this.set('machineFields.' + keyInd + '.label', "Key");
                 this.set('machineFields.' + keyInd + '.helptext', "Optional.");
+            }
+        },
+
+        _updateFieldsForGigG8: function() {
+            var netInd = this._fieldIndexByName('networks');
+            if (netInd > -1) {
+                this.set('machineFields.' + netInd + '.options', this._toArray(this.model.clouds[this.selectedCloud].networks));
+                this.set('machineFields.' + netInd + '.required', true);
             }
         },
 

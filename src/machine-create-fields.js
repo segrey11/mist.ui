@@ -348,6 +348,21 @@ MACHINE_CREATE_FIELDS.push({
     }, ],
 });
 
+// GIG G8
+MACHINE_CREATE_FIELDS.push({
+    provider: 'gig_g8',
+    fields: [{
+        name: 'networks',
+        label: 'Networks *',
+        type: 'checkboxes',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: true,
+        options: [],
+    }],
+});
+
 
 // Alibaba Cloud
 MACHINE_CREATE_FIELDS.push({
@@ -779,16 +794,21 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         required: true,
         options: [],
         search: '',
-    }, {
-        name: 'location',
-        label: 'Location *',
-        type: 'mist_dropdown',
-        value: '',
-        defaultValue: '',
-        show: true,
-        required: true,
-        options: [],
     });
+
+    // location for non gig_g8 clouds
+    if (['gig_g8'].indexOf(p.provider) == -1) {
+        p.fields.splice(0, 0, {
+            name: 'location',
+            label: 'Location *',
+            type: 'mist_dropdown',
+            value: '',
+            defaultValue: '',
+            show: true,
+            required: true,
+            options: []
+        });
+    }
 
     // mist_size for kvm libvirt
     if (['libvirt'].indexOf(p.provider) != -1) {
@@ -826,6 +846,56 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 show: true,
                 required: false,
                 unit: 'cores',
+            }],
+        });
+    } else if (['gig_g8'].indexOf(p.provider) != -1) {
+        p.fields.splice(2, 0, {
+            name: 'size',
+            label: 'Size *',
+            type: 'mist_size',
+            value: 'custom',
+            defaultValue: 'custom',
+            custom: true,
+            customValue: null,
+            show: true,
+            required: true,
+            customSizeFields: [{
+                name: 'ram',
+                label: 'RAM MB',
+                type: 'slider',
+                value: 256,
+                defaultValue: 256,
+                min: 256,
+                max: 15872,
+                step: 256,
+                show: true,
+                required: false,
+                unit: 'MB',
+            }, {
+                name: 'cpu',
+                label: 'CPU cores',
+                type: 'slider',
+                value: 1,
+                defaultValue: 1,
+                min: 1,
+                max: 16,
+                step: 1,
+                show: true,
+                required: false,
+                unit: 'cores',
+            }, {
+                name: 'disk_primary',
+                label: 'Primary Disk',
+                type: 'slider',
+                value: 5,
+                defaultValue: 5,
+                min: 5,
+                max: 16,
+                step: 1,
+                show: true,
+                required: true,
+                unit: 'GB',
+                helptext: 'Custom disk size in GB.'
             }],
         });
     } else if (['onapp'].indexOf(p.provider) != -1) {
@@ -1065,15 +1135,18 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             },
         });
     }
-
+    var requiredKey = true;
+    if (['gig_g8'].indexOf(p.provider) != -1) {
+        requiredKey = false;
+    }
     p.fields.push({
         name: 'key',
-        label: 'Key *',
+        label: 'Key ' + (requiredKey ? '*' : ''),
         type: 'ssh_key',
         value: '',
         defaultValue: '',
         show: true,
-        required: true,
+        required: requiredKey,
         options: [],
         search: '',
     });
