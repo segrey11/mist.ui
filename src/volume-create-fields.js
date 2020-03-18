@@ -156,6 +156,21 @@ VOLUME_CREATE_FIELDS.push({
     }]
 });
 
+// GIGG8
+VOLUME_CREATE_FIELDS.push({
+    provider: 'gig_g8',
+    fields: [ {
+        name: "description",
+        label: "Description *",
+        type: "textarea",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: true,
+        helptext: "A human friendly description of the volume."
+    }]
+});
+
 // OPENSTACK
 VOLUME_CREATE_FIELDS.push({
     provider: 'openstack',
@@ -307,7 +322,7 @@ VOLUME_CREATE_FIELDS.forEach(function(p) {
             required: true});
     }
 
-    if (p.provider != 'openstack') {
+    if (p.provider != 'openstack' && p.provider != 'gig_g8') {
         p.fields.splice(1, 0, {
             name: 'location',
             label: 'Location *',
