@@ -127,8 +127,8 @@
             </paper-material>
         </div>
         <paper-dialog id="addKvmImage" with-backdrop>
-            <h2>Create Image</h2>
-            <paper-input id="kvmImageInput" label="Image's path" value="{{newImage}}" autofocus></paper-input>
+            <h2>[[_computeAddImageTitle(selectedCloud)]]</h2>
+            <paper-input id="kvmImageInput" label="[[_computeAddImageLabel(selectedCloud)]]" value="{{newImage}}" autofocus></paper-input>
             <div class="btn-group">
                 <paper-button dialog-dismiss>Cancel</paper-button>
                 <paper-button class="blue" on-tap="saveNewImage">Save</paper-button>
@@ -140,6 +140,11 @@
             on-response="_handleGetResourceGroupsResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
         <iron-ajax id="getStorageAccounts" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetStorageAccountsRequest"
             on-response="_handleGetStorageAccountsResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
+        <iron-ajax id="getLXDStoragePools" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetLXDStoragePoolsRequest"
+            on-response="_handleGetLXDStoragePoolsResponse" on-error="_handleGetLXDStoragePoolsError"></iron-ajax>
+        <iron-ajax id="getVirtualNetworkFunctions" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetVirtualNetworkFunctionsRequest"
+            on-response="_handleGetVirtualNetworkFunctionsResponse" on-error="_handleGetVirtualNetworkFunctionsError"></iron-ajax>
+
     </template>
     <script>
     SCHEDULEACTIONS = {
@@ -252,6 +257,15 @@
             resourceGroupsFieldIndex: {
                 type: Number
             },
+            lxdStoragePoolsField: {
+                type: Object
+            },
+            securityGroupsFieldIndex: {
+                type: Number
+            },
+            virtualNetworkFunctionFieldIndex: {
+                type: Number
+            },
             constraints: {
                 type: Object
             }
@@ -269,7 +283,8 @@
             'keyup': 'hotkeys',
             'add-input': 'addInput',
             'format-payload': 'formatPayload',
-            'fields-changed': 'fieldsChanged'
+            'fields-changed': 'fieldsChanged',
+            'subfield-enabled': '_subfieldEnabled'
         },
         _teamsChanged: function() {
             console.log('_teamsChanged CALL checkPermissions');
@@ -404,6 +419,8 @@
             }
         },
         _cloudChanged: function(selectedCloud) {
+            //clear saved new image of lxd or kvm
+            this.set("newImage", "");
             if (selectedCloud && this.model) {
                 this.set('cloud', this.model.clouds[selectedCloud]);
             }
@@ -418,7 +435,7 @@
             }
             var allMachinesFields;
             if (this.selectedCloud) {
-                var provider = this.model.clouds[selectedCloud].provider;
+                var provider = this.model.clouds[selectedCloud] && this.model.clouds[selectedCloud].provider;
                 allMachinesFields = this.machinesFields.find(function(c) {
                     return c.provider == provider;
                 });
@@ -438,6 +455,7 @@
                     }
                 }
                 // clear to reset
+                this.set('machineFields', []);
                 this.set('machineFields', fields);
             }
             
@@ -540,10 +558,6 @@
                                 return check_perm == true;
                             });
                         // console.log('LOCATIONS', locations.length);
-                        if (locations.length == 1 && locations[0].name == "") {
-                            // If there's a single location preselect it and hide the field
-                            this._selectSingleLocation(index,locations[0].id);
-                        }
                         // disable maxihost locations that support no sizes
                         if (this.model.clouds[this.selectedCloud].provider == "maxihost") {
                             var sizeLocations = this._toArray(this.model.clouds[this.selectedCloud].sizes).map(x=>x.extra.regions).join();
@@ -552,6 +566,10 @@
                             })
                         }
                         f.options = locations;
+                        if (locations.length == 1 ) {
+                            // If there's a single location preselect it and hide the field
+                            that._selectSingleLocation(index,locations[0].id);
+                        }
                         // console.log(f.options);
                     }
                     if (f.name.endsWith("image")) {
@@ -601,7 +619,7 @@
                     if (f.type == "fieldgroup") {
                         for (var k=0; k<f.subfields.length; k++) {
                             var sf = f.subfields[k];
-                            if (sf.name.endsWith("zone")) {
+                            if (sf.name && sf.name.endsWith("zone")) {
                                 sf.options = this._toArray(this.model.zones);
                                 sf.options.forEach(function(zone) {
                                     if (zone.zone_id+'.' != zone.domain) {
@@ -667,6 +685,16 @@
                             var options = this._cleanCopy(fieldset.fields);
                             var locationIndex = options.findIndex(function(f){return f.name == 'location'})
 
+                            if(provider === "lxd"){
+                                var storagePoolsIdx = options.findIndex(function(f){return f.name == 'pool_id'});
+
+                                if(storagePoolsIdx > -1){
+                                    var storagePoolField = options[storagePoolsIdx];
+                                    this.set("lxdStoragePoolsField",storagePoolField);
+                                    this._updateLXDStoragePools(cloudId);
+                                }
+                            }
+
                             if (locationIndex > -1) {
                                 options.splice(locationIndex,1);
                             }
@@ -712,7 +740,7 @@
 
                     // console.log(this.get('machineFields.' + index + '.options'));
                     // console.log('update fields', f.name, f.value)
-                }, this);
+                }.bind(this));
 
                 // if cloud is Aliyun ECS update locations
                 if (this.model.clouds[this.selectedCloud].provider == "aliyun_ecs") {
@@ -724,7 +752,11 @@
                     this._updateFieldsForDocker();
                 }
 
-                // if is docker, change required values
+                // if is lxd, change required values
+                if (this.model.clouds[this.selectedCloud].provider == "lxd") {
+                    this._updateFieldsForLxd();
+                }
+
                 if (this.model.clouds[this.selectedCloud].provider == "gig_g8") {
                     this._updateFieldsForGigG8();
                 }
@@ -743,19 +775,22 @@
 
                 // default values, hide empty non required, fill in single options
                 if (this.machineFields) {
-                    this.machineFields.forEach(function(f, index) {
-                        this.set('machineFields.' + index + '.value', this.get(
-                            'machineFields.' + index + '.defaultValue'));
-
+                    this.machineFields.forEach(function(f, ind) {
+                        this.set('machineFields.' + ind + '.value', this.get(
+                            'machineFields.' + ind + '.defaultValue'));
                         if (f.required && f.options && f.options.length == 1) {
-                            if (f.type == "dropdown")
-                                this.set('machineFields.' + index + '.value', f.options[0].val);
-                            else
-                                this.set('machineFields.' + index + '.value', f.options[0].id);
+                            if (f.type == "dropdown") {
+                                this.set('machineFields.' + ind + '.value', f.options[0].val);
+                            } else {
+                                this.set('machineFields.' + ind + '.value', f.options[0].id);
+                            }
+                            if (f.add != true) {
+                                this.set('machineFields.' + ind + '.show', false);
+                            }
                         }
 
                         if (!f.required && f.options && f.options.length == 0) {
-                            this.set('machineFields.' + index + '.show', false);
+                            this.set('machineFields.' + ind + '.show', false);
                         }
                     }.bind(this));
                 }
@@ -1352,24 +1387,43 @@
                 this.set('machineFields.' + keyInd + '.required', false);
                 this.set('machineFields.' + keyInd + '.label', 'Key');
                 this.set('machineFields.' + keyInd + '.helptext',
-                    "Optional. Keys are valid only for Mist.io images");
+                    "Optional. Only valid if image includes ssh server");
             }
 
             // disable monitoring by default
             if (monInd > -1)
                 this.set('machineFields.' + monInd + '.value', false);
         },
+        _updateFieldsForLxd: function() {
+            var keyInd = this._fieldIndexByName('key');
+            // optional key
+            if (keyInd > -1) {
+                this.set('machineFields.' + keyInd + '.required', false);
+                this.set('machineFields.' + keyInd + '.label', 'Key');
+                this.set('machineFields.' + keyInd + '.helptext',
+                    "Optional. Only valid if image includes ssh server");
+            }
+        },
+        _computeAddImageTitle: function(selectedCloud) {
+            var provider = "";
+            if (selectedCloud) {
+                provider = this.model.clouds[this.selectedCloud].provider
+            }
+            return provider == 'lxd' ? "Pull image from URL:" : "Create image";
+        },
+        _computeAddImageLabel: function(selectedCloud) {
+            var provider = "";
+            if (selectedCloud) {
+                provider = this.model.clouds[this.selectedCloud].provider
+            }
+            return provider == 'lxd' ? "Image URL:" : "Image's path";
+        },
         _updateFieldsForKvm: function() {
-            var imaInd = this._fieldIndexByName('image');
             var locInd = this._fieldIndexByName('location');
             var keyInd = this._fieldIndexByName('key');
             var pathInd = this._fieldIndexByName('libvirt_disk_path');
 
-            //hide default image and location field
-            if (imaInd > -1) {
-                this.set('machineFields.' + imaInd + '.add', true);
-                this.set('machineFields.' + imaInd + '.required', true);
-            }
+            //hide location field
             if (locInd > -1) {
                 this.set('machineFields.' + locInd + '.show', false);
                 this.set('machineFields.' + locInd + '.required', false);
@@ -1638,6 +1692,99 @@
         _handleGetResourceGroupsError: function(e) {
             console.error('Got resource groups error', e);
         },
+        _updateLXDStoragePools: function(cloudId) {
+            //var fieldIndex = this._fieldIndexByName('pool_id');
+            //console.warn("!!!!!!!!!!!", fieldIndex,this.get('machineFields.' + this.lxdStoragePoolsFieldIndex));
+            if (this.lxdStoragePoolsField.options && !this.lxdStoragePoolsField.options.length) {
+                this._getLXDStoragePools(cloudId);
+            }
+        },
+        _getLXDStoragePools: function(cloudId) {
+            //this.set("lxdStoragePoolsFieldIndex",index);
+            this.$.getLXDStoragePools.headers["Content-Type"] = 'application/json';
+            this.$.getLXDStoragePools.headers["Csrf-Token"] = CSRF_TOKEN;
+            this.$.getLXDStoragePools.url = '/api/v1/clouds/'+ cloudId +'/storage-pools';
+            this.$.getLXDStoragePools.generateRequest();
+        },
+        _handleGetLXDStoragePoolsRequest: function(e) {
+            this.lxdStoragePoolsField.loader = true;
+        },
+        _handleGetLXDStoragePoolsResponse: function(e) {
+            this.lxdStoragePoolsField.options = e.detail.response || [];
+            this.shadowRoot.querySelector('app-form').dispatchEvent(new CustomEvent('fields-changed', {detail: {file: 'machine-create.html : _handleGetLXDStoragePoolsResponse()'}}));
+            this.lxdStoragePoolsField.loader =  false;
+        },
+        _handleGetLXDStoragePoolsError: function(e) {
+            console.error('Got LXD storage pools error error', e);
+        },
+        _updateVirtualNetworkFunctions: function(cloudId) {
+            var fieldIndex = this._fieldIndexByName('vnfs');
+            if (fieldIndex > -1 && this.get('machineFields.' + fieldIndex + '.subfields.0.options') && !this.get('machineFields.' + fieldIndex + '.subfields.0.options').length) {
+                this._getVirtualNetworkFunctions(cloudId, fieldIndex);
+            }
+        },
+        _getVirtualNetworkFunctions: function(cloudId, index) {
+            this.set("virtualNetworkFunctionFieldIndex",index);
+            this.$.getVirtualNetworkFunctions.headers["Content-Type"] = 'application/json';
+            this.$.getVirtualNetworkFunctions.headers["Csrf-Token"] = CSRF_TOKEN;
+            this.$.getVirtualNetworkFunctions.url = '/api/v1/clouds/'+ cloudId +'/vnfs';
+            this.$.getVirtualNetworkFunctions.generateRequest();
+        },
+        _handleGetVirtualNetworkFunctionsRequest: function(e) {
+            this.set('machineFields.' + this.virtualNetworkFunctionFieldIndex + '.loader', true);
+        },
+        _handleGetVirtualNetworkFunctionsResponse: function(e) {
+            var vnfs=[];
+            for (var i=0; i<e.detail.response.length; i++) {
+                if (e.detail.response[i].interface) {
+                    vnfs.push(e.detail.response[i]);
+                }
+            }
+            var categorisedVNFs = this._getCategorizedVirtualNetworkFunctions(vnfs);
+            this.set('machineFields.' + this.virtualNetworkFunctionFieldIndex + '.subfields.0.options', categorisedVNFs || []);
+            this.shadowRoot.querySelector('app-form').dispatchEvent(new CustomEvent('fields-changed', {detail: {file: 'machine-create.html : _handleGetVirtualNetworkFunctionsResponse()'}}));
+            this.set('machineFields.' + this.virtualNetworkFunctionFieldIndex + '.loader', false);
+        },
+        _getCategorizedVirtualNetworkFunctions: function(arr) {
+            var categories = [], // store names
+                categoriesObjects = {}; // store items
+            for  (var i=0; i<arr.length; i++) {
+                var catName = 'NUMA ' + arr[i].numa; // Category name
+                if (categories.indexOf(catName) <= -1) {
+                    // store category name and initialise category
+                    categories.push(catName);
+                    categoriesObjects[catName] = [];
+                }
+                var item = {
+                    'name': arr[i].interface,
+                    'id': arr[i].pci_bdf,
+                    'description': arr[i].pci_bdf,
+                    'tooltip': arr[i].device.vendor + ' ' + arr[i].device.name
+                }
+                // store item under its category name
+                categoriesObjects[catName].push(item);
+            }
+            // merge category names with items
+            var categorisedArray = [];
+            categories = categories.reverse();
+            for  (var i=0; i<categories.length; i++) {
+                var cat = categories[i];
+                categorisedArray.push(cat);
+                categorisedArray = categorisedArray.concat(categoriesObjects[cat]);
+            }
+            // return categorisedArray or default array
+            return categorisedArray || arr.map(function(x){ return {
+                'name': x.interface,
+                'id': x.pci_bdf,
+                'description': x.pci_bdf + ' - ' + x.device.vendor + ' ' + x.device.name}});
+        },
+        _handleGetVirtualNetworkFunctionsError: function(e) {
+            console.error('Got security groups error', e);
+        },
+        _subfieldEnabled: function(e) {
+            if (e.detail.field.name == 'vnfs')
+                this._updateVirtualNetworkFunctions(this.cloud.id)
+        },
         _updateNetworkValue: function() {
             var createFieldIndex = this._fieldIndexByName('create_network');
             var existingFieldIndex = this._fieldIndexByName('ex_networks');
@@ -1692,7 +1839,7 @@
                     this.set('machineFields.' + keyInd + '.show', true);
                 }
                 //if the provider is Docker or onapp, the key should not be required
-                if (['docker', 'onapp'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
+                if (['docker', 'lxd', 'onapp'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
                     if (keyInd > -1) {
                         this.set('machineFields.' + keyInd + '.required', true);
                     }
@@ -1728,7 +1875,7 @@
             // exclude bare metals and not allowed clouds from provider dropdown list
             var that = this;
             return this._toArray(this.model.clouds).filter(function(c) {
-                return ["bare_metal", "clearcenter"].indexOf(c.provider) == -1 && that.check_perm("create_resources","cloud",c.id);
+                return ["bare_metal"].indexOf(c.provider) == -1 && that.check_perm("create_resources","cloud",c.id);
             });
         },
         addInput: function(e) {
@@ -1883,13 +2030,18 @@
         formatPayload: function(e) {
             var hostnameInd = this._fieldIndexByName("hostname"),
                 composedHostname = '',
-                hostname =  this.get('machineFields.' + hostnameInd + '.value');
+                hostname =  this.get('machineFields.' + hostnameInd + '.value'),
+                vnfsInd = this._fieldIndexByName("vnfs"),
+                vnfs = this.get('machineFields.' + vnfsInd + '.value');
             if (hostname) {
                 if (hostname.record_name && hostname.dns_zone) {
                     var domainName = this.model.zones[hostname.dns_zone].zone_id;
                     composedHostname = hostname.record_name+'.'+domainName+'.';
                 }
                 this.set('machineFields.' + hostnameInd + '.value',composedHostname);
+            }
+            if (vnfs && vnfs.vnfs) {
+                this.set('machineFields.' + vnfsInd + '.value', vnfs.vnfs);
             }
         },
         _hasProviders: function(providers) {
