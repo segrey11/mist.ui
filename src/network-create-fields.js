@@ -261,8 +261,8 @@ NETWORK_CREATE_FIELDS.push({
         name: "type",
         label: "Type",
         type: "dropdown",
-        value: "vgw",
-        defaultValue: "vgw",
+        value: "",
+        defaultValue: "",
         show: true,
         required: false,
         options: [{
