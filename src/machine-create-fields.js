@@ -354,12 +354,20 @@ MACHINE_CREATE_FIELDS.push({
     fields: [{
         name: 'networks',
         label: 'Networks *',
-        type: 'checkboxes',
+        type: 'mist_dropdown',
         value: '',
         defaultValue: '',
         show: true,
         required: true,
         options: [],
+    },{
+        name: 'description',
+        label: 'Description',
+        type: 'text',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: false
     }],
 });
 
@@ -889,8 +897,8 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 type: 'slider',
                 value: 5,
                 defaultValue: 5,
-                min: 5,
-                max: 16,
+                min: 1,
+                max: 1024,
                 step: 1,
                 show: true,
                 required: true,
