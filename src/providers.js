@@ -793,7 +793,7 @@ PROVIDERS.push({
 PROVIDERS.push({
     title: 'GigG8',
     val: 'gig_g8',
-    className: 'provider-g8',
+    className: 'provider-gigg8',
     options: [{
         name: "title",
         label: "Title *",
