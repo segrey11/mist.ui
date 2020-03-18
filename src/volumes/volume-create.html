@@ -160,7 +160,7 @@
                 // add cloud fields
                 if (volumeFields.fields)
                     this.set('fields', JSON.parse(JSON.stringify(volumeFields.fields.filter(function(f){
-                        return !f.onForm || f.onForm == 'volume_add ';
+                        return f.onForm == 'volume_add' || !f.onForm;
                     }))));
 
                 // set values by provider

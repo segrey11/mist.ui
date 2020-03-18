@@ -260,12 +260,6 @@ MACHINE_CREATE_FIELDS.push({
     fields: [],
 });
 
-// G8
-MACHINE_CREATE_FIELDS.push({
-    provider: 'g8',
-    fields: [],
-});
-
 // DOCKER
 MACHINE_CREATE_FIELDS.push({
     provider: 'docker',
@@ -368,7 +362,8 @@ MACHINE_CREATE_FIELDS.push({
         defaultValue: '',
         show: true,
         required: false
-    }],
+    }
+],
 });
 
 
@@ -1197,8 +1192,9 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     // add create volume fields for 'openstack'
     // coming soon for 'gce', 'digitalocean', 'aws' & 'packet'
 
-    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs'].indexOf(p.provider) > -1) {
-        var allowedVolumes = ['gce','azure_arm'].indexOf(p.provider) > -1 ? 3 : 1; 
+    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'gig_g8'].indexOf(p.provider) > -1) {
+        var allowedVolumes = ['gce','azure_arm','gig_g8'].indexOf(p.provider) > -1 ? 3 : 1;
+        var allowExistingVolumes = ['gig_g8'].indexOf(p.provider) == -1;
         p.fields.push({
             name: 'addvolume',
             excludeFromPayload: true,
@@ -1239,6 +1235,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 }, {
                     title: 'Attach Existing',
                     val: 'existing',
+                    disabled: !allowExistingVolumes
                 }]
             }, {
                 name: 'volume_id',

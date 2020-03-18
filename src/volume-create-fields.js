@@ -167,7 +167,8 @@ VOLUME_CREATE_FIELDS.push({
         defaultValue: "",
         show: true,
         required: true,
-        helptext: "A human friendly description of the volume."
+        helptext: "A human friendly description of the volume.",
+        onForm: 'volume_add',
     }]
 });
 
