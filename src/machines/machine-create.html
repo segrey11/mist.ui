@@ -1286,11 +1286,11 @@
         },
 
         _updateFieldsForGigG8: function() {
-            var netInd = this._fieldIndexByName('networks');
-            if (netInd > -1) {
-                this.set('machineFields.' + netInd + '.options', this._toArray(this.model.clouds[this.selectedCloud].networks));
-                this.set('machineFields.' + netInd + '.required', true);
-            }
+            // var netInd = this._fieldIndexByName('networks');
+            // if (netInd > -1) {
+            //     this.set('machineFields.' + netInd + '.options', this._toArray(this.model.clouds[this.selectedCloud].networks));
+            //     this.set('machineFields.' + netInd + '.required', true);
+            // }
         },
 
         _updateFieldMinsForOnapp: function(image) {
@@ -1839,7 +1839,7 @@
                     this.set('machineFields.' + keyInd + '.show', true);
                 }
                 //if the provider is Docker or onapp, the key should not be required
-                if (['docker', 'lxd', 'onapp'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
+                if (['docker', 'lxd', 'onapp', 'libvirt', 'vshere', 'gig_g8'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
                     if (keyInd > -1) {
                         this.set('machineFields.' + keyInd + '.required', true);
                     }

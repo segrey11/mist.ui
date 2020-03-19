@@ -1189,10 +1189,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
             },
         });
     }
-    var requiredKey = true;
-    if (['gig_g8'].indexOf(p.provider) != -1) {
-        requiredKey = false;
-    }
+    var requiredKey = ['gig_g8', 'lxd', 'docker', 'onapp', 'libvirt', 'vsphere'].indexOf(p.provider) == -1;
     p.fields.push({
         name: 'key',
         label: 'Key ' + (requiredKey ? '*' : ''),
