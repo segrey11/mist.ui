@@ -247,16 +247,6 @@ NETWORK_CREATE_FIELDS.push({
         show: true,
         required: true,
         inPayloadGroup: 'network'
-    }, {
-        name: "private_network",
-        label: "Private Network",
-        type: "ip_textarea",
-        value: "192.168.103.0/24",
-        defaultValue: "192.168.103.0/24",
-        placeholder: "",
-        show: true,
-        required: false,
-        inPayloadGroup: 'network'
     },{
         name: "type",
         label: "Type",
