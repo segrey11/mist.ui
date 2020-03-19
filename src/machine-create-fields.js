@@ -848,15 +848,6 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         required: true,
         options: [],
         search: '',
-    }, {
-        name: 'location',
-        label: 'Location *',
-        type: 'mist_dropdown',
-        value: '',
-        defaultValue: '',
-        show: showLocation,
-        required: true,
-        options: [],
     });
 
     // location for non gig_g8 clouds
