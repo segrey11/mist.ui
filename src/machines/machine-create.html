@@ -140,6 +140,10 @@
             on-response="_handleGetResourceGroupsResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
         <iron-ajax id="getStorageAccounts" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetStorageAccountsRequest"
             on-response="_handleGetStorageAccountsResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
+        <iron-ajax id="getFolders" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetFoldersRequest"
+        on-response="_handleGetFoldersResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
+        <iron-ajax id="getDatastores" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetDatastoresRequest"
+        on-response="_handleGetDatastoresResponse" on-error="_handleGetResourceGroupsError"></iron-ajax>
         <iron-ajax id="getLXDStoragePools" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetLXDStoragePoolsRequest"
             on-response="_handleGetLXDStoragePoolsResponse" on-error="_handleGetLXDStoragePoolsError"></iron-ajax>
         <iron-ajax id="getVirtualNetworkFunctions" contentType="application/json" handle-as="json" method="GET" on-request="_handleGetVirtualNetworkFunctionsRequest"
@@ -256,6 +260,9 @@
             },
             resourceGroupsFieldIndex: {
                 type: Number
+            },
+            foldersField: {
+                type: Object
             },
             lxdStoragePoolsField: {
                 type: Object
@@ -767,7 +774,15 @@
                 if (this.model.clouds[this.selectedCloud].provider == "libvirt") {
                     this._updateFieldsForKvm();
                 }
-
+                //if it is vsphere add folders
+                if (this.model.clouds[this.selectedCloud].provider == "vsphere") {
+                    var folderFieldInd = this._fieldIndexByName('folders');
+                    var folderField = this.get("machineFields." + folderFieldInd);
+                    var datastoreFieldInd = this._fieldIndexByName('datastore')
+                    var datastoreField = this.get("machineFields." + datastoreFieldInd)
+                    this._updateFolders(this.selectedCloud, folderField);
+                    this._updateDatastores(this.selectedCloud, datastoreField)
+                }
                 // default values, hide empty non required, fill in single options
                 if (this.machineFields) {
                     this.machineFields.forEach(function(f, ind) {
@@ -819,9 +834,10 @@
                     this._mapPortsToDockerPorts(changeRecord.value);
                 }
 
-                // if is gce/linode and image changed, include image extar in payload
+                // if is gce/linode and image changed, include image extra in payload
                 if ((this.model.clouds[this.selectedCloud].provider == "linode" || this.model.clouds[
-                        this.selectedCloud].provider == "gce") && changeRecord.path.endsWith(
+                        this.selectedCloud].provider == "gce" || this.model.clouds[
+                        this.selectedCloud].provider == "vsphere") && changeRecord.path.endsWith(
                         'value') && this.get(changeRecord.path.replace('.value', '')).name ==
                     'image') {
                     this._includeImageExtra(changeRecord.value);
@@ -1149,6 +1165,11 @@
                     }
                 }
             }
+            // if is vsphere change fields
+            if (this.model && this.model.clouds && this.model.clouds[this.selectedCloud] && this.model.clouds[
+                    this.selectedCloud].provider == "vsphere") {
+                this._updateFieldsForVsphere();
+            }
         },
 
         _selectSingleLocation: function(index, value) {
@@ -1245,6 +1266,38 @@
                 });
                 this.set('machineFields.' + locationIndex + '.options', filteredLocations);
             }
+        },
+
+        _updateFieldsForVsphere: function() {
+            var keyInd = this._fieldIndexByName('key');
+            if (keyInd > -1 && this.get('machineFields.' + keyInd + '.required')) {
+                this.set('machineFields.' + keyInd + '.required', false);
+                this.set('machineFields.' + keyInd + '.label', "Key");
+            }
+            var imgInd = this._fieldIndexByName('image');
+            img = this.get('machineFields.' + imgInd);
+            if(img && img.value){
+                for(var i = 0; i < img.options.length; i++){
+                    current = img.options[i];
+                    if(current.id == img.value){
+                        break
+                    }
+                }
+                
+                sizeInd = this._fieldIndexByName('size')
+                if(current.extra.type == "ovf"){
+                    this.set('machineFields.' + sizeInd + '.customSizeFields.' + 2 + '.min', 1);
+                    this.set('machineFields.' + sizeInd + '.customSizeFields.' + 2 + '.max', 1);
+                    this.set('machineFields.' + sizeInd + '.customSizeFields.' + 2 + '.value', 1);
+                }
+                else{
+                    min_size = current.extra.disk_size
+                    this.set('machineFields.' + sizeInd + '.customSizeFields.' + 2 + '.min', min_size);
+                    this.set('machineFields.' + sizeInd + '.customSizeFields.' + 2 + '.max', 512);
+                }
+            }
+            
+            
         },
 
         _updateFieldsForOpenstack: function() {
@@ -1660,6 +1713,63 @@
         },
         _handleGetResourceGroupsError: function(e) {
             console.error('Got resource groups error', e);
+        },
+        _updateFolders: function(cloudId, field){
+            if (field && field.options && !field.options.length){
+                this._getFolders(cloudId, field);                
+            }
+        },
+        _getFolders(cloudId, field){
+            this.set("foldersField", field)
+            this.$.getFolders.headers["Content-Type"] = 'application/json';
+            this.$.getFolders.headers["Csrf-Token"] = CSRF_TOKEN;
+            this.$.getFolders.url = '/api/v1/clouds/' + cloudId + '/folders';
+            this.$.getFolders.generateRequest();
+        },
+        _handleGetFoldersRequest: function(e){
+            this.foldersField.loader = true;
+        },
+        _handleGetFoldersResponse: function(e){
+            const options = [];
+            e.detail.response.forEach(function(item, ind){
+                options.push({title: item.name, val: item.id})
+            });
+            this.foldersField.options = options;
+            //this.set('machineFields.'+this.machineFields.indexOf(this.foldersField)+'.options', options);
+            this.shadowRoot.querySelector('app-form').dispatchEvent(new CustomEvent('fields-changed', {detail: {file: 'machine-create.html : _handleGetFoldersResponse()'}}));
+            this.foldersField.loader = false;
+            if(options && options.length > 0){
+                // this.foldersField.value= this.foldersField.options[0].val;
+                this.set('machineFields.'+this.machineFields.indexOf(this.foldersField)+'.show', true);}
+        },
+        _updateDatastores: function(cloudId, field){
+            if (field && field.options && !field.options.length){
+                this._getDatastores(cloudId, field);                
+            }
+        },
+        _getDatastores(cloudId, field){
+            this.set("datastoresField", field)
+            this.$.getDatastores.headers["Content-Type"] = 'application/json';
+            this.$.getDatastores.headers["Csrf-Token"] = CSRF_TOKEN;
+            this.$.getDatastores.url = '/api/v1/clouds/' + cloudId + '/datastores';
+            this.$.getDatastores.generateRequest();
+        },
+        _handleGetDatastoresRequest: function(e){
+            this.datastoresField.loader = true;
+        },
+        _handleGetDatastoresResponse: function(e){
+            const options = [];
+            e.detail.response.forEach(function(item, ind){
+                space = Math.floor(item.free_space / (1024*1024*1024))
+                name = item.name + "  " + "Free: " + space + " GB"
+                options.push({title: name, val: item.id, space: item.free_space})
+            });
+            this.datastoresField.options = options;
+            this.shadowRoot.querySelector('app-form').dispatchEvent(new CustomEvent('fields-changed', {detail: {file: 'machine-create.html : _handleGetFoldersResponse()'}}));
+            this.datastoresField.loader = false;
+            if(options && options.length > 0){
+                this.set('machineFields.'+this.machineFields.indexOf(this.datastoresField)+'.show', true);
+            }
         },
         _updateLXDStoragePools: function(cloudId) {
             //var fieldIndex = this._fieldIndexByName('pool_id');
