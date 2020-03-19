@@ -519,11 +519,6 @@
                     this.set('machineFields.' + this._fieldIndexByName('monitoring') + '.show',
                         false);
 
-                // if is onapp change fields
-                if (this.model.clouds[this.selectedCloud].provider == "onapp") {
-                    this._updateFieldsForOnapp();
-                }
-
                 // if is openstack do not require network/locations
                 if (this.model.clouds[this.selectedCloud].provider == "openstack") {
                     this._updateFieldsForOpenstack();
@@ -1260,15 +1255,6 @@
                 if (this.get('machineFields.' + locInd + '.options').length == 0) {
                     this.set('machineFields.' + locInd + '.show', false);
                 }
-            }
-        },
-
-        _updateFieldsForOnapp: function() {
-            var keyInd = this._fieldIndexByName('key');
-            if (keyInd > -1) {
-                this.set('machineFields.' + keyInd + '.required', false);
-                this.set('machineFields.' + keyInd + '.label', "Key");
-                this.set('machineFields.' + keyInd + '.helptext', "Optional.");
             }
         },
 
