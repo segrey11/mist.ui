@@ -1154,11 +1154,6 @@
                     }
                 }
             }
-            // if is vsphere change fields
-            if (this.model && this.model.clouds && this.model.clouds[this.selectedCloud] && this.model.clouds[
-                    this.selectedCloud].provider == "vsphere") {
-                this._updateFieldsForVsphere();
-            }
         },
 
         _selectSingleLocation: function(index, value) {
@@ -1254,14 +1249,6 @@
                     return option.extra.available_instance_types.length;
                 });
                 this.set('machineFields.' + locationIndex + '.options', filteredLocations);
-            }
-        },
-
-        _updateFieldsForVsphere: function() {
-            var keyInd = this._fieldIndexByName('key');
-            if (keyInd > -1 && this.get('machineFields.' + keyInd + '.required')) {
-                this.set('machineFields.' + keyInd + '.required', false);
-                this.set('machineFields.' + keyInd + '.label', "Key");
             }
         },
 
