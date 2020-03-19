@@ -348,12 +348,13 @@ MACHINE_CREATE_FIELDS.push({
     fields: [{
         name: 'networks',
         label: 'Networks *',
-        type: 'checkboxes',
+        type: 'mist_networks',
         value: '',
         defaultValue: '',
         show: true,
         required: true,
         options: [],
+        canConfigure: false
     },{
         name: 'description',
         label: 'Description',
@@ -456,6 +457,7 @@ MACHINE_CREATE_FIELDS.push({
         show: true,
         required: false,
         options: [],
+        canConfigure: true
     }, {
         name: 'vnfs',
         label: 'Configure Virtual Network Functions',
