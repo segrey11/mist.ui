@@ -741,7 +741,7 @@ PROVIDERS.push({
     }, {
         name: "api_key",
         label: "API key (JWT) *",
-        type: "text",
+        type: "textarea",
         value: "",
         defaultValue: "",
         show: true,
