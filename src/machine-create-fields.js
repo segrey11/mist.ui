@@ -919,7 +919,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 type: 'slider',
                 value: 256,
                 defaultValue: 256,
-                min: 256,
+                min: 512,
                 max: 15872,
                 step: 256,
                 show: true,
