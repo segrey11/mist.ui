@@ -348,7 +348,7 @@ MACHINE_CREATE_FIELDS.push({
     fields: [{
         name: 'networks',
         label: 'Networks *',
-        type: 'mist_dropdown',
+        type: 'checkboxes',
         value: '',
         defaultValue: '',
         show: true,
