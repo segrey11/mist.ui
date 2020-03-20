@@ -347,8 +347,8 @@ MACHINE_CREATE_FIELDS.push({
     provider: 'gig_g8',
     fields: [{
         name: 'networks',
-        label: 'Networks *',
-        type: 'mist_networks',
+        label: 'Network *',
+        type: 'mist_dropdown',
         value: '',
         defaultValue: '',
         show: true,

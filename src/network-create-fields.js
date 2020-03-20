@@ -248,7 +248,7 @@ NETWORK_CREATE_FIELDS.push({
         required: true,
         inPayloadGroup: 'network'
     },{
-        name: "type",
+        name: "network_type",
         label: "Type",
         type: "dropdown",
         value: "",
