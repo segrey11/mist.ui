@@ -571,71 +571,6 @@ PROVIDERS.push({
     }]
 });
 
-
-/*
-// CLEARCENTER
-PROVIDERS.push({
-    title: 'ClearCenter',
-    val: 'clearcenter',
-    className: 'provider-clearcenter',
-    options: [{
-        name: "title",
-        label: "Title *",
-        type: "text",
-        value: "ClearCenter",
-        defaultValue: "ClearCenter",
-        show: true,
-        required: true,
-        errorMessage: "Please enter title"
-    }, {
-        name: "api_key",
-        label: "API key *",
-        type: "text",
-        value: "",
-        defaultValue: "",
-        show: true,
-        required: true,
-        errorMessage: "Please enter the API key",
-        helptext: ""
-    }]
-});
-
-// CLEARAPI
-PROVIDERS.push({
-    title: 'ClearAPI',
-    val: 'clearapi',
-    className: 'provider-clearapi',
-    options: [{
-        name: "title",
-        label: "Title *",
-        type: "text",
-        value: "ClearAPI",
-        defaultValue: "ClearAPI",
-        show: true,
-        required: true,
-        errorMessage: "Please enter title"
-    }, {
-        name: "url",
-        label: "Url *",
-        type: "text",
-        value: "ClearAPI",
-        defaultValue: "",
-        show: true,
-        required: true,
-        errorMessage: "Please enter url"
-    }, {
-        name: "api_key",
-        label: "API key *",
-        type: "text",
-        value: "",
-        defaultValue: "",
-        show: true,
-        required: true,
-        errorMessage: "Please enter the API key",
-        helptext: ""
-    }]
-});*/
-
 // DOCKER
 PROVIDERS.push({
     title: 'Docker',
@@ -1107,7 +1042,18 @@ PROVIDERS.push({
         show: true,
         required: true,
         errorMessage: "Please enter password"
-    }]
+    }, {
+        name: "ca_cert_file",
+        label: "CA Certificate",
+        helptext: 'CA certificate file',
+        type: "textarea",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: false,
+        helptext:"It is advised to add it for the SSL to work properly."
+    },
+]
 });
 
 // OTHER SERVER
@@ -1259,7 +1205,7 @@ PROVIDERS.push({
         show: true,
         required: true,
         errorMessage: "Please enter Kubernetes API host IP or DNS name",
-    }, {
+    },{
         name: "port",
         label: "port",
         type: "text",
@@ -1335,6 +1281,7 @@ PROVIDERS.push({
             fieldName: "authentication",
             fieldValues: ["tls","tokenbearer"]
         }
+        
     }, {
         name: "cert_file",
         label: "Certificate",
@@ -1349,4 +1296,49 @@ PROVIDERS.push({
             fieldValues: ["tls"]
         }
     },]
+});
+    
+// LXD
+PROVIDERS.push({
+    title: 'LXD',
+    val: 'lxd',
+    className: 'provider-lxd',
+    options: [{
+        name: "title",
+        label: "Title *",
+        type: "text",
+        value: "LXD",
+        defaultValue: "LXD",
+        show: true,
+        required: true,
+        errorMessage: "Please enter title",
+        helptext: "If you need help, read the docs on adding an LXD cloud",
+        helpHref: ""
+    }, {
+        name: "host",
+        label: "Host",
+        type: "text",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: true,
+        errorMessage: "Please enter LXD host IP or DNS name",
+    }, {
+        name: "port",
+        label: "port",
+        type: "text",
+        value: 8443,
+        defaultValue: 8443,
+        show: true,
+        required: true
+    }, {
+        name: "ca_cert_file",
+        label: "CA Certificate",
+        helptext: 'CA certificate file',
+        type: "textarea",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: false
+    }]
 });

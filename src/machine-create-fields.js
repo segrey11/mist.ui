@@ -315,6 +315,16 @@ MACHINE_CREATE_FIELDS.push({
 MACHINE_CREATE_FIELDS.push({
     provider: 'ec2',
     fields: [{
+        name: 'security_group',
+        label: 'Security group *',
+        type: 'dropdown',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: true,
+        options: [],
+        helptext: 'Specify the security group for this machine',
+    }, {
         name: 'subnet_id',
         label: 'Subnet',
         type: 'mist_dropdown_searchable',
@@ -423,6 +433,29 @@ MACHINE_CREATE_FIELDS.push({
         required: false,
         options: [],
     }, {
+        name: 'vnfs',
+        label: 'Configure Virtual Network Functions',
+        type: 'fieldgroup',
+        value: {},
+        defaultValue: {},
+        defaultToggleValue: false,
+        helptext: '',
+        show: true,
+        required: false,
+        optional: true,
+        inline: true,
+        loader: true,
+        subfields: [{
+            name: 'vnfs',
+            label: 'Available VNFs',
+            type: 'checkboxes',
+            helptext: '',
+            show: true,
+            required: false,
+            options: [],
+            loader: true
+        }]
+    }, {
         name: 'libvirt_disk_path',
         type: 'text',
         label: 'Path to create VM\'s disk',
@@ -443,7 +476,7 @@ MACHINE_CREATE_FIELDS.push({
         pattern: '[0-9]*',
         helptext: 'The VM\'s size will be the size of the image plus the number in GBs provided here',
         helpHref: 'http://docs.mist.io/article/99-managing-kvm-with-mist-io',
-    }],
+    }]
 });
 
 // LINODE
@@ -709,6 +742,16 @@ MACHINE_CREATE_FIELDS.push({
 MACHINE_CREATE_FIELDS.push({
     provider: 'vsphere',
     fields: [{
+        name: 'folders',
+        label: 'VM Folder',
+        type: 'dropdown',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: false, 
+        helptext: 'VSphere 6.7 required, choose the folder to place the new VM in.',
+        options:[],
+    },{
         name: 'networks',
         label: 'Networks *',
         type: 'mist_dropdown',
@@ -717,7 +760,25 @@ MACHINE_CREATE_FIELDS.push({
         show: true,
         required: false,
         options: [],
-    }],
+    },{
+        name: 'datastore',
+        label: 'Datastore',
+        type: 'dropdown',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: false, 
+        helptext: 'Optional. Datastore for the VM disk.',
+        options:[],
+    },{
+        name: 'image_extra',
+        label: 'Image extra',
+        type: 'text',
+        value: '',
+        defaultValue: '',
+        show: false,
+        required: false,
+    },],
 });
 
 // VULTR
@@ -745,10 +806,36 @@ MACHINE_CREATE_FIELDS.push({
  MACHINE_CREATE_FIELDS.push({
      provider: 'kubevirt',
      fields: [],
+ });
+// LXD
+MACHINE_CREATE_FIELDS.push({
+    provider: 'lxd',
+    fields: [{
+        name: 'ephemeral',
+        label: 'Ephemeral *',
+        type: 'toggle',
+        value: '',
+        defaultValue: false,
+        show: true,
+        required: true,
+        helptext: 'An ephemeral container will be deleted when is stopped.'
+    }, {
+        name: 'networks',
+        label: 'Network',
+        type: 'mist_dropdown',
+        value: '',
+        defaultValue: '',
+        show: true,
+        required: false,
+        options: [],
+    }],
 });
 
 // add common fields
 MACHINE_CREATE_FIELDS.forEach(function(p) {
+    var addImage = ['kvm'].indexOf(p.provider) != -1;
+    var showLocation = ['lxd'].indexOf(p.provider) == -1;
+
     // add common machine properties fields
     p.fields.splice(0, 0, {
         name: 'name',
@@ -766,6 +853,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         value: '',
         defaultValue: '',
         show: true,
+        add: addImage,
         required: true,
         options: [],
         search: '',
@@ -775,7 +863,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
         type: 'mist_dropdown',
         value: '',
         defaultValue: '',
-        show: true,
+        show: showLocation,
         required: true,
         options: [],
     });
@@ -899,7 +987,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 },
             }],
         });
-    } else if (['vsphere', 'kubevirt'].indexOf(p.provider) != -1) {
+    } else if (['vsphere', 'lxd', 'kubevirt'].indexOf(p.provider) != -1) {
         p.fields.splice(2, 0, {
             name: 'size',
             label: 'Size *',
@@ -934,6 +1022,19 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 show: true,
                 required: false,
                 unit: 'cores',
+            }, {
+                name: 'disk_primary',
+                label: 'Disk',
+                type: 'slider',
+                value: 5,
+                defaultValue: 5,
+                min: 5,
+                max: 512,
+                step: 1,
+                show: false,
+                required: false,
+                unit: 'GB',
+                helptext: 'Custom disk size in GB.'
             }],
         });
     } else if (['maxihost'].indexOf(p.provider) != -1){ // size dependent on location for maxihost
@@ -1120,7 +1221,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     // add create volume fields for 'openstack'
     // coming soon for 'gce', 'digitalocean', 'aws' & 'packet'
 
-    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'kubevirt'].indexOf(p.provider) > -1) {
+    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'lxd', 'kubevirt'].indexOf(p.provider) > -1) {
         var allowedVolumes = ['gce','azure_arm'].indexOf(p.provider) > -1 ? 3 : 1; 
         p.fields.push({
             name: 'addvolume',
@@ -1180,6 +1281,22 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 }
             }]
         })
+
+        if(['lxd'].indexOf(p.provider) > -1){
+           p.fields[p.fields.length-1].options.push({
+                    name: 'path',
+                    label: 'Path *',
+                    type: 'text',
+                    value: '',
+                    defaultValue: '',
+                    show: true,
+                    required: true,
+                    onForm: 'createForm',
+                    options: [],
+                    helptext: 'Path in the container the volume is attached. e.g. /opt/my/data. This is required when attaching the volume to a container',
+           })
+        }
+
         if (['ec2'].indexOf(p.provider) > -1) {
             p.fields[p.fields.length-1].options.push({
                 name: 'device',

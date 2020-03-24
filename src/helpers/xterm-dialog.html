@@ -157,7 +157,13 @@
                     } else if (this.target.provider === 'kubevirt') {
                         payload['provider'] = 'kubevirt';
                         payload['host'] = 'kubevirt'; // otherwise an error is thrown in the api
-                    } else {
+                    } else if (this.target.provider === 'lxd'){
+                        payload['provider'] = 'lxd';
+                        payload['host'] = ips[0];
+                    }
+                    else {
+                        payload['cloud_id'] = this.target.cloud;
+                        payload['machine_id'] = this.target.id;
                         payload['host'] = ips[0];
                     }
                     payload['cloud_id'] = this.target.cloud;
