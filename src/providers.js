@@ -1281,7 +1281,6 @@ PROVIDERS.push({
             fieldName: "authentication",
             fieldValues: ["tls","tokenbearer"]
         }
-        
     }, {
         name: "cert_file",
         label: "Certificate",

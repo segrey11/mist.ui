@@ -1279,10 +1279,8 @@
                         if (field.type == 'fieldgroup') {
 
                             if (JSON.stringify(field.value) == '{}') {
-                                console.log("OUBAKA YOUBAKA", field, field.value);
                                 excludeFields.push(field);
                             } else {
-                                console.log("Bouyaka!!!!!!", field, field.value);
                                 payload[field.name] = field.value;
                             }
                         }
