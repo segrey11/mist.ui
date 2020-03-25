@@ -1297,7 +1297,7 @@ PROVIDERS.push({
         }
     },]
 });
-    
+
 // LXD
 PROVIDERS.push({
     title: 'LXD',
@@ -1329,6 +1329,24 @@ PROVIDERS.push({
         type: "text",
         value: 8443,
         defaultValue: 8443,
+        show: true,
+        required: true
+    }, {
+        name: "key_file",
+        label: "Key",
+        type: "textarea",
+        helptext: 'Client private key file',
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: true
+    }, {
+        name: "cert_file",
+        label: "Certificate",
+        helptext: 'Client certificate file',
+        type: "textarea",
+        value: "",
+        defaultValue: "",
         show: true,
         required: true
     }, {
