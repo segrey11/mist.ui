@@ -1742,12 +1742,11 @@
         _handleGetResourceGroupsError: function(e) {
             console.error('Got resource groups error', e);
         },
-        _updateStorageClasses: function(cloudId,field) {
-                
+        _updateStorageClasses: function(cloudId,field) {                
             if (field && field.options && !field.options.length){
-                    this._getStorageClasses(cloudId, field);
-                }
-            },
+                this._getStorageClasses(cloudId, field);
+            }
+        },
         _getStorageClasses: function(cloudId, field) {
             this.set("storageClassesField", field)
             this.$.getStorageClasses.headers["Content-Type"] = 'application/json';
