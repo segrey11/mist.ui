@@ -160,7 +160,7 @@
                     },
                     payload: {
                         type: Object,
-                        value: {}
+                        value: function () { return {} }
                     },
                     tagsString: {
                         type: Array
@@ -323,7 +323,7 @@
                     }
                     else if (this.isTags) {
                         var tags = this._constructTagsValue(this.textToArray(this.tagsString));
-                        pl["selectors"].push({type: 'tags', tags: tags});
+                        pl["selectors"].push({type: 'tags', include: tags});
                         valid = this.textToArray(this.tagsString) ? this.textToArray(this.tagsString).length : false;
                     }
 
