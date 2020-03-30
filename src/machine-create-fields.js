@@ -1302,14 +1302,9 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
     // add create volume fields for 'openstack'
     // coming soon for 'gce', 'digitalocean', 'aws' & 'packet'
 
-<<<<<<< HEAD
-    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'lxd', 'kubevirt'].indexOf(p.provider) > -1) {
-        var allowedVolumes = ['gce','azure_arm'].indexOf(p.provider) > -1 ? 3 : 1; 
-=======
-    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'lxd', 'gig_g8'].indexOf(p.provider) > -1) {
+    if (['openstack', 'packet', 'azure_arm','gce', 'digitalocean', 'ec2', 'aliyun_ecs', 'lxd', 'kubevirt', 'gig_g8'].indexOf(p.provider) > -1) {
         var allowedVolumes = ['gce','azure_arm','gig_g8'].indexOf(p.provider) > -1 ? 3 : 1;
         var allowExistingVolumes = ['gig_g8'].indexOf(p.provider) == -1;
->>>>>>> master
         p.fields.push({
             name: 'addvolume',
             excludeFromPayload: true,
