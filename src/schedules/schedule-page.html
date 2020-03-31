@@ -853,20 +853,20 @@
             _computeTagsArray: function(selectors, isMachinesWithTags ){
                 console.log('_computeTagsArray');
                 if (this.isMachinesWithTags && this.schedule.selectors) {
-                    var tagsCond = this.schedule.selectors.find(function(c){
+                    var tagsSelector = this.schedule.selectors.find(function(c){
                         return c.type == 'tags'
                     });
-                    if (tagsCond) {
-                        var tags = tagsCond.include;
+                    if (tagsSelector) {
+                        var tags = tagsSelector.include;
 
-                        var arrTags = Object.keys(tags); 
-                        for (var i=0; i < arrTags.length; i++) {
-                            var t = arrTags[i];
+                        var tagsArray = Object.keys(tags);
+                        for (var i=0; i < tagsArray.length; i++) {
+                            var t = tagsArray[i];
                             if (tags[t] != null && tags[t].trim() != '') {
-                                arrTags[i] = arrTags[i]+'='+tags[t];
+                                tagsArray[i] = tagsArray[i]+'='+tags[t];
                             }
                         }
-                        return arrTags;
+                        return tagsArray;
                     }
                 }
             },
