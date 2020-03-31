@@ -781,26 +781,25 @@
                 var fulfillsAge = true,
                     fulfillsCost = true;
 
-                if (m) {
-                    if (this._findSelector('age')){
-                        fulfillsAge = m.created && m.created.trim() != "" ? moment().diff(m.created, 'minutes') > this.schedule.selectors.find(function(con){
-                                return con.type == 'age';
-                            }).minutes : false;
-                    }
-                    if (this._findSelector('cost__monthly')){
-                        fulfillsCost = m.cost && m.cost.monthly ? m.cost.monthly > this.schedule.selectors.find(function(con){
-                                return con.field == 'cost__monthly';
-                            }).value : false;
-                    }
+                if (!m)
+                    return false;
 
-                    if (this.isSpecificMachines) {
-                        return this.isSelectedMachine(m.id); // && fulfillsAge && fulfillsCost;
-                    }
-                    else if (this.isMachinesWithTags) {
-                        return this.machineHasTag(m) && fulfillsAge && fulfillsCost;
-                    }
+                if (this._findSelector('age')){
+                    fulfillsAge = m.created && m.created.trim() != "" ? moment().diff(m.created, 'minutes') > this.schedule.selectors.find(function(con){
+                            return con.type == 'age';
+                        }).minutes : false;
                 }
-                return false;
+                if (this._findSelector('cost__monthly')){
+                    fulfillsCost = m.cost && m.cost.monthly ? m.cost.monthly > this.schedule.selectors.find(function(con){
+                            return con.field == 'cost__monthly';
+                        }).value : false;
+                }
+
+                if (this.isSpecificMachines) {
+                    return this.isSelectedMachine(m.id); // && fulfillsAge && fulfillsCost;
+                } else if (this.isMachinesWithTags) {
+                    return this.machineHasTag(m) && fulfillsAge && fulfillsCost;
+                }
             },
             isSelectedMachine: function(machineId) {
                 return !this.schedule.selectors || !this.schedule.selectors.find(function(c){return c.type == "machines"}) ? false : this.schedule.selectors.find(function(c){return c.type == "machines"}).ids.indexOf(machineId) > -1;
@@ -808,7 +807,7 @@
             machineHasTag: function(m) {
                 var exists = false;
                 for (var i = 0; i < m.tags.length; i++){
-                    var scheduleTags = this.schedule.selectors.find(function(c){return c.type == "tags"}).tags;
+                    var scheduleTags = this.schedule.selectors.find(function(c){return c.type == "tags"}).include;
 
                     if (scheduleTags.hasOwnProperty(m.tags[i].key)){
                         if (!scheduleTags[m.tags[i].key] && !m.tags[i].value){
@@ -858,7 +857,7 @@
                         return c.type == 'tags'
                     });
                     if (tagsCond) {
-                        var tags = tagsCond.tags;
+                        var tags = tagsCond.include;
 
                         var arrTags = Object.keys(tags); 
                         for (var i=0; i < arrTags.length; i++) {

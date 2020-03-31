@@ -331,7 +331,7 @@
             return false;
         },
         _removeBrackets: function(string) {
-            return string.replace(/{/g, "").replace(/}/g, "").replace(/"/g, "").replace(/:/g, "=").replace(/=null/g, "");
+            return string && string.replace(/{/g, "").replace(/}/g, "").replace(/"/g, "").replace(/:/g, "=").replace(/=null/g, "");
         },
         _categoryHasNoRules: function(rules, category) {
             for (var p in rules) {
@@ -422,7 +422,7 @@
                     for (var l = 0; l < s.length; l++) {
                         var sl = s[l];
                         if (sl.type == "tags") {
-                            var stringifiedTags = that._removeBrackets(JSON.stringify(sl.tags));
+                            var stringifiedTags = that._removeBrackets(JSON.stringify(sl.include));
                             if (!categories.find(function(c) { return c.type == "tagged_"+ r.resource_type +"s" && c.stringifiedTags == stringifiedTags })) {
                                 categories.push({
                                     id: 'apply-on-tags-of-'+ r.resource_type +'s',
@@ -430,7 +430,7 @@
                                     type: 'tagged_'+ r.resource_type +'s',
                                     stringifiedTags: stringifiedTags,
                                     rules: [r],
-                                    selectors: [sl.tags]
+                                    selectors: [sl.include]
                                 });
                             } else {
                                 categories.find(function(c) { return c.type == "tagged_"+ r.resource_type +"s" && c.stringifiedTags == stringifiedTags }).rules.push(r);

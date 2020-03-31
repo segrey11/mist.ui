@@ -389,7 +389,7 @@
                 },
                 _updateTagsString: function(selectors){
                     if (this.selectors && this.schedule && this.selectors.length) {
-                        var tags = this.selectors.find(function(c){return c.type=="tags"}) ? this.selectors.find(function(c){return c.type=="tags"}).tags : {};
+                        var tags = this.selectors.find(function(c){return c.type=="tags"}) ? this.selectors.find(function(c){return c.type=="tags"}).include : {};
                         var arrTags = Object.keys(tags); 
                         for (var i=0; i < arrTags.length; i++) {
                             var t = arrTags[i];
