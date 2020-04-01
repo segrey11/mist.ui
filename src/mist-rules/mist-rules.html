@@ -361,7 +361,7 @@
         computeRuleCategories: function(resource, rules, machines) {
             var categories = [],
                 that = this,
-                rulesArray = Object.values(rules);
+                rulesArray = rules ? Object.values(rules) : [];
             var selectors = rulesArray.map(function(r) {
                 return r.selectors;
             });
