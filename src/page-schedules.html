@@ -206,10 +206,10 @@
                                 }
                             } else if (selectors[i].type == "tags") {
                                 display += "on tags ";
-                                for (var p in selectors[i].tags) {
+                                for (var p in selectors[i].include) {
                                     display += "<span class='tag'>" + p;
-                                    if (selectors[i].tags.p != undefined && selectors[i].tags.p != "")
-                                        display += "=" + selectors[i].tags.p;
+                                    if (selectors[i].include[p] != undefined && selectors[i].include[p] != "")
+                                        display += "=" + selectors[i].include[p];
                                     display += "</span>";
                                 }
                             }
