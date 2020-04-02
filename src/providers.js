@@ -1327,7 +1327,7 @@ PROVIDERS.push({
         required: false,
         showIf: {
             fieldName: "authentication",
-            fieldValues: ["tls","tokenbearer"]
+            fieldValues: ["tls"]
         }
     }, {
         name: "cert_file",
@@ -1342,7 +1342,20 @@ PROVIDERS.push({
             fieldName: "authentication",
             fieldValues: ["tls"]
         }
-    },]
+    },{
+        name: "token",
+        label: "Token",
+        helptext: 'Bearer Token',
+        type: "textarea",
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: false,
+        showIf: {
+            fieldName: "authentication",
+            fieldValues: ["tokenbearer"]
+        }
+    }]
 });
 
 // LXD
