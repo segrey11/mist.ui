@@ -788,15 +788,12 @@
                     this.machineFields.forEach(function(f, ind) {
                         this.set('machineFields.' + ind + '.value', this.get(
                             'machineFields.' + ind + '.defaultValue'));
-                        if (f.required && f.options && f.options.length == 1) {
+                        if (f.required && f.options && f.options.length == 1 &&
+                            (f.name!= "image" && this.model.clouds[this.selectedCloud].provider != "vsphere")) {
                             if (f.type == "dropdown") {
                                 this.set('machineFields.' + ind + '.value', f.options[0].val);
                             } else {
                                 this.set('machineFields.' + ind + '.value', f.options[0].id);
-                            }
-                            if (f.name == "image" && this.model.clouds[
-                                this.selectedCloud].provider == "vsphere"){
-                                this._includeImageExtra(f.value)
                             }
                             if (f.add != true) {
                                 this.set('machineFields.' + ind + '.show', false);
@@ -1232,9 +1229,6 @@
                 if (indImEx != undefined)
                     this.set('machineFields.' + indImEx + '.value', this.model.clouds[this.selectedCloud]
                         .images[image].extra);
-                    console.log("HAHAHAHA2", this.model.clouds[this.selectedCloud]
-                        .images[image].extra);
-                    console.log("HAHAHAHA", this.get('machineFields.'+indImEx));
             }
         },
 
