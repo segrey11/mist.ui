@@ -790,6 +790,10 @@
                             } else {
                                 this.set('machineFields.' + ind + '.value', f.options[0].id);
                             }
+                            if (f.name == "image" && this.model.clouds[
+                                this.selectedCloud].provider == "vsphere"){
+                                this._includeImageExtra(f.value)
+                            }
                             if (f.add != true) {
                                 this.set('machineFields.' + ind + '.show', false);
                             }
@@ -1224,6 +1228,9 @@
                 if (indImEx != undefined)
                     this.set('machineFields.' + indImEx + '.value', this.model.clouds[this.selectedCloud]
                         .images[image].extra);
+                    console.log("HAHAHAHA2", this.model.clouds[this.selectedCloud]
+                        .images[image].extra);
+                    console.log("HAHAHAHA", this.get('machineFields.'+indImEx));
             }
         },
 
