@@ -695,7 +695,7 @@
                                 var storageClassIndex = options.findIndex(function(f){return f.name == 'storage_class_name'});
                                 if(storageClassIndex > -1) {
                                     var storageClassField = options[storageClassIndex];
-                                    this._updateStorageClasses(cloudId, storageClassField);                                
+                                    this._updateStorageClasses(cloudId, storageClassField);
                                 }
                                 //remove the static volume creation
                                 var toRemove = ['dynamic', 'volume_type', 'reclaim_policy'];
@@ -704,9 +704,9 @@
                                     if(ind>-1){
                                         options.splice(ind,1);
                                     }
-                                }                                
+                                }
                             }
-                            
+
                             var locationIndex = options.findIndex(function(f){return f.name == 'location'});
 
                             if(provider === "lxd"){
@@ -1030,7 +1030,6 @@
                     this._toggleScriptFields(this.get(changeRecord.path.replace('.value', '')).value);
                 }
 
-                
                 if (this.model.clouds[this.selectedCloud].provider == 'onapp' && changeRecord.path
                     .endsWith('value')) {
                     // if is onapp controll options based on location
@@ -1737,7 +1736,7 @@
         _handleGetResourceGroupsError: function(e) {
             console.error('Got resource groups error', e);
         },
-        _updateStorageClasses: function(cloudId,field) {                
+        _updateStorageClasses: function(cloudId,field) {
             if (field && field.options && !field.options.length){
                 this._getStorageClasses(cloudId, field);
             }
