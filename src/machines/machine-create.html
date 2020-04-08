@@ -810,7 +810,8 @@
                     this.machineFields.forEach(function(f, ind) {
                         this.set('machineFields.' + ind + '.value', this.get(
                             'machineFields.' + ind + '.defaultValue'));
-                        if (f.required && f.options && f.options.length == 1) {
+                        if (f.required && f.options && f.options.length == 1 &&
+                            (f.name!= "image" && this.model.clouds[this.selectedCloud].provider != "vsphere")) {
                             if (f.type == "dropdown") {
                                 this.set('machineFields.' + ind + '.value', f.options[0].val);
                             } else {
@@ -1967,7 +1968,7 @@
                     this.set('machineFields.' + keyInd + '.show', true);
                 }
                 //if the provider is Docker or onapp, the key should not be required
-                if (['docker', 'lxd', 'onapp', 'libvirt', 'vshere', 'gig_g8'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
+                if (['docker', 'lxd', 'onapp', 'libvirt', 'vshere', 'gig_g8', 'kubevirt'].indexOf(this.model.clouds[this.selectedCloud].provider) < 0)
                     if (keyInd > -1) {
                         this.set('machineFields.' + keyInd + '.required', true);
                     }
