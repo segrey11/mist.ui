@@ -448,7 +448,7 @@
         },
 
         setLocationPath: function(e) {
-            // console.log('search: setLocationPath with search query', e.detail);
+            console.log('search: setLocationPath with search query', e.detail);
             if (e.detail.url && this.$.appLocation) {
                 this.$.appLocation.set('path', e.detail.url);
                 if (e.detail.params) {
@@ -456,10 +456,10 @@
                 }
                 // use in redirects to filtered lists, ex from ec2 cloud page to ec2 filtered machine list
                 if (e.detail.search) {
-                    // console.log('setLocationPath', e.detail.search)
+                    console.log('search: setLocationPath', e.detail.search)
                     this.async(function() {
-                        this.dispatchEvent(new CustomEvent('search', { bubbles: true, composed: true, detail: e.detail.search }));
-                    }, 200);
+                        this.dispatchEvent(new CustomEvent('search', { bubbles: true, composed: true, detail: {page: e.detail.url.replace('/',''), q:e.detail.search} }));
+                    }, 400);
                 }
             } else {
                 console.error('redirect url could not be found...');
@@ -619,11 +619,11 @@
 
         updateSearchQuery: function(e) {
             if (e.detail != undefined && e.detail.q != undefined) {
-                if (this.page == e.detail.page) {
-                    // console.log('search: update Search Query', e.detail);
-                    this.set('q', e.detail.q);
+                console.log('search: update Search Query', e.detail);
+                if (e.detail.page && this.page == e.detail.page) {
                     this.set('model.sections.' + this.page + '.q', e.detail.q || '');
                 }
+                this.set('q', e.detail.q);
             }
         },
 
