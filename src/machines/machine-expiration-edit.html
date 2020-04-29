@@ -40,7 +40,7 @@
             <template>
                 <h2>Edit expiration date</h2>
                 <div class="paper-dialog-scrollable">
-                    <app-form id="machine-expiration-edit" fields="{{fields}}" single-column indialog show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT"></app-form>
+                    <app-form id="machine-expiration-edit" fields="{{fields}}" single-column indialog no-horizontal-margins show-cancel btncontent="Save" url="/api/v1/machines/[[machine.id]]" method="PUT"></app-form>
                 </div>
             </template>
         </vaadin-dialog>
