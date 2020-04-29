@@ -196,12 +196,9 @@
                 cursor: pointer;
             }
 
-            iron-icon.delete {
-                opacity: 0.13;
+            iron-icon.delete, iron-icon.edit {
                 margin-right: 16px;
-                height: 12px;
-                width: 12px;
-                transition: opacity 100 ease-in;
+                margin-left: 8px;
             }
 
             .expiration iron-icon.delete, .machine-key:hover iron-icon.delete, .machine-volume:hover iron-icon.delete {
@@ -636,7 +633,7 @@
                             [[_fromNow(machine.expiration.date, machine.*, model.machines.*)]]
                             <span hidden$="[[!machine.expiration.date]]">
                                 <template is="dom-if" if="[[canDeleteExpiration]]" restamp>
-                                    <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
+                                    <iron-icon icon="icons:clear" on-tap="deleteExpiration" class="delete"></iron-icon>
                                 </template>
                             </span>
                             <template is="dom-if" if="[[canEditMachine]]" restamp>
@@ -652,7 +649,7 @@
                                 <div class="machine-key" hidden$="[[!_visibleKey(model,association)]]">
                                     <a class="regular blue-link flexchild" href$="/keys/[[association.key]]">
                                         <iron-icon icon="communication:vpn-key"></iron-icon> [[_computeKeyName(association.key, model.keys)]]</a>
-                                    <iron-icon icon="icons:cancel" on-tap="disassociateKey" class="delete"></iron-icon>
+                                    <iron-icon icon="icons:clear" on-tap="disassociateKey" class="delete"></iron-icon>
                                 </div>
                             </template>
                             <div class="machine-key" id="pendingKeyRequest">
@@ -668,7 +665,7 @@
                                 <div class="machine-volume">
                                     <a class="regular blue-link flexchild" href$="/volumes/[[volumeId]]">
                                         <iron-icon icon="device:storage"></iron-icon>[[_computeVolumeName(volumeId)]]</a>
-                                    <iron-icon icon="icons:cancel" class="delete" on-tap="detachVolume">
+                                    <iron-icon icon="icons:clear" class="delete" on-tap="detachVolume">
                                 </div>
                             </template>
                             <div class="machine-volume" id="pendingVolumeRequest">
@@ -1307,7 +1304,7 @@ Polymer({
         }
     },
     _fromNow: function(time) {
-        return time && moment(time).isValid() ? moment.utc(time).fromNow() : 'never.';
+        return time && moment(time).isValid() ? moment.utc(time).fromNow() : 'never';
     },
     itemProbeClasses: function(machine) {
         if (!machine || !machine.probe) {
