@@ -1257,7 +1257,7 @@ PROVIDERS.push({
         errorMessage: "Please enter title"
     }, {
         name: "host",
-        label: "Host",
+        label: "Hostname or IP *",
         type: "text",
         value: "",
         defaultValue: "",
@@ -1266,7 +1266,7 @@ PROVIDERS.push({
         errorMessage: "Please enter Kubernetes API host IP or DNS name",
     },{
         name: "port",
-        label: "port",
+        label: "Port *",
         type: "text",
         value: 6443,
         defaultValue: 6443,
@@ -1275,13 +1275,13 @@ PROVIDERS.push({
     }, {
         name: "ca_cert_file",
         label: "CA Certificate",
-        helptext: 'CA certificate file',
+        helptext: 'Certification Authority certificate',
         type: "textarea",
         value: "",
         defaultValue: "",
         show: true,
         required: false,
-        helptext:"It is advised to add it for the SSL to work properly."
+        helptext:"Kubernetes uses self signed certificates and it is best practice to add them to the trusted certificates' list. Mist works and will silence any untrusted certificate warnings without it."
     }, {
         name: "authentication",
         label: "Authentication",
@@ -1290,7 +1290,7 @@ PROVIDERS.push({
         defaultValue: "tls",
         options: [{
             val: "basic",
-            title: "Basic http authentication"
+            title: "Basic HTTP authentication"
         }, {
             val: "tls",
             title: "TLS"
@@ -1303,7 +1303,7 @@ PROVIDERS.push({
         errorMessage: "Please choose authentication method",
     }, {
         name: "username",
-        label: "Username",
+        label: "Username *",
         type: "text",
         value: "",
         defaultValue: "",
@@ -1316,7 +1316,7 @@ PROVIDERS.push({
         }
     }, {
         name: "password",
-        label: "Password",
+        label: "Password *",
         type: "password",
         value: "",
         defaultValue: "",
@@ -1328,22 +1328,9 @@ PROVIDERS.push({
             fieldValues: ["basic"]
         }
     }, {
-        name: "key_file",
-        label: "Key",
-        type: "textarea",
-        helptext: 'Client private key file',
-        value: "",
-        defaultValue: "",
-        show: true,
-        required: false,
-        showIf: {
-            fieldName: "authentication",
-            fieldValues: ["tls"]
-        }
-    }, {
         name: "cert_file",
-        label: "Certificate",
-        helptext: 'Client certificate file',
+        label: "User Certificate *",
+        helptext: 'Certificate file for TLS auth.',
         type: "textarea",
         value: "",
         defaultValue: "",
@@ -1354,9 +1341,22 @@ PROVIDERS.push({
             fieldValues: ["tls"]
         }
     },{
+        name: "key_file",
+        label: "Private Key *",
+        type: "textarea",
+        helptext: 'Private Key matching the above certificate',
+        value: "",
+        defaultValue: "",
+        show: true,
+        required: false,
+        showIf: {
+            fieldName: "authentication",
+            fieldValues: ["tls"]
+        }
+    }, {
         name: "token",
-        label: "Token",
-        helptext: 'Bearer Token',
+        label: "Bearer Token *",
+        helptext: 'Bearer Token should be a long string of characters',
         type: "textarea",
         value: "",
         defaultValue: "",

@@ -295,7 +295,7 @@ VOLUME_CREATE_FIELDS.push({
     provider: 'kubevirt',
     fields: [{
             name: "storage_class_name",
-            label: "Storage Class",
+            label: "Storage Class *",
             type: "dropdown",
             class: "margin-bottom",
             value: "",
