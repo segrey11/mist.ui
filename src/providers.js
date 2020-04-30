@@ -1275,7 +1275,6 @@ PROVIDERS.push({
     }, {
         name: "ca_cert_file",
         label: "CA Certificate",
-        helptext: 'Certification Authority certificate',
         type: "textarea",
         value: "",
         defaultValue: "",
@@ -1309,7 +1308,7 @@ PROVIDERS.push({
         defaultValue: "",
         show: true,
         required: false,
-        helptext: 'Username, if you have set basic http authentication',
+        helptext: '',
         showIf: {
             fieldName: "authentication",
             fieldValues: ["basic"]
@@ -1322,7 +1321,7 @@ PROVIDERS.push({
         defaultValue: "",
         show: true,
         required: false,
-        helptext: 'Password, if you have set basic http authentication',
+        helptext: '',
         showIf: {
             fieldName: "authentication",
             fieldValues: ["basic"]
@@ -1356,7 +1355,7 @@ PROVIDERS.push({
     }, {
         name: "token",
         label: "Bearer Token *",
-        helptext: 'Bearer Token should be a long string of characters',
+        helptext: '',
         type: "textarea",
         value: "",
         defaultValue: "",
