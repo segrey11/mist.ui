@@ -42,9 +42,10 @@
                 <h2>Expose machine's ports</h2>
                 <p class="grey" hidden$="[[!ports.length]]">To remove exposed ports, delete them and save.</p>
                 <app-form id="expose-machines-ports" inline single-column fields="[[fields]]" form="{{form}}" url="/api/v1/machines/[[machine.id]]"
-                on-request="_handleRequest" on-response="_handleResponse" on-error="_handleError" btncontent="Save" show-cancel no-auto-update></app-form>
+                on-request="_handleRequest" on-response="_handleResponse" on-error="_handleError" on-service-type-updated="_serviceTypeUpdated" btncontent="Save" show-cancel no-auto-update></app-form>
                 <br/>
             </template>
+        </template>>
         </vaadin-dialog>
     </template>
 </dom-module>
@@ -77,12 +78,16 @@ Polymer({
         }
     },
     listeners: {
-        'app-form-cancel': '_computePorts'
+        'app-form-cancel': '_updatePorts',
     },
     observers: [
-        '_computePorts(machine, machine.extra.port_forwards.*)',
+        '_updatePorts(machine, machine.extra.port_forwards.*)',
     ],
-    _computePorts: function(machine, portForwards) {
+    _serviceTypeUpdated: function(e) {
+        console.log('Service Type Updated: ', e);
+        this._updatePorts();
+    },
+    _updatePorts: function(machine, portForwards) {
         var ports = [];
         if (this.machine && this.machine.extra && this.machine.extra.port_forwards) {
             for (var i=0; i < this.machine.extra.port_forwards.length; i++){
@@ -127,12 +132,12 @@ Polymer({
                     cleanCopy.unshift(service_t_field[0])}
                 if(ports){
                     for(const port of ports){
-                        if(port.service_type == cleanCopy[1].value) {
-                            toAdd = Array.from(cleanCopy[0].options)
+                        if(port.service_type == cleanCopy[0].value) {
+                            toAdd = Array.from(cleanCopy[1].options)
                             toAdd[0].value = port.port
                             toAdd[1].value = port.target_port
                             toAdd[2].value = port.protocol
-                            cleanCopy[0].items.push(toAdd)
+                            cleanCopy[1].items.push(toAdd)
                         }
                     }
                 }
@@ -142,7 +147,7 @@ Polymer({
     },
     _openDialog: function(e) {
         // Recompute ports on open to reset when canceled
-        this._computePorts();
+        this._updatePorts();
         this.$.exposePortsDialog.opened = true;
     },
     _closeDialog: function(e) {

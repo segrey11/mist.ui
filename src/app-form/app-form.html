@@ -876,7 +876,7 @@
             listeners: {
                 'fields-changed': 'runFieldsChanged',
                 'field-value-changed': 'runValidateFields',
-                'app-form-ready': 'runValidateFields'
+                'app-form-ready': 'runValidateFields',
             },
 
             renderForm: function() {
@@ -1049,7 +1049,13 @@
 
                         // Update show field flag after calculating dependencies
                         that.fields.forEach(function (el, index) {
-                            // console.log(el.name);
+                            
+                            if (el.eventOnChange) {
+                                if(el.previousValue != el.value){
+                                    el.previousValue = el.value
+                                    that.dispatchEvent(new CustomEvent(el.eventOnChange, {bubbles: true, composed: true})); 
+                                }
+                            }
                             if (el.name == "expiration") {
                                 // console.log(el.value);
                             }
@@ -1382,7 +1388,7 @@
                                 for (var i = 0; i < field.items.length; i++) {
                                     var o = {};
                                     for (var j = 0; j < field.items[i].length; j++) {
-                                        if (this._asssertToInclude(field.items[i], field.items[
+                                        if (this._includeInPayload(field.items[i], field.items[
                                                 i][j]))
                                             o[field.items[i][j].name] = field.items[i][j].value;
                                     }
@@ -1411,7 +1417,7 @@
                 return moment().add(span,unit).utc().format("YYYY-MM-DD HH:mm:ss");
             },
 
-            _asssertToInclude: function (list, field) {
+            _includeInPayload: function (list, field) {
                 if (field.excludeFromPayload)
                     return false;
                 if (field.show && !field.showIf)

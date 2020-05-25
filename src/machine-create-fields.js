@@ -1461,10 +1461,12 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                         type: 'dropdown',
                         value: 'NodePort',
                         defaultValue: 'NodePort',
+                        previousValue: 'NodePort',
                         helptext: 'The type of the service to be created',
+                        eventOnChange: "service-type-updated",
                         show: true,
                         required: true,
-                        class: 'width-150 inline-block',
+                        class: 'width-155 inline-block',
                         options: [
                             {val: 'ClusterIP', title: 'ClusterIP'},
                             {val: 'NodePort', title: 'NodePort'},
