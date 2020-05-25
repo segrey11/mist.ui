@@ -1373,6 +1373,8 @@ Polymer({
                 item.extra.image)) {
             return item.extra['image_id'] || item.imageId || item.image_id || item.extra.image.slug ||
                 item.extra.image.name;
+        } else if (item && item.image && typeof(item.image) != "object") {
+            return this.model.images[item.image].name  || item.image;
         } else
             return "not found";
     },
@@ -1422,14 +1424,25 @@ Polymer({
             this.model.clouds[machine.cloud].locations[machine.location].name : machine.location;
         }
     },
-    _getNetworkName: function(machine, cloud) {
-        if (!machine || !cloud)
+    _getNetworkName: function(machine) {
+        if (!machine)
             return;
         if (this.machine) {
-            return this.model.clouds && this.model.clouds[machine.cloud] && this.model.clouds[machine.cloud].networks && this.model.clouds[machine.cloud].networks[
-                machine.networks] && this.model.clouds[machine.cloud].networks[machine.network].name != undefined ?
-            this.model.clouds[machine.cloud].networks[machine.network].name : machine.network;
+            return this.model &&
+                    this.model.networks &&
+                    this.model.networks[machine.network] &&
+                    this.model.networks[machine.network].name != undefined ?
+            this.model.networks[machine.network].name : machine.network;
+
         }
+    },
+    _canLinkToNetwork: function(network) {
+        if (network) {
+            return this.model &&
+                    this.model.networks &&
+                    this.model.networks[this.machine.network] ? true : false;
+        }
+        return false;
     },
     _probeMachine: function(e) {
         var payload = {

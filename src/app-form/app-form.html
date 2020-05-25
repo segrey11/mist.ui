@@ -1095,7 +1095,22 @@
                                 // console.log('form set visibility', el.name , show);
 
                                 // update form values regardless of el.show
-                                if (el.type == "ip_textarea") {
+                                if (el.type == 'list') {
+                                    var subformPayload = [];
+                                    if (el.items && el.items.length) {
+                                        for (var i = 0; i < el.items.length; i++) {
+                                            var fieldPayload = {};
+                                            for (var j = 0; j < el.items[i].length; j++) {
+                                                if (that._includeInPayload(el.items[i], el.items[
+                                                        i][j]))
+                                                    fieldPayload[el.items[i][j].name] = el.items[i][j].value;
+                                            }
+                                            subformPayload.push(fieldPayload);
+                                        }
+                                    }
+                                    el.value = subformPayload;
+                                    that.set('form.' + el.name, el.value);
+                                } else if (el.type == "ip_textarea") {
                                     var textToArray = el.value.split('\n');
                                     that.set('form.' + el.name, textToArray);
                                 } else if (el.name == "machines_tags") {
@@ -1112,7 +1127,22 @@
                                     that.set('form.' + el.name, el.value);
                                 }
                             } else {
-                                if (el.type == "ip_textarea") {
+                                if (el.type == 'list') {
+                                    var subformPayload = [];
+                                    if (el.items && el.items.length) {
+                                        for (var i = 0; i < el.items.length; i++) {
+                                            var fieldPayload = {};
+                                            for (var j = 0; j < el.items[i].length; j++) {
+                                                if (that._includeInPayload(el.items[i], el.items[
+                                                        i][j]))
+                                                    fieldPayload[el.items[i][j].name] = el.items[i][j].value;
+                                            }
+                                            subformPayload.push(fieldPayload);
+                                        }
+                                    }
+                                    el.value = subformPayload;
+                                    that.set('form.' + el.name, el.value);
+                                } else if (el.type == "ip_textarea") {
                                     var textToArray = el.value.split('\n');
                                     that.set('form.' + el.name, textToArray);
                                 } else if (el.name == "machines_tags") {
