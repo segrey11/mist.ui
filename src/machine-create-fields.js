@@ -1405,7 +1405,7 @@ MACHINE_CREATE_FIELDS.forEach(function(p) {
                 optional: true,
                 inline: true,
                 flatten: false,
-                enabled:true,
+                enabled:false,
                 loader: false,
                 subfields: [{
                     name: 'ports',

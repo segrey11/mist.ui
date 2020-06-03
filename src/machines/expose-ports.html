@@ -115,8 +115,6 @@ Polymer({
         });
         
         if (portFieldGroup) {
-            // delete existing values
-            portFieldGroup.value = {};
             // locate ports field
             var fields = portFieldGroup.subfields.filter(function(f){
         
@@ -134,7 +132,7 @@ Polymer({
                         if(serviceTypeField[0] && port.service_type != serviceTypeField[0].value){
                             continue;
                         }
-                        const toAdd = JSON.parse(JSON.stringify(cleanCopy[0].options));
+                        let toAdd = JSON.parse(JSON.stringify(cleanCopy[0].options));
                         toAdd[0].value = port.port;
                         toAdd[1].value = port.target_port;
                         toAdd[2].value = port.protocol.toUpperCase();

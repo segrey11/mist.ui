@@ -92,6 +92,7 @@
                 '_subfieldsChanged(field.subfields.*)'
             ],
             _enabledChanged: function(enabled) {
+                this.set('field.enabled', this.enabled);
                 if (!this.enabled) {
                     this._resetValue();
                 } else {

@@ -1379,7 +1379,10 @@
                             payload[field.name] = field.customValue;
                         }
                         if (field.type == 'fieldgroup') {
-                            for(const subfield of field.subfields){
+                            if (!field.enabled) {
+                                excludeFields.push(field);
+                            } else {
+                                for(const subfield of field.subfields){
                                 if(subfield.type == 'list'){
                                     var list = subfield;
                                     var subformPayload = [];
@@ -1396,9 +1399,6 @@
                                 } else
                                     field.value[subfield.name] = subfield.value;
                             }
-                            if (JSON.stringify(field.value) == '{}') {
-                                excludeFields.push(field);
-                            } else {
                                 payload[field.name] = field.value;
                             }
                         }
