@@ -866,6 +866,11 @@
                 fieldIndex: {
                     type: Number,
                     value: -1
+                },
+                noAutoUpdate: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
                 }
             },
 
@@ -1023,7 +1028,8 @@
 
                 if (fields && fields.path && fields.path == 'fields') {
                     // console.log('app form - fields changed. changerecord', fields);
-                    this._updateForm();
+                    if (!this.noAutoUpdate)
+                        this._updateForm();
                     // construct fieldVisibility 
                     var fv = {};
                     for (var i = this.fields.length - 1; i >= 0; i--) {
@@ -1063,7 +1069,7 @@
                                 console.log('fieldgroup', that.id, 'el', el.name, el.value);
                             }
                             if (el.loadScheme && el.schemeName) {
-                                console.log('fieldgroup', that.id, 'el', el.name, el.value);
+                                //console.log('fieldgroup', that.id, 'el', el.name, el.value);
                             }
                             // if field determines a scheme for another field
                             if (el.schemeLoaderFor && (fields.path == 'fields' || fields.path == 'fields.'+ index +'.value')) {
@@ -1373,6 +1379,23 @@
                             payload[field.name] = field.customValue;
                         }
                         if (field.type == 'fieldgroup') {
+                            for(const subfield of field.subfields){
+                                if(subfield.type == 'list'){
+                                    var list = subfield;
+                                    var subformPayload = [];
+                                    if (list && list.items.length) {
+                                        for (var k = 0; k < list.items.length; k++) {
+                                            var o = {};
+                                            for (var j = 0; j < list.items[k].length; j++) {
+                                                o[list.items[k][j].name] = list.items[k][j].value;
+                                            }
+                                            subformPayload.push(o);
+                                        }
+                                    }
+                                    field.value[subfield.name] = subformPayload;
+                                } else
+                                    field.value[subfield.name] = subfield.value;
+                            }
                             if (JSON.stringify(field.value) == '{}') {
                                 excludeFields.push(field);
                             } else {

@@ -115,31 +115,34 @@ Polymer({
         });
         
         if (portFieldGroup) {
+            // delete existing values
+            portFieldGroup.value = {};
             // locate ports field
             var fields = portFieldGroup.subfields.filter(function(f){
         
                 return f.type == 'list';
             });
         
-            var service_t_field = portFieldGroup.subfields.filter(function(f){        
+            var serviceTypeField = portFieldGroup.subfields.filter(function(f){
                 return f.type == 'dropdown';
             });
-            
             if (fields) {
                 var ports = this.ports;
                 var cleanCopy = JSON.parse(JSON.stringify(fields));
-                if(service_t_field){
-                    cleanCopy.unshift(service_t_field[0])}
                 if(ports){
-                    for(const port of ports){
-                        if(port.service_type == cleanCopy[0].value) {
-                            toAdd = Array.from(cleanCopy[1].options)
-                            toAdd[0].value = port.port
-                            toAdd[1].value = port.target_port
-                            toAdd[2].value = port.protocol
-                            cleanCopy[1].items.push(toAdd)
+                    for(let port of ports){
+                        if(serviceTypeField[0] && port.service_type != serviceTypeField[0].value){
+                            continue;
                         }
+                        const toAdd = JSON.parse(JSON.stringify(cleanCopy[0].options));
+                        toAdd[0].value = port.port;
+                        toAdd[1].value = port.target_port;
+                        toAdd[2].value = port.protocol.toUpperCase();
+                        cleanCopy[0].items.push(toAdd);
                     }
+                }
+                if(serviceTypeField && serviceTypeField.length > 0){
+                    cleanCopy.unshift(serviceTypeField[0]);
                 }
                 return cleanCopy;
             }
