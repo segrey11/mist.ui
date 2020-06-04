@@ -1037,7 +1037,6 @@ Polymer({
                 }
             }
         }
-        // console.log('machine rules', machineRules);
         return machineRules;
     },
     _getMachineCloud: function(clouds, id) {
@@ -1064,7 +1063,6 @@ Polymer({
         } }))
     },
     _machineChanged: function(machine) {
-        // console.log('perform action machine changed', machine);
         if (this.machine) {
             this.set('itemArray', [this.machine]);
             // Check if tags changed, update if they did
@@ -1678,7 +1676,6 @@ Polymer({
     },
 
     _isPast: function(time) {
-        // console.log('_isPast', time, moment(time).isValid(), !moment().isBefore(time));
         return time && moment(time).isValid() ? !moment().isBefore(time) : true;
     },
 
@@ -1701,12 +1698,10 @@ Polymer({
     },
 
     _isEmptyExpiration: function(machine) {
-        console.log('_isEmpty');
         return !this.machine.expiration;
     },
 
     _computeMachineExpiration: function(machine) {
-        console.log('_computeMachineExpiration', this.machine.expiration, this.machine)
         if  (this.isPendingExpirationRequest) {
             this.set('isPendingExpirationRequest', false);
         }
