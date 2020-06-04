@@ -201,11 +201,12 @@
             }
 
             iron-icon.delete {
-                opacity: 0.13;
                 margin-right: 16px;
-                height: 12px;
-                width: 12px;
-                transition: opacity 100 ease-in;
+                margin-left: 8px;
+            }
+
+            iron-icon.edit {
+                margin-left: 8px;
             }
 
             .expiration iron-icon.delete, .machine-key:hover iron-icon.delete, .machine-volume:hover iron-icon.delete {
@@ -612,7 +613,7 @@
                         </div>
                     </div>
                 </paper-material>
-                <paper-material id="rightcolumn" class="right">
+                <paper-material id="rightcolumn" class="right resource-description">
                     <div hidden$="[[!machine.cost.monthly]]">
                         <div class="m-info-head cost-head">Monthly Cost</div>
                         <div class="cost">
@@ -632,7 +633,7 @@
                             <h4>Created:</h4>
                         </div>
                         <div class="cell" hidden$="[[!machine]]">
-                            [[_fromNow(machine.created)]].
+                            [[_fromNow(machine.created)]]
                             <span hidden$="[[!machine.created_by]]">
                                 by <a class="blue-link" href$="/members/[[machine.created_by]]">[[_displayUser(machine.created_by,model.members)]]</a> 
                             </span>
@@ -645,14 +646,17 @@
                         </div>
                         <div class="cell expiration" hidden$="[[!machine]]">
                             [[_fromNow(machine.expiration.date, machine.*, model.machines.*)]]
-                            <span hidden$="[[!machine.expiration.date]]">
-                                <template is="dom-if" if="[[canDeleteExpiration]]" restamp>
-                                    <iron-icon icon="icons:cancel" on-tap="deleteExpiration" class="delete"></iron-icon>
-                                </template>
-                            </span>
                             <template is="dom-if" if="[[canEditMachine]]" restamp>
                                 <iron-icon icon="editor:mode-edit" on-tap="editExpiration" class="edit"></iron-icon>
                             </template>
+                            <span hidden$="[[!machineExpiration]]">
+                                <template is="dom-if" if="[[canDeleteExpiration]]" restamp>
+                                    <iron-icon icon="icons:clear" on-tap="deleteExpiration"></iron-icon>
+                                </template>
+                            </span>
+                            <div class="machine-key" id="pendingExpRequest">
+                                <paper-spinner active="[[isPendingExpirationRequest]]" hidden$="[[!isPendingExpirationRequest]]"></paper-spinner>
+                            </div>
                         </div>
                         <br />
                     </div>
@@ -663,7 +667,7 @@
                                 <div class="machine-key" hidden$="[[!_visibleKey(model,association)]]">
                                     <a class="regular blue-link flexchild" href$="/keys/[[association.key]]">
                                         <iron-icon icon="communication:vpn-key"></iron-icon> [[_computeKeyName(association.key, model.keys)]]</a>
-                                    <iron-icon icon="icons:cancel" on-tap="disassociateKey" class="delete"></iron-icon>
+                                    <iron-icon icon="icons:clear" on-tap="disassociateKey" class="delete"></iron-icon>
                                 </div>
                             </template>
                             <div class="machine-key" id="pendingKeyRequest">
@@ -679,7 +683,7 @@
                                 <div class="machine-volume">
                                     <a class="regular blue-link flexchild" href$="/volumes/[[volumeId]]">
                                         <iron-icon icon="device:storage"></iron-icon>[[_computeVolumeName(volumeId)]]</a>
-                                    <iron-icon icon="icons:cancel" class="delete" on-tap="detachVolume">
+                                    <iron-icon icon="icons:clear" class="delete" on-tap="detachVolume">
                                 </div>
                             </template>
                             <div class="machine-volume" id="pendingVolumeRequest">
@@ -778,7 +782,7 @@
                 </template>
             </paper-material>
         </div>
-        <dialog-element id="machinedialog"></dialog-element>
+        <dialog-element id="machinedialog" btn-class="smaller"></dialog-element>
         <iron-ajax id="deleteExpirationDate" url="/api/v1/machines/[[machine.id]]" method="PUT" on-response="_handleMachineDeleteAjaxResponse" on-error="_handleMachineDeleteAjaxError"></iron-ajax>
         <iron-ajax id="machineDeleteAjaxRequest" url="/api/v1/machines/[[machine.id]]" method="DELETE" on-response="_handleMachineDeleteAjaxResponse" on-error="_handleMachineDeleteAjaxError"></iron-ajax>
         <iron-ajax id="disassociateKeyRequest" url="/api/v1/machines/[[machine.id]]/keys/[[disassociateKeyId]]" method="DELETE" on-response="_disassociateKeyResponse" on-error="_disassociateKeyError" on-request="_disassociateKeyRequest" handle-as="xml"></iron-ajax>
@@ -849,6 +853,10 @@ Polymer({
             type: String,
             computed: "_computeMachineSize(machine, machine.*, model.machines.*, cloud.*)"
         },
+        machineExpiration: {
+            type: String,
+            computed: "_computeMachineExpiration(machine.expiration, machine.*, model.machines.*)"
+        },
         machineTags: {
             type: Array,
             value: function(){ return []}
@@ -879,6 +887,10 @@ Polymer({
             type: Boolean
         },
         isPendingVolumeRequest: {
+            type: Boolean,
+            value: false
+        },
+        isPendingExpirationRequest: {
             type: Boolean,
             value: false
         },
@@ -951,6 +963,7 @@ Polymer({
     listeners: {
         'confirmation': '_machineActionConfirmation',
         'pending-key-request': '_updateKeyLoader',
+        'pending-expiration-request': '_updateExpirationLoader',
         'select-action': 'selectAction'
     },
     ready: function() {
@@ -1035,7 +1048,6 @@ Polymer({
                 }
             }
         }
-        // console.log('machine rules', machineRules);
         return machineRules;
     },
     _getMachineCloud: function(clouds, id) {
@@ -1062,7 +1074,6 @@ Polymer({
         } }))
     },
     _machineChanged: function(machine) {
-        // console.log('perform action machine changed', machine);
         if (this.machine) {
             this.set('itemArray', [this.machine]);
             // Check if tags changed, update if they did
@@ -1246,6 +1257,7 @@ Polymer({
     },
     _machineActionConfirmation: function(e) {
         if (e.detail.response == "confirm" && e.detail.reason == "machine.expiration_delete") {
+            this.set('isPendingExpirationRequest', true);
             var emptyExpDate = {expiration: {date:false}};
             this.shadowRoot.querySelector('#deleteExpirationDate').headers["Csrf-Token"] = CSRF_TOKEN;
             this.shadowRoot.querySelector('#deleteExpirationDate').headers["Content-Type"] = 'application/json';
@@ -1274,8 +1286,10 @@ Polymer({
                 msg: e.detail.errormsg,
                 duration: 3000
             } }));
-
         }
+    },
+    _updateExpirationLoader: function(e) {
+        this.set('isPendingExpirationRequest', true);
     },
     _feedbackOnScript: function(e) {
         if (e.detail.response) {
@@ -1318,7 +1332,7 @@ Polymer({
         }
     },
     _fromNow: function(time) {
-        return time && moment(time).isValid() ? moment.utc(time).fromNow() : 'never.';
+        return time && moment(time).isValid() ? moment.utc(time).fromNow() : 'never';
     },
     itemProbeClasses: function(machine) {
         if (!machine || !machine.probe) {
@@ -1686,7 +1700,6 @@ Polymer({
     },
 
     _isPast: function(time) {
-        // console.log('_isPast', time, moment(time).isValid(), !moment().isBefore(time));
         return time && moment(time).isValid() ? !moment().isBefore(time) : true;
     },
 
@@ -1706,6 +1719,17 @@ Polymer({
             else 
                 return moment.duration(seconds,'months').humanize();
         }
+    },
+
+    _isEmptyExpiration: function(machine) {
+        return !this.machine.expiration;
+    },
+
+    _computeMachineExpiration: function(machine) {
+        if  (this.isPendingExpirationRequest) {
+            this.set('isPendingExpirationRequest', false);
+        }
+        return this.machine && this.machine.expiration && this.machine.expiration.date;
     },
 
     deleteExpiration: function() {
