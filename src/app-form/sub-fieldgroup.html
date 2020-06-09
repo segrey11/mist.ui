@@ -70,7 +70,7 @@
                     reflectToAttribute: true
                 },
                 listeners: {
-                'subform-fields-changed': '_subfieldsChanged'
+                    'subform-fields-changed': '_subfieldsChanged'
                 },
                 enabled: {
                     type: Boolean,
@@ -98,7 +98,7 @@
                 } else {
                     this.dispatchEvent(new CustomEvent('subfield-enabled', {bubbles: true, composed: true, detail: {field: this.field}}));
                 }
-            },                
+            },
             _resetValue: function() {
                 // console.log('reset field value');
                 this.set('field.value', {});
