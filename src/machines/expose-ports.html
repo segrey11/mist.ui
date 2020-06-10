@@ -110,7 +110,7 @@ Polymer({
             return x.provider == provider;
         });
         // locate port fieldgroup definition
-        var portFieldGroup = providerFields.fields.find(function(f){
+        var portFieldGroup = providerFields && providerFields.fields.find(function(f){
             return f.name == 'port_forwards';
         });
         
