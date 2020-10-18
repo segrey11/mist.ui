@@ -1594,7 +1594,7 @@
         _getLocationImages: function(location) {
             if (location && this.model && this.model.clouds)
                 return this.model.imagesArray.filter(function(im){
-                        return im.extra && im.extra.locations && im.extra.locations.indexOf(location) > -1 ;
+                        return im.extra && (!im.extra.locations || im.extra.locations.indexOf(location) > -1);
                     });
             return [];
         },
