@@ -757,13 +757,19 @@ Polymer({
   },
   _makeArray(output) {
       const arr = [];
-      const indexes = {0: "cpu", 4: "mem", 7: "swap"}
+      const indexes = {}
       if (output) {
           if (output && typeof(output) === 'object') {
               let obj = {};
               Object.keys(output || {}).forEach((p) => {
                   if (typeof(output[p]) === 'object') {
                       obj = { name: p, options: this._makeArray(output[p]) };
+                      if(p === "cpu")
+                        indexes[arr.length] = "cpu"
+                      if(p === "mem")
+                        indexes[arr.length] = "mem"
+                      if(p === "swap")
+                        indexes[arr.length] = "swap"
                   } else {
                       obj = { name: output[p], options: [] };
                   }
@@ -771,7 +777,7 @@ Polymer({
               });
           }
       }
-      Object.keys(indexes).forEach((index) => {        
+      Object.keys(indexes).forEach((index) => {
         if(arr[index] && arr[index].name === indexes[index]){
             let totalIndex = 0;
             for(let i=0; i < arr[index].options.length; i++){
