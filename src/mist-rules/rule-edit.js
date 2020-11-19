@@ -738,7 +738,7 @@ Polymer({
                       res[chunks[i]] = {};
                   }
                   if (i === chunks.length - 1) {
-                      res[chunks[i]] = data.detail.response[metric].id;
+                      res[chunks[i]] = chunks[i];
                   }
                   res = res[chunks[i]];
               }
@@ -757,6 +757,7 @@ Polymer({
   },
   _makeArray(output) {
       const arr = [];
+      const indexes = {0: "cpu", 4: "mem", 7: "swap"}
       if (output) {
           if (output && typeof(output) === 'object') {
               let obj = {};
@@ -770,8 +771,21 @@ Polymer({
               });
           }
       }
+      Object.keys(indexes).forEach((index) => {        
+        if(arr[index] && arr[index].name === indexes[index]){
+            let totalIndex = 0;
+            for(let i=0; i < arr[index].options.length; i++){
+                if(arr[index].options[i].name.includes("total")){
+                    totalIndex = i;
+                    break;
+                }
+            }
+            arr[index].options.splice(0, 0, arr[index].options.splice(totalIndex, 1)[0]);
+        }
+      });
       return arr;
   },
+
   _handleMetricError(error) {
       console.error('_handleMetricError', error);
       this.dispatchEvent(new CustomEvent('toast', { bubbles: true, composed: true, detail: {msg:"Error fetching available metrics.", duration:3000} }));
