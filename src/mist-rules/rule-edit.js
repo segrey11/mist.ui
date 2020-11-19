@@ -744,7 +744,7 @@ Polymer({
               }
           });
       }
-      this.set('availableMetrics', this._makeArray(output));
+      this.set('availableMetrics', this._computeMetricsArray(output));
       // Store metrics in resource if available, ie we are in a single page, so as to improve performance
       if (!this.model.metrics) {
           this.model.metrics = {};
@@ -755,21 +755,14 @@ Polymer({
           this.dispatchEvent(new CustomEvent('toast', { bubbles: true, composed: true, detail: {msg:"No metrics available for this resource(s)", duration:3000} }));
       }
   },
-  _makeArray(output) {
+  _computeMetricsArray(output) {
       const arr = [];
-      const indexes = {}
       if (output) {
           if (output && typeof(output) === 'object') {
               let obj = {};
               Object.keys(output || {}).forEach((p) => {
                   if (typeof(output[p]) === 'object') {
-                      obj = { name: p, options: this._makeArray(output[p]) };
-                      if(p === "cpu")
-                        indexes[arr.length] = "cpu"
-                      if(p === "mem")
-                        indexes[arr.length] = "mem"
-                      if(p === "swap")
-                        indexes[arr.length] = "swap"
+                      obj = { name: p, options: this._computeMetricsArray(output[p]) };
                   } else {
                       obj = { name: output[p], options: [] };
                   }
@@ -777,18 +770,17 @@ Polymer({
               });
           }
       }
-      Object.keys(indexes).forEach((index) => {
-        if(arr[index] && arr[index].name === indexes[index]){
-            let totalIndex = 0;
-            for(let i=0; i < arr[index].options.length; i++){
-                if(arr[index].options[i].name.includes("total")){
+      arr.forEach((elem) => {
+        let totalIndex = 0;
+        for(let i=0; i < elem.options.length; i++){
+                if(elem.options[i].name.includes("total")){
                     totalIndex = i;
                     break;
                 }
             }
-            arr[index].options.splice(0, 0, arr[index].options.splice(totalIndex, 1)[0]);
-        }
-      });
+            if(totalIndex > 0)
+            elem.options.splice(0, 0, elem.options.splice(totalIndex, 1)[0]);
+        });
       return arr;
   },
 
