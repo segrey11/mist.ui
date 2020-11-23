@@ -1,3 +1,4 @@
+import numeral from "numeral-es6/index.js"
 
 function ratedCost(cost, rate) {
     const c = parseFloat(cost || 0);
@@ -26,9 +27,9 @@ function itemUid(item, section) {
 function mapToArray(obj) {
     const arr = [];
     if (obj) {
-        for (const id in obj) {
+        Object.keys(obj).forEach((id) => {
             arr.push(obj[id]);
-        }
+        });
     }
     return arr;
 }
