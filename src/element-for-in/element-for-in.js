@@ -3,6 +3,7 @@ import '../../node_modules/@advanced-rest-client/json-viewer/json-viewer.js';
 import '../../node_modules/@advanced-rest-client/xml-viewer/xml-viewer.js';
 import { Polymer } from '../../node_modules/@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '../../node_modules/@polymer/polymer/lib/utils/html-tag.js';
+import { YAML } from '../../node_modules/yaml/browser/dist/index.js';
 
 Polymer({
   _template: html`

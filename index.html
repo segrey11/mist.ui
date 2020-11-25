@@ -17,10 +17,10 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async tal:condition="google_analytics_id" src="https://www.googletagmanager.com/gtag/js?id=${google_analytics_id}"></script>
     <script type="module">
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
+        const dataLayer = window.dataLayer || [];
+        function gtag(...args) { dataLayer.push(args); }
         gtag('js', new Date());
-        gtag('config', '${google_analytics_id}', {
+        gtag('config', `${google_analytics_id}`, {
             'custom_map': { 'app': 'ui' }
         });
         gtag('set', { 'content_group1': 'ui' });

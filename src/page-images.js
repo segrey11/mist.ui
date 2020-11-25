@@ -7,7 +7,6 @@ import './images/image-provider-search.js';
 import { mistListsBehavior } from './helpers/mist-lists-behavior.js';
 import { Polymer } from '../node_modules/@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '../node_modules/@polymer/polymer/lib/utils/html-tag.js';
-import { ratedCost } from './helpers/utils.js';
 
 Polymer({
     _template: html`
@@ -120,7 +119,7 @@ Polymer({
                     return `<strong class="name unstarred">${  name  }</strong>`;
                 },
                 'cmp': (row1, row2) => {
-                    return row1['name'].localeCompare(row2['name'], 'en', {sensitivity: 'base'});
+                    return row1.name.localeCompare(row2.name, 'en', {sensitivity: 'base'});
                 }
             },
             'cloud': {

@@ -1,4 +1,4 @@
-import numeral from "numeral-es6/index.js"
+import "numeral-es6/index.js"
 
 function ratedCost(cost, rate) {
     const c = parseFloat(cost || 0);
