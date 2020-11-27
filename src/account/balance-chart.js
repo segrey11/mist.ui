@@ -52,7 +52,7 @@ const BALANCE_GRAPH_OPTIONS = {
     yAxis: {
         type: 'value',
         axisLabel: {
-            formatter: `${this.value}`
+            formatter: 'value'
         }
     },
     series: [

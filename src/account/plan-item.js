@@ -462,7 +462,7 @@ Polymer({
   },
 
   _computeDiscountedPriceText(plan) {
-      if (plan.promo) {
+      if ( plan && plan.promo) {
           const newPrice = Math.round(plan.price * (1 - (plan.promo.discount / 100)));
           return `$${  newPrice  }/mo`;
       }
