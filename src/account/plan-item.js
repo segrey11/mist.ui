@@ -6,7 +6,7 @@ import '../../node_modules/@polymer/paper-spinner/paper-spinner-lite.js';
 import '../../node_modules/@polymer/paper-tooltip/paper-tooltip.js';
 import '../helpers/dialog-element.js';
 import moment from 'moment/src/moment.js';
-import { CSRFToken } from '../helpers/utils.js';
+import { CSRFToken, formatMoney } from '../helpers/utils.js';
 import { Polymer } from '../../node_modules/@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '../../node_modules/@polymer/polymer/lib/utils/html-tag.js';
 
@@ -414,7 +414,7 @@ Polymer({
       },
       discountedPriceText: {
           type: String,
-          computed: '_computeDiscountedPriceText(plan.promo)'
+          computed: '_computeDiscountedPriceText(plan)'
       },
       enterprise: {
           type: Boolean,
@@ -461,9 +461,9 @@ Polymer({
       return !this.plan.description || this.plan.description === "" ? `up to ${  this.plan.machine_limit  }  machines${  monitoringFor}` : this.plan.description;
   },
 
-  _computeDiscountedPriceText(promo) {
-      if (promo) {
-          const newPrice = Math.round(price * (1 - (promo.discount / 100)));
+  _computeDiscountedPriceText(plan) {
+      if (plan.promo) {
+          const newPrice = Math.round(plan.price * (1 - (plan.promo.discount / 100)));
           return `$${  newPrice  }/mo`;
       }
       return '';
@@ -559,7 +559,7 @@ Polymer({
 
   _formatMoney(int) {
       if (int)
-          return int.formatMoney(0,'.',',');
+          return formatMoney(int, 0, '.', ',');
       return int;
   }
 });

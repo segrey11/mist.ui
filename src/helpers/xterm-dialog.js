@@ -2,9 +2,12 @@ import '../../node_modules/@polymer/paper-button/paper-button.js';
 import '../../node_modules/@polymer/neon-animation/animations/scale-up-animation.js';
 import '../../node_modules/@polymer/neon-animation/animations/fade-out-animation.js';
 import { Polymer } from '../../node_modules/@polymer/polymer/lib/legacy/polymer-fn.js';
+/* eslint-disable import/extensions */
+// Linter complains about js extension but these are typescript...
 import "../../node_modules/xterm";
-import FitAddon from "../../node_modules/xterm-addon-fit";
-import AttachAddon from '../../node_modules/xterm-addon-attach';
+import "../../node_modules/xterm-addon-fit";
+import '../../node_modules/xterm-addon-attach';
+/* eslint-enable import/extensions */
 
 const documentContainer = document.createElement('template');
 
@@ -248,6 +251,8 @@ Polymer({
     ready() {
         console.debug('xterm loaded');
     },
+    // disablin no undef because of the typescript imports
+    /* eslint-disable no-undef */
     attached() {
         console.debug('xterm attached');
         this.socket = document.querySelector('mist-app').shadowRoot.querySelector('mist-socket');
@@ -319,7 +324,8 @@ Polymer({
         const textArea = this.shadowRoot.querySelector('.xterm-helper-textarea');
         textArea.focus();
     },
-
+    /* eslint-enable no-undef */
+    /* eslint-disable no-param-reassign */
     resizeTerminal(newRows, newCols) {
         const prevCols = this.term.cols;
         const prevRows = this.term.rows;
@@ -342,6 +348,8 @@ Polymer({
         }
         return [newCols, newRows];
     },
+    /* eslint-enable no-param-reassign */
+
     detached() {
         console.debug('xterm detached');
         const socket = document.querySelector('mist-app').shadowRoot.querySelector('mist-socket');

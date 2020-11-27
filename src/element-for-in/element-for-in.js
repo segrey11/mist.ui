@@ -100,7 +100,7 @@ Polymer({
 
       for (let i = 0, len = content.length; i < len; i++) {
           if (this.ignore && content[i].key.indexOf(this.ignore) > -1) {
-              continue;
+              continue; // eslint-disable-line no-continue
           }
           tpl += "<div class='info-item flex-horizontal-with-ratios'>";
           tpl += `<div class='flexchild key'>${  this.processKeys(content[i].key)  }</div>`;

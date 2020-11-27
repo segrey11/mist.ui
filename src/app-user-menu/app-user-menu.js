@@ -328,7 +328,7 @@ Polymer({
   _computeGravatar (email, size, placeholder) {
       let url = '';
       if (email) {
-          const avatarString = email && md5(email);
+          const avatarString = email && md5(email); // eslint-disable-line no-undef
           url = `//www.gravatar.com/avatar/${  avatarString  }.jpg?s=${  size  }&d=${  placeholder}`;
       } else {
           url = placeholder;

@@ -1,5 +1,6 @@
 import '../../node_modules/@polymer/polymer/polymer-legacy.js';
 import moment from '../../node_modules/moment/src/moment.js'
+import { formatMoney } from './utils.js';
 /**
 * Behavior that defines the machine list columns
 *
@@ -112,7 +113,7 @@ export const machinesListBehavior = {
             'cost': {
                 'body': (item, _row) => {
                     const cost = parseFloat(item.monthly) * _this.currency.rate;
-                    return item && item.monthly ? _this.currency.sign + cost.formatMoney(0) : '';
+                    return item && item.monthly ? _this.currency.sign + formatMoney(cost, 0) : '';
                 },
                 'cmp': (row1, row2) => {
                     const item1 = row1.cost;
