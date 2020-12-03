@@ -5,7 +5,7 @@ import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { _generateMap , CSRFToken, stripePublicAPIKey } from './helpers/utils.js'
 
 const DEBUG_SOCKET = false;
-
+const loadedResourceCounters = {};
 Polymer({
     is: 'mist-socket',
     url: '/socket',
@@ -83,6 +83,7 @@ Polymer({
                     that._patchModel(data);
                 },
                 list_clouds (data) {
+                    console.log("just received clouds ", data)
                     console.warn(that.model.pending)
                     that._updateClouds(data);
                 },
@@ -102,6 +103,7 @@ Polymer({
                     that._updateStacks(data);
                 },
                 list_machines (data) {
+                    console.log("is list_machines")
                     that._updateMachines(data);
                 },
                 list_rules (data) {
@@ -255,7 +257,7 @@ Polymer({
                 .toString(16)
                 .substring(1);
         }
-        return `${s4() + s4()  }-${  s4()  }-${  s4()  }-${ 
+        return `${s4() + s4()  }-${  s4()  }-${  s4()  }-${
             s4()  }-${  s4()  }${s4()  }${s4()}`;
     },
     /* eslint-disable no-param-reassign */
@@ -283,8 +285,11 @@ Polymer({
         const parts = message.split(',');
         const namespace = parts[1];
         const body = JSON.parse(parts.splice(2).join(','));
+        console.log("namespace ", namespace);
+        console.log("body ", body)
         if (this.handlers[namespace] === undefined)
             console.warn('Unknown namespace', namespace);
+
         const endpoint = this.handlers[namespace][Object.keys(body)[0].trim()];
         if (endpoint === undefined)
             console.warn('Unknown endpoint', Object.keys(body)[0], 'in namespace', namespace);
@@ -480,9 +485,19 @@ Polymer({
         }
         return false;
     },
+    _initializeLoadedResourceCounters(clouds) {
+        console.log(clouds);
+        console.log(this.get('model.clouds'))
+        // If the resource types increase, we should probably store them in an array and iterate over them
+        loadedResourceCounters.machines = clouds.filter(cloud => cloud.enabled).length;
+        loadedResourceCounters.volumes = clouds.filter(cloud => cloud.hasOwnProperty('volumes')).length;
+        loadedResourceCounters.networks = clouds.filter(cloud => cloud.hasOwnProperty('networks')).length;
+        loadedResourceCounters.zones = clouds.filter(cloud => cloud.hasOwnProperty('zones')).length;
+        loadedResourceCounters.images = clouds.filter(cloud => cloud.hasOwnProperty('images')).length;
+    },
     /* eslint-enable no-param-reassign */
     _updateClouds (data) {
-        // console.log('_updateClouds', data);
+        console.log('_updateClouds', [...data]);
         if (data.length && this.get('model.onboarding.hasCloud') !== true)
             this.set('model.onboarding.hasCloud', true);
         if (!data.length) {
@@ -490,6 +505,12 @@ Polymer({
             this.set('model.onboarding.isLoadingMachines', false);
             this.set('model.onboarding.isLoadingImages', false);
             this.set('model.onboarding.isLoadingNetworks', false);
+        } else {
+            console.log("")
+            this._initializeLoadedResourceCounters([...data]);
+            this.set('model.onboarding.isLoadingMachines', true);
+            this.set('model.onboarding.isLoadingImages', true);
+            this.set('model.onboarding.isLoadingNetworks', true);
         }
         const ret = this._updateModel('clouds', data);
         this.set('model.onboarding.isLoadingClouds', false);
@@ -515,7 +536,7 @@ Polymer({
                 return b1 || b2;
             });
         if (!cloudsResources) {
-            this.set('model.onboarding.isLoadingMachines', false);
+           // this.set('model.onboarding.isLoadingMachines', false);
             this.set('model.onboarding.isLoadingImages', false);
             this.set('model.onboarding.isLoadingNetworks', false);
         }
@@ -589,7 +610,7 @@ Polymer({
                                             port;
                                     });
                             if (keyIndex > -1) {
-                                this.set(`model.clouds.${  cloud  }.machines.${  machine 
+                                this.set(`model.clouds.${  cloud  }.machines.${  machine
                                     }.key_associations.${  keyIndex}`, {
                                         'key': key.id,
                                         'last_used': lastUsed,
@@ -713,7 +734,13 @@ Polymer({
     },
     /* eslint-enable no-param-reassign */
     _updateMachines (data) {
-        this.set('model.onboarding.isLoadingMachines', false);
+
+        loadedResourceCounters.machines -= 1;
+        console.log("updateMachine ", loadedResourceCounters.machines)
+        if (loadedResourceCounters.machines <= 0) {
+          //  this.set('model.onboarding.isLoadingMachines', false);
+        }
+
         this._updateCloudResources(data, 'machines', 'machine_id');
     },
 
@@ -723,17 +750,25 @@ Polymer({
     },
 
     _updateVolumes (data) {
-        // console.log('UPDATE VOLUMES', data);
+        console.log('UPDATE VOLUMES', data);
         this._updateCloudResources(data, 'volumes', 'external_id')
     },
 
     _updateZones (data) {
+        console.log("updateZone")
         this.set('model.onboarding.isLoadingNetworks', false);
         this._updateCloudResources(data, 'zones', 'zone_id');
     },
-
+    _increaseLoadedResources(section) {
+       return resourcesLoaded.hasOwnProperty(section) ? resourcesLoaded[section] + 1 : 1;
+    },
     _updateCloudResources (data, section, externalId) {
+        console.log("section ", section, data)
+
+        console.log("resourcesLoaded ", loadedResourceCounters);
         if (this.model && this.model.clouds && this.model.clouds[data.cloud_id]) {
+
+            console.log("this.model.clouds ", this.model.clouds)
             if (this.model.clouds[data.cloud_id][section] === undefined)
                 this.model.clouds[data.cloud_id][section] = {};
             const oldCloudResourcesExternalIDs = Object.keys(this.model.clouds[data.cloud_id][section]);
@@ -742,7 +777,7 @@ Polymer({
             const newCloudResources = {};
             data[section].forEach((sec) => { newCloudResources[sec[externalId]] = sec });
             const newCloudResourcesExternalIds = Object.keys(newCloudResources);
-            const newCloudResourcesIds = newCloudResourcesExternalIds.map(i => newCloudResources[i].id); 
+            const newCloudResourcesIds = newCloudResourcesExternalIds.map(i => newCloudResources[i].id);
 
             this.set(`model.clouds.${  data.cloud_id  }.${  section}`, newCloudResources);
 
@@ -760,7 +795,7 @@ Polymer({
             }
             this.set(`model.sections.${  section  }.count`, Object.keys(this.model[section]).length);
         }
-    },        
+    },
 
     _updateTunnels (data) {
         this.set('model.onboarding.isLoadingTunnels', false);
@@ -866,7 +901,7 @@ Polymer({
             !this.model.clouds || !this.model.clouds[cloudID] || !this.model.clouds[cloudID].machines ||
             !this.model.clouds[cloudID].machines[machineID]) {
             return [];
-        } 
+        }
             const rules = [];
             Object.keys(this.model.monitoring.rules || {}).forEach((rule) => {
                 if (this.model.monitoring.rules[rule].machine === machineID && this.model.monitoring.rules[
@@ -885,9 +920,8 @@ Polymer({
                 }
             });
             return rules;
-        
-    },
 
+    },
     cleanUpResources (cloudId) {
         let newImagesArray = [];
         if (cloudId && this.model && this.model.imagesArray) {
