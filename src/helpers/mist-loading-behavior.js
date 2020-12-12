@@ -22,6 +22,11 @@ export const mistLoadingBehavior = {
     trials: {
       type: Number,
     },
+    loadingMachines: {
+      type: Boolean,
+      value: true,
+      computed: '_computeMachineLoading(model.onboarding.isLoadingMachines)'
+  },
   },
   observers: [
     '_updateState(resourceId, section.count)',
@@ -30,9 +35,18 @@ export const mistLoadingBehavior = {
   updateState() {
     this._updateState(this.resourceId, this.section);
   },
+  _computeMachineLoading(isLoadingMachines) {
+    console.log("isLoading ", isLoadingMachines);
+    console.log("model.onboarding.isLoadingMachines ", this.model.onboarding.isLoadingMachines)
+    console.log("this.section.id ", this.section.id)
+    this.set('state', 'loading');
+    if (!this.model.onboarding.isLoadingMachines && this.section.id == 'machines' && this.model[this.section.id][this.resourceId]) {
+      this.set('state', 'found');
+      this._clearAsync();
+    }
+  },
   _updateState(resourceId, section) {
     if (this.resourceId && this.resourceId.indexOf('+add', '+create') === -1) {
-      console.log('load state resourceId', resourceId, section);
       // // initial state
       this.set('state', 'loading');
       this.set('isMissing', false);
@@ -55,6 +69,7 @@ export const mistLoadingBehavior = {
         this.model[this.section.id] &&
         this.model[this.section.id][this.resourceId]
       ) {
+
         this.set('state', 'found');
         this._clearAsync();
       }
