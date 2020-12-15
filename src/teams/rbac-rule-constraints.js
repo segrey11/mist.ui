@@ -14,30 +14,13 @@ const RBAC_CONSTRAINTS_FIELDS = [
     name: 'constraints',
     label: 'Constraints in JSON',
     type: 'textarea',
-    value: { test: '' },
-    defaultValue: {},
+    value: '',
+    defaultValue: '',
     class: 'script',
     show: true,
-    required: false,
+    required: true,
     helptext: 'Add/edit constraints in JSON format',
   },
-  // {
-  //     name: "script_inline",
-  //     label: "Script *",
-  //     type: "textarea",
-  //     value: "#!/bin/sh\necho \"Hello world\"",
-  //     class: "script",
-  //     defaultValue: "",
-  //     show: false,
-  //     required: true,
-  //     errorMessage: "Please enter inline script",
-  //     placeholder: "",
-  //     showIf: {
-  //         fieldName: "location_type",
-  //         fieldValues: ["inline"]
-  //     },
-  //     helptext: "Copy paste your script. Make sure the script's format is aligned to the examples"
-  // }
 ];
 Polymer({
   _template: html`
@@ -115,6 +98,7 @@ Polymer({
         formid="editConstraints-[[index]]"
         fields="{{fields}}"
         form="{{form}}"
+        form-valid="{{formValid}}"
         single-column-form="[[singleColumnForm]]"
         inline="[[inline]]"
       >
@@ -161,13 +145,16 @@ Polymer({
       type: Boolean,
       value: true,
     },
+    formValid: {
+      type: Boolean,
+    },
   },
 
   listeners: {
     keyup: 'hotkeys',
     confirmation: '_updateRuleConstraints',
+    'fields-changed': '_fieldsChanged',
   },
-
   _computeShowConstraints(_prule) {
     // empty strings for ALL
     return (
@@ -214,26 +201,38 @@ Polymer({
   _updateRuleConstraints(e) {
     // update rule.constraints
     const { reason, response } = e.detail;
+
     if (response === 'confirm' && reason === 'edit.constraints') {
-      const newConstraints = this.fields[0].value;
+      const newConstraints = JSON.parse(this.fields[0].value);
       this.dispatchEvent(
         new CustomEvent('update-constraints', {
           bubbles: true,
           composed: true,
           detail: {
             index: this.index,
-            constraints: JSON.parse(newConstraints),
+            constraints: newConstraints,
           },
         })
       );
     }
   },
-
+  _fieldsChanged(e) {
+    // change notify values if expiration date changes
+    const { value } = e.detail;
+    try {
+      JSON.parse(value);
+    } catch (error) {
+      this.formValid = false;
+      return false;
+    }
+    this.formValid = true;
+    return false;
+  },
   _mapValuesToFields() {
     // console.log("in map ", this.rule)
     // fill in fields with constraints corresponding values
     const constraints = JSON.stringify(this.rule.constraints);
     console.log('constraints in map ', constraints);
-    this.set('fields.0.value', constraints || '');
+    this.set('fields.0.value', constraints || '{}');
   },
 });
