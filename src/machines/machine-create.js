@@ -439,27 +439,36 @@ Polymer({
           constraint[field] &&
           machineField.fields[sizeIndex].customSizeFields
         ) {
+          console.log('constraint[field] ', constraint);
           const fieldIndex = this._fieldIndexByName(
             field,
             machineField.fields[sizeIndex].customSizeFields
           );
-          const fieldPath = `${path}.customSizeFields.${fieldIndex}`;
+          const customSizeFieldPath = `${path}.customSizeFields.${fieldIndex}`;
+
           if (constraint[field].min) {
-            this.set(`${fieldPath}.min`, constraint[field].min);
-            this.set(`${fieldPath}.value`, constraint[field].min);
+            this.set(`${customSizeFieldPath}.min`, constraint[field].min);
+            this.set(`${customSizeFieldPath}.value`, constraint[field].min);
           }
           if (constraint[field].max) {
-            this.set(`${fieldPath}.max`, constraint[field].max);
-            this.set(`${fieldPath}.value`, constraint[field].max);
+            this.set(`${customSizeFieldPath}.max`, constraint[field].max);
+            this.set(`${customSizeFieldPath}.value`, constraint[field].max);
           }
           if (constraint[field].show !== undefined) {
-            this.set(`${fieldPath}.hidden`, !constraint[field].show);
-            this.set(`${fieldPath}.value`, undefined);
+            this.set(`${customSizeFieldPath}.hidden`, !constraint[field].show);
+            this.set(`${customSizeFieldPath}.value`, undefined);
           }
         }
       });
+      if (constraint.allowed) {
+        this.set(`${path}.allowed`, constraint.allowed);
+        this.set(`${path}.value`, constraint.allowed);
+      }
+      if (constraint.not_allowed) {
+        this.set(`${path}.not_allowed`, constraint.not_allowed);
+        this.set(`${path}.value`, constraint.not_allowed);
+      }
     });
-    console.log('this.machinesFields ', this.machinesFields);
   },
 
   _applyFieldConstraints() {
@@ -2367,15 +2376,13 @@ Polymer({
       `machineFields.${this.storageAccountsFieldIndex}.options`,
       options
     );
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file: 'machine-create.html : _filterStorageAccountsOptions()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file: 'machine-create.html : _filterStorageAccountsOptions()',
+        },
+      })
+    );
   },
 
   _filterNetworksOptions() {
@@ -2405,13 +2412,11 @@ Polymer({
       this.get(`machineFields.${netInd}.defaultValue`)
     );
     this.set(`machineFields.${netInd}.options`, options);
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: { file: 'machine-create.html : _filterNetworksOptions()' },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: { file: 'machine-create.html : _filterNetworksOptions()' },
+      })
+    );
   },
 
   _handleGetStorageAccountsError(e) {
@@ -2471,15 +2476,13 @@ Polymer({
       `machineFields.${this.securityGroupsFieldIndex}.options`,
       secGroups || []
     );
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file: 'machine-create.html : _handleGetSecurityGroupsResponse()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file: 'machine-create.html : _handleGetSecurityGroupsResponse()',
+        },
+      })
+    );
     this.set(`machineFields.${this.securityGroupsFieldIndex}.loader`, false);
   },
 
@@ -2515,15 +2518,13 @@ Polymer({
       `machineFields.${this.resourceGroupsFieldIndex}.options`,
       e.detail.response || []
     );
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file: 'machine-create.html : _handleGetResourceGroupsResponse()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file: 'machine-create.html : _handleGetResourceGroupsResponse()',
+        },
+      })
+    );
     this.set(`machineFields.${this.resourceGroupsFieldIndex}.loader`, false);
   },
 
@@ -2555,15 +2556,13 @@ Polymer({
       options.push({ title: item, val: item });
     });
     this.storageClassesField.options = options;
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file: 'machine-create.html : _handleGetStorageClassesResponse()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file: 'machine-create.html : _handleGetStorageClassesResponse()',
+        },
+      })
+    );
     this.storageClassesField.loader = false;
   },
 
@@ -2596,13 +2595,11 @@ Polymer({
     });
     this.foldersField.options = options;
     // this.set('machineFields.'+this.machineFields.indexOf(this.foldersField)+'.options', options);
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: { file: 'machine-create.html : _handleGetFoldersResponse()' },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: { file: 'machine-create.html : _handleGetFoldersResponse()' },
+      })
+    );
     this.foldersField.loader = false;
     if (options && options.length > 0) {
       // this.foldersField.value= this.foldersField.options[0].val;
@@ -2639,13 +2636,11 @@ Polymer({
       options.push({ title: name, val: item.id, space: item.free_space });
     });
     this.datastoresField.options = options;
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: { file: 'machine-create.html : _handleGetFoldersResponse()' },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: { file: 'machine-create.html : _handleGetFoldersResponse()' },
+      })
+    );
     this.datastoresField.loader = false;
     if (options && options.length > 0) {
       let showDatastores = true;
@@ -2697,15 +2692,13 @@ Polymer({
 
   _handleGetLXDStoragePoolsResponse(e) {
     this.lxdStoragePoolsField.options = e.detail.response || [];
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file: 'machine-create.html : _handleGetLXDStoragePoolsResponse()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file: 'machine-create.html : _handleGetLXDStoragePoolsResponse()',
+        },
+      })
+    );
     this.lxdStoragePoolsField.loader = false;
   },
 
@@ -2767,16 +2760,14 @@ Polymer({
       `machineFields.${this.virtualNetworkFunctionFieldIndex}.subfields.0.options`,
       categorisedVNFs || []
     );
-    this.shadowRoot
-      .querySelector('app-form')
-      .dispatchEvent(
-        new CustomEvent('fields-changed', {
-          detail: {
-            file:
-              'machine-create.html : _handleGetVirtualNetworkFunctionsResponse()',
-          },
-        })
-      );
+    this.shadowRoot.querySelector('app-form').dispatchEvent(
+      new CustomEvent('fields-changed', {
+        detail: {
+          file:
+            'machine-create.html : _handleGetVirtualNetworkFunctionsResponse()',
+        },
+      })
+    );
     this.set(
       `machineFields.${this.virtualNetworkFunctionFieldIndex}.loader`,
       false
@@ -2967,7 +2958,7 @@ Polymer({
       // set attribute origin
       const origin = window.location.pathname;
       const qParams = {
-        origin: origin,
+        origin,
       };
       this.dispatchEvent(
         new CustomEvent('go-to', {
