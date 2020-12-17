@@ -81,7 +81,7 @@ Polymer({
   },
 
   listeners: {
-      'change': '_updateCustomValue'
+    change: '_updateCustomValue',
   },
 
   observers: [
@@ -110,35 +110,44 @@ _updateAllowedSizes(options) {
   },
 
   _showCustomSizeFields(_custom, _value) {
-      return this.field.custom && (!this.field.value || this.field.value === "custom")
+    return (
+      this.field.custom && (!this.field.value || this.field.value === 'custom')
+    );
   },
 
-  _replaceAsterisk (str) {
-      return str.replace(/_/g, " ").replace("*", "").replace("id", "").trim();
+  _replaceAsterisk(str) {
+    return str.replace(/_/g, ' ').replace('*', '').replace('id', '').trim();
   },
 
   _hideDropdown(_options, field) {
-      return field.custom === true && (!this.field.options || this.field.options.length === 0);
+    return (
+      field.custom === true &&
+      (!this.field.options || this.field.options.length === 0)
+    );
   },
 
-  _noOptions (_options) {
-      return !this.field.options || this.field.options.length === 0;
+  _noOptions(_options) {
+    return !this.field.options || this.field.options.length === 0;
   },
 
-  _allowCustom (field) {
-      return field.custom === true || !this.field.options || !this.field.options.length;
+  _allowCustom(field) {
+    return (
+      field.custom === true || !this.field.options || !this.field.options.length
+    );
   },
 
-  _updateCustomValue (_e) {
-      if (!this.field.custom) {
-          this.set('field.customValue', false);
-      } else if (this.field.custom && this.field.customSizeFields) {
-          const cv = {};
-          for (let i=0; i<this.field.customSizeFields.length; i++){
-              cv[this.field.customSizeFields[i].name] = this.field.customSizeFields[i].value;
-          }
-          this.set('field.customValue', cv);
+  _updateCustomValue(_e) {
+    if (!this.field.custom) {
+      this.set('field.customValue', false);
+    } else if (this.field.custom && this.field.customSizeFields) {
+      const cv = {};
+      for (let i = 0; i < this.field.customSizeFields.length; i++) {
+        cv[this.field.customSizeFields[i].name] = this.field.customSizeFields[
+          i
+        ].value;
       }
+      this.set('field.customValue', cv);
+    }
   },
   _nameContainsStr(name, string) {
     const strArray =  Array.isArray(string) ? string: [string];
@@ -157,16 +166,16 @@ _updateAllowedSizes(options) {
   },
 
   _sort(arr) {
-      if (arr && arr.length)
-          return arr.sort((a,b) => {
-              if (a.cpus < b.cpus) {
-                  return -1;
-              }
-              if (a.cpus > b.cpus) {
-                  return 1;
-              }
-              return 0;
-          })
-      return [];
-  }
+    if (arr && arr.length)
+      return arr.sort((a, b) => {
+        if (a.cpus < b.cpus) {
+          return -1;
+        }
+        if (a.cpus > b.cpus) {
+          return 1;
+        }
+        return 0;
+      });
+    return [];
+  },
 });
