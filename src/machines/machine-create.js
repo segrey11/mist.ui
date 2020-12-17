@@ -477,6 +477,7 @@ Polymer({
     } else {
       constraints = [this.constraints.field];
     }
+
     // Iterate available clouds
     for (let i = 0; i < this.machinesFields.length; i++) {
       // Iterate field constraints
@@ -621,6 +622,7 @@ Polymer({
     }
     return actions;
   },
+
   _computeProviderLogo(className) {
     const identifier = className.replace('_', '');
     return `assets/providers/provider-${identifier}.png`;
