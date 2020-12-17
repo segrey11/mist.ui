@@ -12,7 +12,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 const RBAC_CONSTRAINTS_FIELDS = [
   {
     name: 'constraints',
-    label: 'Constraints in JSON',
+    label: '',
     type: 'textarea',
     value: '',
     defaultValue: '',
