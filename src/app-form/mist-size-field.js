@@ -13,71 +13,115 @@ import { html } from '../../node_modules/@polymer/polymer/lib/utils/html-tag.js'
 
 Polymer({
   _template: html`
-        <style include="shared-styles forms">
-            :host>* {
-                width: 100%;
-            }
+    <style include="shared-styles forms">
+      :host > * {
+        width: 100%;
+      }
 
-            paper-item.button-true {
-                text-transform: uppercase;
-            }
-            paper-item.button-true.iron-selected {
-                background-color: #2196F3 !important;
-                color: #fff;
-            }
-            paper-slider ::slotted(#input) {
-                width: 70px;
-            }
-            paper-input.search {
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-            .label:first-of-type {
-                margin-top: 24px;
-            }
-        </style>
+      paper-item.button-true {
+        text-transform: uppercase;
+      }
+      paper-item.button-true.iron-selected {
+        background-color: #2196f3 !important;
+        color: #fff;
+      }
+      paper-slider ::slotted(#input) {
+        width: 70px;
+      }
+      paper-input.search {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .label:first-of-type {
+        margin-top: 24px;
+      }
+    </style>
 
-        <paper-dropdown-menu label="[[field.label]]" horizontal-align="left" disabled="[[field.disabled]]" required="[[field.required]]" hidden\$="[[_hideDropdown(field.options,field)]]">
-            <div slot="dropdown-content" class="dropdown-content">
-                <paper-input class="search" label\$="Search [[field.name]]s" value="{{field.search}}" data-options\$="[[field.name]]"></paper-input>
-                <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{field.value}}" class="dropdown-content">
-                    <template is="dom-if" if="[[_noOptions(field.options.length)]]" restamp="">
-                        <paper-item disabled="">No sizes found</paper-item>
-                    </template>
-                    <template is="dom-if" if="[[field.custom]]" restamp="">
-                        <paper-item value="custom" class="button-true">Custom Size</paper-item>
-                    </template>
-                    <template is="dom-repeat" items="[[_filter(allowedSizes, field.search)]]" as="option">
-                        <paper-item value="[[option.id]]" disabled\$="[[option.disabled]]">
-                            <span class="flex">[[showOption(option)]]</span>
-                        </paper-item>
-                    </template>
-                </paper-listbox>
-            </div>
-        </paper-dropdown-menu>
-        <template is="dom-if" if="[[_showCustomSizeFields(field.custom, field.value)]]" restamp="">
-            <template is="dom-repeat" items="{{field.customSizeFields}}">
-                <div class="label" hidden="[[item.hidden]]">[[item.label]]
-                    <span class="field-helptext">min [[item.min]], max [[item.max]] [[item.unit]]</span>
-                </div>
-                <paper-slider id\$="[[id]]-[[field.name]]-[[item.name]]" disabled="[[item.disabled]]" hidden="[[item.hidden]]" min="[[item.min]]" max="[[item.max]]" value="{{item.value}}" step="[[item.step]]" pin="" snaps="" editable=""></paper-slider>
-            </template>
-        </template>
-`,
+    <paper-dropdown-menu
+      label="[[field.label]]"
+      horizontal-align="left"
+      disabled="[[field.disabled]]"
+      required="[[field.required]]"
+      hidden$="[[_hideDropdown(field.options,field)]]"
+    >
+      <div slot="dropdown-content" class="dropdown-content">
+        <paper-input
+          class="search"
+          label$="Search [[field.name]]s"
+          value="{{field.search}}"
+          data-options$="[[field.name]]"
+        ></paper-input>
+        <paper-listbox
+          slot="dropdown-content"
+          attr-for-selected="value"
+          selected="{{field.value}}"
+          class="dropdown-content"
+        >
+          <template
+            is="dom-if"
+            if="[[_noOptions(field.options.length)]]"
+            restamp=""
+          >
+            <paper-item disabled="">No sizes found</paper-item>
+          </template>
+          <template is="dom-if" if="[[field.custom]]" restamp="">
+            <paper-item value="custom" class="button-true"
+              >Custom Size</paper-item
+            >
+          </template>
+          <template
+            is="dom-repeat"
+            items="[[_filter(allowedSizes, field.search)]]"
+            as="option"
+          >
+            <paper-item value="[[option.id]]" disabled$="[[option.disabled]]">
+              <span class="flex">[[showOption(option)]]</span>
+            </paper-item>
+          </template>
+        </paper-listbox>
+      </div>
+    </paper-dropdown-menu>
+    <template
+      is="dom-if"
+      if="[[_showCustomSizeFields(field.custom, field.value)]]"
+      restamp=""
+    >
+      <template is="dom-repeat" items="{{field.customSizeFields}}">
+        <div class="label" hidden="[[item.hidden]]">
+          [[item.label]]
+          <span class="field-helptext"
+            >min [[item.min]], max [[item.max]] [[item.unit]]</span
+          >
+        </div>
+        <paper-slider
+          id$="[[id]]-[[field.name]]-[[item.name]]"
+          disabled="[[item.disabled]]"
+          hidden="[[item.hidden]]"
+          min="[[item.min]]"
+          max="[[item.max]]"
+          value="{{item.value}}"
+          step="[[item.step]]"
+          pin=""
+          snaps=""
+          editable=""
+        ></paper-slider>
+      </template>
+    </template>
+  `,
 
   is: 'mist-size-field',
 
   properties: {
-      id: {
-          type: String
-      },
-      field: {
-          type: Object,
-          notify: true
-      },
-      allowedSizes: {
-          type: Array
-      }
+    id: {
+      type: String,
+    },
+    field: {
+      type: Object,
+      notify: true,
+    },
+    allowedSizes: {
+      type: Array,
+    },
   },
 
   listeners: {
@@ -85,28 +129,33 @@ Polymer({
   },
 
   observers: [
-      '_updateCustomValue(field.customSizeFields.*)',
-      '_updateAllowedSizes(field.options)'
+    '_updateCustomValue(field.customSizeFields.*)',
+    '_updateAllowedSizes(field.options)',
   ],
-_updateAllowedSizes(options) {
-    const {allowed, not_allowed} = this.field;
+  _updateAllowedSizes(options) {
+    const { allowed } = this.field;
+    const notAllowed = this.field.not_allowed;
 
     if (allowed instanceof Array) {
-      this.set('allowedSizes', options.filter(option => this._allowedInOption(allowed, option)));
+      this.set(
+        'allowedSizes',
+        options.filter(option => this._allowedInOption(allowed, option))
+      );
       return;
     }
-    if (not_allowed instanceof Array) {
-        this.set('allowedSizes', options.filter(option => !this._allowedInOption(not_allowed, option)));
-        return;
+    if (notAllowed instanceof Array) {
+      this.set(
+        'allowedSizes',
+        options.filter(option => !this._allowedInOption(notAllowed, option))
+      );
+      return;
     }
     this.set('allowedSizes', options);
-},
-  showOption (option) {
-      if (option.name)
-          return option.name;
-      if (option.id)
-          return option.id;
-      return "";
+  },
+  showOption(option) {
+    if (option.name) return option.name;
+    if (option.id) return option.id;
+    return '';
   },
 
   _showCustomSizeFields(_custom, _value) {
@@ -150,19 +199,31 @@ _updateAllowedSizes(options) {
     }
   },
   _nameContainsStr(name, string) {
-    const strArray =  Array.isArray(string) ? string: [string];
-    return strArray.some(str => name.toLowerCase().indexOf(str.toLowerCase()) > -1);
-},
-  _allowedInOption(allowed, option) {
-    return allowed.includes(option.id) || allowed.includes(option.external_id) ||  this._nameContainsStr(option.name, allowed);
+    const strArray = Array.isArray(string) ? string : [string];
+    return strArray.some(
+      str => name.toLowerCase().indexOf(str.toLowerCase()) > -1
+    );
   },
-  _resetField () {
+  _allowedInOption(allowed, option) {
+    return (
+      allowed.includes(option.id) ||
+      allowed.includes(option.external_id) ||
+      this._nameContainsStr(option.name, allowed)
+    );
+  },
+  _resetField() {
     this.set('field.value', this.field.defaultValue);
-},
-  _filter (options, search) {
-      return options ? this._sort(options.filter((op) => {
-          return op.name && (!search || this._nameContainsStr(op.name, search));
-      })) : [];
+  },
+  _filter(options, search) {
+    return options
+      ? this._sort(
+          options.filter(op => {
+            return (
+              op.name && (!search || this._nameContainsStr(op.name, search))
+            );
+          })
+        )
+      : [];
   },
 
   _sort(arr) {
