@@ -33,7 +33,7 @@ Polymer({
                 padding-right: 16px;
             }
             .label:first-of-type {
-                margin-top: 24px;                
+                margin-top: 24px;
             }
         </style>
 
@@ -47,7 +47,7 @@ Polymer({
                     <template is="dom-if" if="[[field.custom]]" restamp="">
                         <paper-item value="custom" class="button-true">Custom Size</paper-item>
                     </template>
-                    <template is="dom-repeat" items="[[_filter(field.options, field.search)]]" as="option">
+                    <template is="dom-repeat" items="[[_filter(allowedSizes, field.search)]]" as="option">
                         <paper-item value="[[option.id]]" disabled\$="[[option.disabled]]">
                             <span class="flex">[[showOption(option)]]</span>
                         </paper-item>
@@ -74,6 +74,9 @@ Polymer({
       field: {
           type: Object,
           notify: true
+      },
+      allowedSizes: {
+          type: Array
       }
   },
 
@@ -82,9 +85,22 @@ Polymer({
   },
 
   observers: [
-      '_updateCustomValue(field.customSizeFields.*)'
+      '_updateCustomValue(field.customSizeFields.*)',
+      '_updateAllowedSizes(field.options)'
   ],
+_updateAllowedSizes(options) {
+    const {allowed, not_allowed} = this.field;
 
+    if (allowed instanceof Array) {
+      this.set('allowedSizes', options.filter(option => this._allowedInOption(allowed, option)));
+      return;
+    }
+    if (not_allowed instanceof Array) {
+        this.set('allowedSizes', options.filter(option => !this._allowedInOption(not_allowed, option)));
+        return;
+    }
+    this.set('allowedSizes', options);
+},
   showOption (option) {
       if (option.name)
           return option.name;
@@ -124,14 +140,19 @@ Polymer({
           this.set('field.customValue', cv);
       }
   },
-
-  _resetField () {
-      this.set('field.value', this.field.defaultValue);
+  _nameContainsStr(name, string) {
+    const strArray =  Array.isArray(string) ? string: [string];
+    return strArray.some(str => name.toLowerCase().indexOf(str.toLowerCase()) > -1);
+},
+  _allowedInOption(allowed, option) {
+    return allowed.includes(option.id) || allowed.includes(option.external_id) ||  this._nameContainsStr(option.name, allowed);
   },
-
+  _resetField () {
+    this.set('field.value', this.field.defaultValue);
+},
   _filter (options, search) {
       return options ? this._sort(options.filter((op) => {
-          return op.name && (!search || op.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
+          return op.name && (!search || this._nameContainsStr(op.name, search));
       })) : [];
   },
 

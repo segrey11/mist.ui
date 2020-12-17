@@ -429,21 +429,17 @@ Polymer({
   },
 
   _applySizeConstraints() {
-    const customFields = ['disk', 'cpu', 'ram', 'swap'];
+    const customFields = [ 'cpu', 'ram', 'disk_primary','disk_swap'];
     const constraint = this.constraints.size;
+
     this.machinesFields.forEach((machineField, index) => {
       const sizeIndex = this._fieldIndexByName('size', machineField.fields);
       const path = `machinesFields.${index}.fields.${sizeIndex}`;
+      const customSizeFields = machineField.fields[sizeIndex].customSizeFields;
       customFields.forEach(field => {
-        if (
-          constraint[field] &&
-          machineField.fields[sizeIndex].customSizeFields
-        ) {
+        if (constraint[field] && customSizeFields) {
           console.log('constraint[field] ', constraint);
-          const fieldIndex = this._fieldIndexByName(
-            field,
-            machineField.fields[sizeIndex].customSizeFields
-          );
+          const fieldIndex = this._fieldIndexByName(field,customSizeFields);
           const customSizeFieldPath = `${path}.customSizeFields.${fieldIndex}`;
 
           if (constraint[field].min) {
@@ -452,21 +448,22 @@ Polymer({
           }
           if (constraint[field].max) {
             this.set(`${customSizeFieldPath}.max`, constraint[field].max);
-            this.set(`${customSizeFieldPath}.value`, constraint[field].max);
           }
           if (constraint[field].show !== undefined) {
-            this.set(`${customSizeFieldPath}.hidden`, !constraint[field].show);
-            this.set(`${customSizeFieldPath}.value`, undefined);
+            const isHidden = !constraint[field].show;
+            this.set(`${customSizeFieldPath}.hidden`, isHidden);
+            if (isHidden) {
+              this.set(`${customSizeFieldPath}.value`, undefined);
+            }
           }
         }
       });
-      if (constraint.allowed) {
+
+      if (constraint.allowed && !customSizeFields) {
         this.set(`${path}.allowed`, constraint.allowed);
-        this.set(`${path}.value`, constraint.allowed);
       }
-      if (constraint.not_allowed) {
+      if (constraint.not_allowed && !customSizeFields) {
         this.set(`${path}.not_allowed`, constraint.not_allowed);
-        this.set(`${path}.value`, constraint.not_allowed);
       }
     });
   },
