@@ -429,26 +429,28 @@ Polymer({
   },
 
   _applySizeConstraints() {
-    const customFields = [ 'cpu', 'ram', 'disk_primary','disk_swap'];
+    const customFields = ['cpu', 'ram', 'disk_primary', 'disk_swap'];
     const constraint = this.constraints.size;
 
     this.machinesFields.forEach((machineField, index) => {
       const sizeIndex = this._fieldIndexByName('size', machineField.fields);
       const path = `machinesFields.${index}.fields.${sizeIndex}`;
-      const customSizeFields = machineField.fields[sizeIndex].customSizeFields;
+      const { customSizeFields } = machineField.fields[sizeIndex];
+
       customFields.forEach(field => {
         if (constraint[field] && customSizeFields) {
-          console.log('constraint[field] ', constraint);
-          const fieldIndex = this._fieldIndexByName(field,customSizeFields);
+          const fieldIndex = this._fieldIndexByName(field, customSizeFields);
           const customSizeFieldPath = `${path}.customSizeFields.${fieldIndex}`;
 
           if (constraint[field].min) {
             this.set(`${customSizeFieldPath}.min`, constraint[field].min);
             this.set(`${customSizeFieldPath}.value`, constraint[field].min);
           }
+
           if (constraint[field].max) {
             this.set(`${customSizeFieldPath}.max`, constraint[field].max);
           }
+
           if (constraint[field].show !== undefined) {
             const isHidden = !constraint[field].show;
             this.set(`${customSizeFieldPath}.hidden`, isHidden);
