@@ -429,7 +429,7 @@ Polymer({
   },
 
   _applySizeConstraints() {
-    const customFields = ['cpu', 'ram', 'disk_primary', 'disk_swap'];
+    const customFields = ['cpu', 'ram', 'disk', 'swap'];
     const constraint = this.constraints.size;
 
     this.machinesFields.forEach((machineField, index) => {
