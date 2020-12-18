@@ -25,6 +25,11 @@ Polymer({
         background-color: #2196f3 !important;
         color: #fff;
       }
+      paper-slider {
+        --paper-slider-input: {
+          width: 90px;
+        }
+      }
       paper-slider ::slotted(#input) {
         width: 70px;
       }
