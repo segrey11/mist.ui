@@ -52,6 +52,7 @@ Polymer({
   connect() {
     console.warn('connecting at ', this.url);
     // Create the SockJS object
+    // eslint-disable-line no-undef
     this.socket = new SockJS(this.url, null, {
       // eslint-disable-line no-undef
       transports: ['websocket', 'xhr-polling'],
@@ -310,6 +311,7 @@ Polymer({
   _patchModel(patch) {
     const _this = this;
     patch.forEach(operation => {
+      // eslint-disable-line no-unused-vars
       const idleCallbackId = requestIdleCallback(
         () => {
           // eslint-disable-line no-unused-vars

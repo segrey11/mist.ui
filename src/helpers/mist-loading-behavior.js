@@ -47,6 +47,7 @@ export const mistLoadingBehavior = {
   },
   _updateState(resourceId, section) {
     if (this.resourceId && this.resourceId.indexOf('+add', '+create') === -1) {
+      console.log('load state resourceId', resourceId, section);
       // // initial state
       this.set('state', 'loading');
       this.set('isMissing', false);
@@ -69,7 +70,6 @@ export const mistLoadingBehavior = {
         this.model[this.section.id] &&
         this.model[this.section.id][this.resourceId]
       ) {
-
         this.set('state', 'found');
         this._clearAsync();
       }
