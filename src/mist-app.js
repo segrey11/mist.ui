@@ -716,10 +716,10 @@ Polymer({
     });
   },
   _dataLoading() {
-    console.log("data loading")
+
     switch(this.routeData && this.routeData.page) {
         case 'machines':
-            return this.pageLoading && this.model.onboarding.isLoadingMachines;
+            return this.pageLoading || this.model.onboarding.isLoadingMachines;
         default:
             return this.pageLoading;
 

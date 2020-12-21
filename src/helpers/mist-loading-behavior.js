@@ -22,11 +22,6 @@ export const mistLoadingBehavior = {
     trials: {
       type: Number,
     },
-    loadingMachines: {
-      type: Boolean,
-      value: true,
-      computed: '_computeMachineLoading(model.onboarding.isLoadingMachines)'
-  },
   },
   observers: [
     '_updateState(resourceId, section.count)',
@@ -34,16 +29,6 @@ export const mistLoadingBehavior = {
   ],
   updateState() {
     this._updateState(this.resourceId, this.section);
-  },
-  _computeMachineLoading(isLoadingMachines) {
-    console.log("isLoading ", isLoadingMachines);
-    console.log("model.onboarding.isLoadingMachines ", this.model.onboarding.isLoadingMachines)
-    console.log("this.section.id ", this.section.id)
-    this.set('state', 'loading');
-    if (!this.model.onboarding.isLoadingMachines && this.section.id == 'machines' && this.model[this.section.id][this.resourceId]) {
-      this.set('state', 'found');
-      this._clearAsync();
-    }
   },
   _updateState(resourceId, section) {
     if (this.resourceId && this.resourceId.indexOf('+add', '+create') === -1) {
@@ -54,22 +39,23 @@ export const mistLoadingBehavior = {
 
       // if we are still loading the model of resources
       if (!this.section || !this.model[this.section.id]) {
-        // Try again after some time and see if it has loaded
-        this._modelStillLoadingTryAgain();
+        this.set('state', 'loading');
+        this.set('isMissing', false);
+        this._tryAgain();
       }
       // if we have loaded the resources but resource is still missing
       else if (
         this.model[this.section.id] &&
         !this.model[this.section.id][this.resourceId]
       ) {
-        // Try 5 more times in case we get the resource
-        this._modelHasLoadedTryAgain();
+        this._tryAgain();
       }
       // if we found and loaded the resource
       else if (
         this.model[this.section.id] &&
         this.model[this.section.id][this.resourceId]
       ) {
+        this.set('isMissing', false);
         this.set('state', 'found');
         this._clearAsync();
       }
@@ -83,16 +69,13 @@ export const mistLoadingBehavior = {
       this.set('asyncID', null);
     }
   },
-  _modelStillLoadingTryAgain() {
-    setTimeout(() => {
-      this.updateState();
-    }, 1000);
-  },
-  _modelHasLoadedTryAgain() {
+  _tryAgain() {
     console.log('load timeout', this.trials);
+    // Currently we can only tell if machines have loaded. Update this number for other resources in the future
+    const trialLimit = this.section.id === 'machines' ? 1 : 5;
     this.set('trials', this.trials ? this.trials + 1 : 1);
     this._clearAsync();
-    if (this.trials > 5) {
+    if (this.trials > trialLimit) {
       this.set('state', 'missing');
       this.set('isMissing', true);
     } else {
