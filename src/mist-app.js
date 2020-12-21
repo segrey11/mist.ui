@@ -716,13 +716,11 @@ Polymer({
     });
   },
   _dataLoading() {
-
     switch(this.routeData && this.routeData.page) {
         case 'machines':
             return this.pageLoading || this.model.onboarding.isLoadingMachines;
         default:
             return this.pageLoading;
-
     }
 },
   _hideLoader() {
