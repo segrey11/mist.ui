@@ -501,6 +501,7 @@ Polymer({
 
   _rulesChanged() {
     if (this.team) {
+      console.log(this.team.policy.rules, this.rules);
       if (
         JSON.stringify(this.team.policy.rules) !== JSON.stringify(this.rules) ||
         this.defaultOperator !== this.team.policy.operator
@@ -619,7 +620,6 @@ Polymer({
     const policy = {};
     policy.rules = this.rules;
     console.log('_submitForm', this.rules);
-
     policy.operator = this.defaultOperator;
     this.$.postPolicy.headers['Content-Type'] = 'application/json';
     this.$.postPolicy.headers['Csrf-Token'] = CSRFToken.value;
