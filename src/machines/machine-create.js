@@ -427,10 +427,27 @@ Polymer({
       this._applySizeConstraints();
     }
   },
-
   _applySizeConstraints() {
-    const customFields = ['cpu', 'ram', 'disk', 'swap'];
+    const customFields = [
+      'cpu',
+      'ram',
+      'disk',
+      'disk_primary',
+      'size_disk_primary',
+      'swap',
+      'disk_swap',
+      'size_disk_swap',
+    ];
     const constraint = this.constraints.size;
+    // If the machine fields are ever simplified, these next 4 assignments won't be needed
+    if (constraint.disk) {
+      constraint.size_disk_primary = constraint.disk;
+      constraint.disk_primary = constraint.disk;
+    }
+    if (constraint.swap) {
+      constraint.size_disk_swap = constraint.swap;
+      constraint.disk_swap = constraint.swap;
+    }
 
     this.machinesFields.forEach((machineField, index) => {
       const sizeIndex = this._fieldIndexByName('size', machineField.fields);
