@@ -562,7 +562,7 @@ Polymer({
       rid: '',
       rtags: {},
       rtype: '',
-      constraints: null,
+      constraints: {},
     };
     this.push('rules', emptyRuleObj);
     this.ruleHasChanges();
@@ -618,14 +618,13 @@ Polymer({
   _submitForm() {
     const policy = {};
     policy.rules = this.rules;
-
     console.log('_submitForm', this.rules);
 
     policy.operator = this.defaultOperator;
     this.$.postPolicy.headers['Content-Type'] = 'application/json';
     this.$.postPolicy.headers['Csrf-Token'] = CSRFToken.value;
     this.$.postPolicy.body = {
-      policy: policy,
+      policy,
     };
     this.$.postPolicy.generateRequest();
   },
